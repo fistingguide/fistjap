@@ -51,12 +51,12 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 		.filter((item) => item.handle.trim().length > 0)
 		.map((item) =>
 			db
-				.prepare(
-					`INSERT OR IGNORE INTO profiles (name, handle, bio, profile_url, avatar, sexual_orientation, followers_count)
-					 VALUES (?, ?, ?, ?, ?, '同性恋', 20)`,
-				)
-				.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar),
-		);
+					.prepare(
+						`INSERT OR IGNORE INTO profiles (name, handle, bio, profile_url, avatar, sexual_orientation, followers_count)
+						 VALUES (?, ?, ?, ?, ?, 'Gay', 20)`,
+					)
+					.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar),
+			);
 
 	if (statements.length > 0) {
 		await db.batch(statements);
@@ -101,7 +101,7 @@ function normalizePayload(payload: ProfilePayload) {
 		bio: toText(payload.bio),
 		profileUrl: toText(payload.profileUrl),
 		avatar: toText(payload.avatar),
-		sexualOrientation: toText(payload.sexualOrientation, "同性恋") || "同性恋",
+		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
 		followersCount: toFollowers(payload.followersCount),
 	};
 }

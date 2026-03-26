@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     bio TEXT NOT NULL DEFAULT '',
     profile_url TEXT NOT NULL DEFAULT '',
     avatar TEXT NOT NULL DEFAULT '',
-    sexual_orientation TEXT NOT NULL DEFAULT '同性恋',
+    sexual_orientation TEXT NOT NULL DEFAULT 'Gay',
     followers_count INTEGER NOT NULL DEFAULT 20,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

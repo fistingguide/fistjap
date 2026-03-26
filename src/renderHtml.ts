@@ -21,30 +21,30 @@ function escapeHtml(value: string): string {
 
 function renderLeaderboardRows(rows: ProfileRecord[]): string {
 	if (rows.length === 0) {
-		return '<li class="empty">暂无数据，请先在管理面板新增记录。</li>';
+		return '<li class="empty">No data yet. Add records in the admin panel.</li>';
 	}
 
 	return rows
 		.map((row, index) => {
 			const rank = index + 1;
 			const rankClass = rank <= 3 ? "top-rank" : "normal-rank";
-			const safeName = escapeHtml(row.name || "未命名");
+			const safeName = escapeHtml(row.name || "Unnamed");
 			const safeHandle = escapeHtml(row.handle || "");
-			const safeOrientation = escapeHtml(row.sexual_orientation || "同性恋");
+			const safeOrientation = escapeHtml(row.sexual_orientation || "Gay");
 			const safeUrl = escapeHtml(row.profile_url || "#");
-			const safeBio = escapeHtml(row.bio || "暂无简介");
+			const safeBio = escapeHtml(row.bio || "No bio");
 			const safeAvatar = escapeHtml(row.avatar || "");
 			const avatarEl = safeAvatar
 				? `<img class="avatar" src="${safeAvatar}" alt="${safeName}" referrerpolicy="no-referrer" loading="lazy" />`
-				: `<div class="avatar placeholder">无图</div>`;
+				: `<div class="avatar placeholder">N/A</div>`;
 
 			return `
 				<li class="leaderboard-item">
 					<div class="card-top">
 						<div class="rank ${rankClass}">#${rank}</div>
 						<div class="badges">
-							<div class="badge">性取向 ${safeOrientation}</div>
-							<div class="badge">粉丝 ${row.followers_count}</div>
+							<div class="badge">Orientation ${safeOrientation}</div>
+							<div class="badge">Fans ${row.followers_count}</div>
 						</div>
 					</div>
 					<div class="identity">
@@ -68,7 +68,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>账号粉丝榜单</title>
+		<title>Creator Ranking</title>
 		<style>
 			:root {
 				color-scheme: light;
@@ -227,10 +227,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		<section class="panel">
 			<header class="header">
 				<div>
-					<h1>账号粉丝榜单</h1>
-					<p>排序规则：粉丝数降序，ID 升序</p>
+					<h1>Creator Ranking</h1>
+					<p>Sort: Fans DESC, ID ASC</p>
 				</div>
-				<a href="/admin">打开数据库管理面板</a>
+				<a href="/admin">Open Admin Panel</a>
 			</header>
 			<ol class="list">
 				${renderLeaderboardRows(rows)}
@@ -248,7 +248,7 @@ export function renderAdminPage(): string {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>数据库管理面板</title>
+		<title>Database Admin Panel</title>
 		<style>
 			:root {
 				--bg: #f5f7ff;
@@ -321,34 +321,34 @@ export function renderAdminPage(): string {
 	<body>
 		<div class="wrap">
 			<section class="card">
-				<h1>数据库管理面板</h1>
-				<p class="sub">支持账号数据增删改查，数据表：profiles。<a href="/">查看榜单页</a></p>
+				<h1>Database Admin Panel</h1>
+				<p class="sub">CRUD for the <code>profiles</code> table. <a href="/">View ranking page</a></p>
 			</section>
 
 			<section class="card">
 				<div class="toolbar">
-					<input id="keyword" placeholder="搜索昵称 / 账号 / 简介" />
-					<button id="searchBtn">查询</button>
-					<button id="resetBtn" class="secondary">重置</button>
+					<input id="keyword" placeholder="Search name / handle / bio" />
+					<button id="searchBtn">Search</button>
+					<button id="resetBtn" class="secondary">Reset</button>
 				</div>
 			</section>
 
 			<section class="card">
 				<form id="profileForm" class="form">
 					<input type="hidden" id="id" />
-					<input id="name" placeholder="昵称" />
-					<input id="handle" placeholder="账号（例如 @demo）" required />
-					<input id="orientation" value="同性恋" placeholder="性取向" />
-					<input id="followers" type="number" min="0" value="20" placeholder="粉丝数" />
-					<input id="profileUrl" class="full" placeholder="主页链接" />
-					<input id="avatar" class="full" placeholder="头像链接" />
-					<textarea id="bio" class="full" placeholder="简介"></textarea>
+					<input id="name" placeholder="Display name" />
+					<input id="handle" placeholder="Handle (e.g. @demo)" required />
+					<input id="orientation" value="Gay" placeholder="Orientation" />
+					<input id="followers" type="number" min="0" value="20" placeholder="Fans count" />
+					<input id="profileUrl" class="full" placeholder="Profile URL" />
+					<input id="avatar" class="full" placeholder="Avatar URL" />
+					<textarea id="bio" class="full" placeholder="Bio"></textarea>
 					<div class="full actions">
-						<button type="submit" id="submitBtn">新增</button>
-						<button type="button" id="cancelEditBtn" class="secondary">取消编辑</button>
+						<button type="submit" id="submitBtn">Create</button>
+						<button type="button" id="cancelEditBtn" class="secondary">Cancel Edit</button>
 					</div>
 				</form>
-				<p class="status" id="status">就绪</p>
+				<p class="status" id="status">Ready</p>
 			</section>
 
 			<section class="card">
@@ -356,10 +356,10 @@ export function renderAdminPage(): string {
 					<thead>
 						<tr>
 							<th>ID</th>
-							<th>账号信息</th>
-							<th>性取向</th>
-							<th>粉丝数</th>
-							<th>操作</th>
+							<th>Profile</th>
+							<th>Orientation</th>
+							<th>Fans</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody id="rows"></tbody>
@@ -405,7 +405,7 @@ export function renderAdminPage(): string {
 
 			function renderRows() {
 				if (!currentRows.length) {
-					els.rows.innerHTML = '<tr><td colspan="5">暂无数据</td></tr>';
+					els.rows.innerHTML = '<tr><td colspan="5">No data</td></tr>';
 					return;
 				}
 
@@ -413,12 +413,12 @@ export function renderAdminPage(): string {
 					return '' +
 						'<tr>' +
 							'<td>' + row.id + '</td>' +
-							'<td><div><strong>' + esc(row.name || '未命名') + '</strong></div><div class="handle">' + esc(row.handle) + '</div></td>' +
+							'<td><div><strong>' + esc(row.name || 'Unnamed') + '</strong></div><div class="handle">' + esc(row.handle) + '</div></td>' +
 							'<td>' + esc(row.sexual_orientation) + '</td>' +
 							'<td>' + row.followers_count + '</td>' +
 							'<td><div class="actions">' +
-								'<button data-action="edit" data-id="' + row.id + '">编辑</button>' +
-								'<button class="danger" data-action="delete" data-id="' + row.id + '">删除</button>' +
+								'<button data-action="edit" data-id="' + row.id + '">Edit</button>' +
+								'<button class="danger" data-action="delete" data-id="' + row.id + '">Delete</button>' +
 							'</div></td>' +
 						'</tr>';
 				}).join('');
@@ -432,9 +432,9 @@ export function renderAdminPage(): string {
 				els.bio.value = '';
 				els.profileUrl.value = '';
 				els.avatar.value = '';
-				els.orientation.value = '同性恋';
+				els.orientation.value = 'Gay';
 				els.followers.value = '20';
-				els.submitBtn.textContent = '新增';
+				els.submitBtn.textContent = 'Create';
 			}
 
 			function fillForm(row) {
@@ -445,20 +445,20 @@ export function renderAdminPage(): string {
 				els.bio.value = row.bio || '';
 				els.profileUrl.value = row.profile_url || '';
 				els.avatar.value = row.avatar || '';
-				els.orientation.value = row.sexual_orientation || '同性恋';
+				els.orientation.value = row.sexual_orientation || 'Gay';
 				els.followers.value = String(row.followers_count || 0);
-				els.submitBtn.textContent = '保存修改';
+				els.submitBtn.textContent = 'Save Changes';
 			}
 
 			async function loadRows() {
-				setStatus('加载中...');
+				setStatus('Loading...');
 				const keyword = els.keyword.value.trim();
 				const query = keyword ? '?keyword=' + encodeURIComponent(keyword) : '';
 				const res = await fetch('/api/profiles' + query);
 				const data = await res.json();
 				currentRows = Array.isArray(data.results) ? data.results : [];
 				renderRows();
-				setStatus('共 ' + currentRows.length + ' 条记录');
+				setStatus('Total ' + currentRows.length + ' records');
 			}
 
 			function collectPayload() {
@@ -476,7 +476,7 @@ export function renderAdminPage(): string {
 			async function submitForm(event) {
 				event.preventDefault();
 				if (!els.handle.value.trim()) {
-					setStatus('账号不能为空');
+					setStatus('Handle is required');
 					return;
 				}
 
@@ -484,7 +484,7 @@ export function renderAdminPage(): string {
 				const method = editingId ? 'PUT' : 'POST';
 				const url = editingId ? '/api/profiles/' + editingId : '/api/profiles';
 
-				setStatus('提交中...');
+				setStatus('Submitting...');
 				const res = await fetch(url, {
 					method,
 					headers: { 'content-type': 'application/json' },
@@ -493,25 +493,25 @@ export function renderAdminPage(): string {
 
 				if (!res.ok) {
 					const msg = await res.text();
-					setStatus('提交失败：' + msg);
+					setStatus('Submit failed: ' + msg);
 					return;
 				}
 
-				setStatus(editingId ? '更新成功' : '新增成功');
+				setStatus(editingId ? 'Updated successfully' : 'Created successfully');
 				resetForm();
 				await loadRows();
 			}
 
 			async function handleDelete(id) {
-				if (!confirm('确认删除 ID ' + id + ' 吗？')) return;
-				setStatus('删除中...');
+				if (!confirm('Delete ID ' + id + '?')) return;
+				setStatus('Deleting...');
 				const res = await fetch('/api/profiles/' + id, { method: 'DELETE' });
 				if (!res.ok) {
 					const msg = await res.text();
-					setStatus('删除失败：' + msg);
+					setStatus('Delete failed: ' + msg);
 					return;
 				}
-				setStatus('删除成功');
+				setStatus('Deleted successfully');
 				await loadRows();
 			}
 
