@@ -1049,12 +1049,5 @@ export const seedProfiles: SeedProfile[] = [
 		"bio": "ひろ@拡張\n@tkhrag1124\n\n拡張大好きです。#anal #fisting #gaping",
 		"profileUrl": "https://x.com/tkhrag1124",
 		"avatar": "https://pbs.twimg.com/profile_images/1132596536053911553/QeEkcyKZ_normal.png"
-	},
-	{
-		"name": "鲸叔",
-		"handle": "@jingshu_",
-		"bio": "鲸叔\n@jingshu_\n\n\n重新营业了，いらっしゃい！",
-		"profileUrl": "https://x.com/jingshu_",
-		"avatar": "https://pbs.twimg.com/profile_images/1788003128861949952/OdeOLeiM_normal.jpg"
 	}
 ];
