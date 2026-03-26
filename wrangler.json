@@ -1,0 +1,16 @@
+{
+	"compatibility_date": "2025-10-08",
+	"main": "src/index.ts",
+	"name": "fistjap",
+	"upload_source_maps": true,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_id": "d6f69b40-6768-431d-a2a4-2233aa802bc7",
+			"database_name": "japs"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}
