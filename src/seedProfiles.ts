@@ -8,13 +8,6 @@ export type SeedProfile = {
 
 export const seedProfiles: SeedProfile[] = [
 	{
-		"name": "アルベル",
-		"handle": "@C03eTsdZX83Unaw",
-		"bio": "アルベル\n@C03eTsdZX83Unaw\n\nアナル好き　目指せ11cm　見る専、たまにアップします。　拡張友達募集。　横浜在住です。",
-		"profileUrl": "https://x.com/C03eTsdZX83Unaw",
-		"avatar": "https://pbs.twimg.com/profile_images/1530013728124866560/X0ECaRRE_normal.png"
-	},
-	{
 		"name": "アナアナ",
 		"handle": "@qkpF8Y06B7K0aGZ",
 		"bio": "アナアナ\n@qkpF8Y06B7K0aGZ\n\n拡張穴と女性、女装さんが好きな斜め上を行く変態さん 和歌山市 に生息しています。 拡張したいされたい、興味がある方DMにて。オフパコもお誘い有れば良いな。",
@@ -1035,13 +1028,6 @@ export const seedProfiles: SeedProfile[] = [
 		"bio": "乖離性ミリオンカビ\n@Kabigon1069\n\n\n坐标深圳/ / 爽0猛1 很宽的宽带 偶尔接接按摩赚赚外快 有兴趣可以私聊加微信 原味锦纶可私",
 		"profileUrl": "https://x.com/Kabigon1069",
 		"avatar": "https://pbs.twimg.com/profile_images/1991688527403425792/qVipF6Oz_normal.jpg"
-	},
-	{
-		"name": "司卡/お菓子",
-		"handle": "@LKudrow031",
-		"bio": "司卡/お菓子\n@LKudrow031\n\n\n165/70/31/0 是隻狗狗 可約 Owned by \n@peterma58809980\n & \n@teadog_master\n #Kuroverse #粗屌控 #控射 #野裸 #肉便器 #ballbusting #GayChastity #不菸 #不藥 #不無套 #未滿18歲請勿觀看",
-		"profileUrl": "https://x.com/LKudrow031",
-		"avatar": "https://pbs.twimg.com/profile_images/1752171369863991296/KcTXMmwa_normal.jpg"
 	},
 	{
 		"name": "茶主",
