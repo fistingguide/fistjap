@@ -4,6 +4,9 @@ import {
 	renderDashboardPage,
 	renderLeaderboardPage,
 	type ProfileRecord,
+	renderWikiArticlePage,
+	renderWikiPage,
+	type WikiArticleRecord,
 } from "./renderHtml";
 import { seedProfiles } from "./seedProfiles";
 
@@ -29,6 +32,12 @@ type ProfilePayload = {
 	followersCount?: unknown;
 	country?: unknown;
 	city?: unknown;
+};
+
+type WikiPayload = {
+	title?: unknown;
+	content?: unknown;
+	author?: unknown;
 };
 
 function toText(value: unknown, fallback = ""): string {
@@ -149,6 +158,25 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 	}
 }
 
+async function ensureWikiSeeded(db: D1Database): Promise<void> {
+	try {
+		const row = await db.prepare("SELECT COUNT(*) AS total FROM wiki_articles").first<{ total: number | string }>();
+		const total = Number(row?.total ?? 0);
+		if (total > 0) {
+			return;
+		}
+
+		await db
+			.batch([
+				db.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)").bind("For Test 1", "for test", "fistingguide"),
+				db.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)").bind("For Test 2", "for test", "fistingguide"),
+				db.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)").bind("For Test 3", "for test", "fistingguide"),
+			]);
+	} catch (error) {
+		console.warn("wiki seed skipped", error);
+	}
+}
+
 async function queryProfiles(
 	db: D1Database,
 	params: {
@@ -201,6 +229,41 @@ async function queryCountries(db: D1Database): Promise<string[]> {
 		)
 		.all<{ country: string }>();
 	return (results ?? []).map((item) => item.country);
+}
+
+async function queryWikiArticles(db: D1Database): Promise<WikiArticleRecord[]> {
+	const { results } = await db
+		.prepare(
+			`SELECT id, title, content, author, created_at, updated_at
+			 FROM wiki_articles
+			 ORDER BY id ASC`,
+		)
+		.all<WikiArticleRecord>();
+	return results ?? [];
+}
+
+async function queryWikiArticleById(db: D1Database, id: number): Promise<WikiArticleRecord | null> {
+	const row = await db
+		.prepare(
+			`SELECT id, title, content, author, created_at, updated_at
+			 FROM wiki_articles
+			 WHERE id = ?`,
+		)
+		.bind(id)
+		.first<WikiArticleRecord>();
+	return row ?? null;
+}
+
+function normalizeWikiPayload(payload: WikiPayload) {
+	const title = toText(payload.title);
+	if (!title) {
+		throw new Error("title is required");
+	}
+	return {
+		title,
+		content: toText(payload.content, "for test") || "for test",
+		author: toText(payload.author, "fistingguide") || "fistingguide",
+	};
 }
 
 function formatOperationSummary(action: "CREATE" | "UPDATE" | "DELETE", row: Record<string, unknown>): string {
@@ -295,15 +358,20 @@ export default {
 		const { pathname } = url;
 		const method = request.method.toUpperCase();
 		const idMatch = pathname.match(/^\/api\/profiles\/(\d+)$/);
+		const wikiIdMatch = pathname.match(/^\/api\/wiki\/(\d+)$/);
+		const wikiArticlePageMatch = pathname.match(/^\/wiki\/article\/(\d+)$/);
 
 		if (
 			pathname === "/" ||
 			pathname === "/admin" ||
 			pathname === "/dashboard" ||
 			pathname === "/about" ||
-			pathname.startsWith("/api/profiles")
+			pathname === "/wiki" ||
+			pathname.startsWith("/api/profiles") ||
+			pathname.startsWith("/api/wiki")
 		) {
 			await ensureSeeded(env.DB);
+			await ensureWikiSeeded(env.DB);
 		}
 
 		if (method === "GET" && pathname === "/") {
@@ -331,6 +399,23 @@ export default {
 			});
 		}
 
+		if (method === "GET" && pathname === "/wiki") {
+			return new Response(renderWikiPage(), {
+				headers: { "content-type": "text/html; charset=UTF-8" },
+			});
+		}
+
+		if (method === "GET" && wikiArticlePageMatch) {
+			const id = Number(wikiArticlePageMatch[1]);
+			const row = await queryWikiArticleById(env.DB, id);
+			if (!row) {
+				return new Response("Not Found", { status: 404 });
+			}
+			return new Response(renderWikiArticlePage(row), {
+				headers: { "content-type": "text/html; charset=UTF-8" },
+			});
+		}
+
 		if (method === "GET" && pathname === "/api/profiles") {
 			const keyword = url.searchParams.get("keyword")?.trim() ?? "";
 			const country = url.searchParams.get("country")?.trim() ?? "";
@@ -353,6 +438,33 @@ export default {
 			}
 			const results = await queryGeoSuggestions(type, keyword, country);
 			return json({ results });
+		}
+
+		if (method === "GET" && pathname === "/api/wiki") {
+			const rows = await queryWikiArticles(env.DB);
+			return json({ results: rows });
+		}
+
+		if (method === "POST" && pathname === "/api/wiki") {
+			let payload: WikiPayload;
+			try {
+				payload = (await request.json()) as WikiPayload;
+			} catch {
+				return badRequest("invalid json");
+			}
+
+			let input: { title: string; content: string; author: string };
+			try {
+				input = normalizeWikiPayload(payload);
+			} catch (error) {
+				return badRequest((error as Error).message);
+			}
+
+			await env.DB
+				.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)")
+				.bind(input.title, input.content, input.author)
+				.run();
+			return json({ ok: true }, 201);
 		}
 
 		if (method === "POST" && pathname === "/api/profiles") {
@@ -483,6 +595,51 @@ export default {
 				}
 				if (deletedRow) {
 					void sendAdminNotification(env, "DELETE", deletedRow);
+				}
+				return json({ ok: true });
+			}
+		}
+
+		if (wikiIdMatch) {
+			const id = Number(wikiIdMatch[1]);
+
+			if (method === "GET") {
+				const row = await queryWikiArticleById(env.DB, id);
+				if (!row) {
+					return json({ error: "not found" }, 404);
+				}
+				return json({ result: row });
+			}
+
+			if (method === "PUT" || method === "PATCH") {
+				let payload: WikiPayload;
+				try {
+					payload = (await request.json()) as WikiPayload;
+				} catch {
+					return badRequest("invalid json");
+				}
+
+				let input: { title: string; content: string; author: string };
+				try {
+					input = normalizeWikiPayload(payload);
+				} catch (error) {
+					return badRequest((error as Error).message);
+				}
+
+				const result = await env.DB
+					.prepare("UPDATE wiki_articles SET title = ?, content = ?, author = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+					.bind(input.title, input.content, input.author, id)
+					.run();
+				if ((result.meta.changes ?? 0) === 0) {
+					return json({ error: "not found" }, 404);
+				}
+				return json({ ok: true });
+			}
+
+			if (method === "DELETE") {
+				const result = await env.DB.prepare("DELETE FROM wiki_articles WHERE id = ?").bind(id).run();
+				if ((result.meta.changes ?? 0) === 0) {
+					return json({ error: "not found" }, 404);
 				}
 				return json({ ok: true });
 			}

@@ -12,6 +12,15 @@
 	created_at: string;
 };
 
+export type WikiArticleRecord = {
+	id: number;
+	title: string;
+	content: string;
+	author: string;
+	created_at: string;
+	updated_at: string;
+};
+
 function escapeHtml(value: string): string {
 	return value
 		.replaceAll("&", "&amp;")
@@ -108,21 +117,34 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				padding: 26px 24px;
 				background: linear-gradient(120deg, #0b66e4, #5393ff);
 				color: #fff;
-				display: flex;
-				justify-content: space-between;
-				gap: 10px;
-				align-items: end;
 			}
 			.header h1 { margin: 0; font-size: 30px; }
 			.header p { margin: 8px 0 0; opacity: 0.92; }
-			.header .links { display: flex; gap: 8px; }
-			.header a {
-				color: #fff;
+			.top-nav {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				justify-content: flex-end;
+				padding: 14px 24px;
+				background: #f6f8ff;
+				border-bottom: 1px solid var(--line);
+			}
+			.nav-btn {
+				display: inline-flex;
+				align-items: center;
 				text-decoration: none;
-				border: 1px solid rgba(255, 255, 255, 0.5);
-				padding: 8px 12px;
-				border-radius: 10px;
-				font-size: 14px;
+				padding: 12px 24px;
+				border-radius: 18px;
+				color: #fff;
+				font-size: 16px;
+				font-weight: 600;
+			}
+			.nav-btn.secondary { background: #6f7f99; }
+			.nav-btn.primary { background: #1f63ea; }
+			.nav-btn:hover { filter: brightness(1.03); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
+			@media (max-width: 720px) {
+				.top-nav { justify-content: flex-start; }
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -252,12 +274,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<h1>Creator Ranking</h1>
 					<p>Sort: Fans DESC, ID ASC</p>
 				</div>
-				<div class="links">
-					<a href="/dashboard">Open Dashboard</a>
-					<a href="/admin">Open Admin Panel</a>
-					<a href="/about">About</a>
-				</div>
 			</header>
+			<nav class="top-nav">
+				<a class="nav-btn primary active" href="/">Ranking Page</a>
+				<a class="nav-btn secondary" href="/dashboard">Dashboard</a>
+				<a class="nav-btn secondary" href="/admin">Admin Panel</a>
+				<a class="nav-btn secondary" href="/about">About</a>
+				<a class="nav-btn secondary" href="/wiki">fistingwiki</a>
+			</nav>
 			<ol class="list">
 				${renderLeaderboardRows(rows)}
 			</ol>
@@ -316,7 +340,7 @@ export function renderAdminPage(): string {
 				color: var(--text);
 				padding: 20px;
 			}
-			.wrap { max-width: 1200px; margin: 0 auto; display: grid; gap: 16px; }
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 16px; }
 			.card {
 				background: var(--card);
 				border: 1px solid var(--line);
@@ -333,18 +357,25 @@ export function renderAdminPage(): string {
 				align-items: center;
 				gap: 10px;
 			}
-			.head-actions { display: flex; gap: 8px; }
-			.link-btn {
+			.top-nav {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				justify-content: flex-end;
+			}
+			.nav-btn {
 				display: inline-flex;
 				align-items: center;
 				text-decoration: none;
-				background: var(--primary);
+				background: #6f7f99;
 				color: #fff;
-				padding: 9px 12px;
-				border-radius: 10px;
-				font-size: 14px;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
 			}
-			.link-btn.alt { background: #6b778c; }
+			.nav-btn.primary { background: #1f63ea; }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
 			.age-gate-overlay {
 				position: fixed;
 				inset: 0;
@@ -410,8 +441,10 @@ export function renderAdminPage(): string {
 			datalist { display: none; }
 			@media (max-width: 900px) {
 				.head { flex-direction: column; align-items: flex-start; }
+				.top-nav { justify-content: flex-start; }
 				.toolbar { grid-template-columns: 1fr; }
 				.form { grid-template-columns: 1fr; }
+				.wrap { width: 94vw; max-width: 94vw; }
 			}
 		</style>
 	</head>
@@ -433,10 +466,13 @@ export function renderAdminPage(): string {
 						<h1>Database Admin Panel</h1>
 						<p class="sub">CRUD for the <code>profiles</code> table.</p>
 					</div>
-					<div class="head-actions">
-						<a class="link-btn alt" href="/">Ranking Page</a>
-						<a class="link-btn" href="/dashboard">Dashboard</a>
-					</div>
+					<nav class="top-nav">
+						<a class="nav-btn" href="/">Ranking Page</a>
+						<a class="nav-btn" href="/dashboard">Dashboard</a>
+						<a class="nav-btn primary active" href="/admin">Admin Panel</a>
+						<a class="nav-btn" href="/about">About</a>
+						<a class="nav-btn" href="/wiki">fistingwiki</a>
+					</nav>
 				</div>
 			</section>
 
@@ -884,7 +920,7 @@ export function renderDashboardPage(): string {
 				color: var(--text);
 				padding: 20px;
 			}
-			.wrap { max-width: 1200px; margin: 0 auto; display: grid; gap: 14px; }
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 14px; }
 			.card {
 				background: var(--card);
 				border: 1px solid var(--line);
@@ -901,18 +937,25 @@ export function renderDashboardPage(): string {
 				gap: 10px;
 			}
 			.head-meta { display: grid; gap: 6px; }
-			.head-actions { display: flex; gap: 8px; }
-			.link-btn {
+			.top-nav {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				justify-content: flex-end;
+			}
+			.nav-btn {
 				display: inline-flex;
 				align-items: center;
 				text-decoration: none;
-				background: var(--primary);
+				background: #6f7f99;
 				color: #fff;
-				padding: 9px 12px;
-				border-radius: 10px;
-				font-size: 14px;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
 			}
-			.link-btn.alt { background: #6b778c; }
+			.nav-btn.primary { background: #1f63ea; }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
 			.toolbar { display: grid; grid-template-columns: 220px auto auto; gap: 8px; align-items: center; }
 			button, select {
 				font: inherit;
@@ -965,8 +1008,10 @@ export function renderDashboardPage(): string {
 			#map { width: 100%; height: 480px; border-radius: 12px; overflow: hidden; }
 			@media (max-width: 900px) {
 				.head { flex-direction: column; align-items: flex-start; }
+				.top-nav { justify-content: flex-start; }
 				.toolbar, .stats { grid-template-columns: 1fr; }
 				#map { height: 360px; }
+				.wrap { width: 94vw; max-width: 94vw; }
 			}
 		</style>
 	</head>
@@ -988,10 +1033,13 @@ export function renderDashboardPage(): string {
 						<h1>Data Dashboard</h1>
 						<p>Filter by country/region, sort by fans, and display city-level locations on the map.</p>
 					</div>
-					<div class="head-actions">
-						<a class="link-btn alt" href="/">Ranking Page</a>
-						<a class="link-btn" href="/admin">Admin Panel</a>
-					</div>
+					<nav class="top-nav">
+						<a class="nav-btn" href="/">Ranking Page</a>
+						<a class="nav-btn primary active" href="/dashboard">Dashboard</a>
+						<a class="nav-btn" href="/admin">Admin Panel</a>
+						<a class="nav-btn" href="/about">About</a>
+						<a class="nav-btn" href="/wiki">fistingwiki</a>
+					</nav>
 				</div>
 			</section>
 
@@ -1181,7 +1229,7 @@ export function renderAboutPage(): string {
 				color: var(--text);
 				padding: 20px;
 			}
-			.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 14px; }
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 14px; }
 			.card {
 				background: var(--card);
 				border: 1px solid var(--line);
@@ -1196,18 +1244,25 @@ export function renderAboutPage(): string {
 				gap: 10px;
 			}
 			.head h1 { margin: 0; }
-			.head-actions { display: flex; gap: 8px; }
-			.link-btn {
+			.top-nav {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				justify-content: flex-end;
+			}
+			.nav-btn {
 				display: inline-flex;
 				align-items: center;
 				text-decoration: none;
-				background: var(--primary);
+				background: #6f7f99;
 				color: #fff;
-				padding: 9px 12px;
-				border-radius: 10px;
-				font-size: 14px;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
 			}
-			.link-btn.alt { background: #6b778c; }
+			.nav-btn.primary { background: #1f63ea; }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
 			.content {
 				white-space: pre-wrap;
 				line-height: 1.65;
@@ -1245,6 +1300,8 @@ export function renderAboutPage(): string {
 			.age-btn.no { background: #6b778c; }
 			@media (max-width: 700px) {
 				.head { flex-direction: column; align-items: flex-start; }
+				.top-nav { justify-content: flex-start; }
+				.wrap { width: 94vw; max-width: 94vw; }
 			}
 		</style>
 	</head>
@@ -1263,10 +1320,13 @@ export function renderAboutPage(): string {
 		<div class="wrap">
 			<section class="card head">
 				<h1>About</h1>
-				<div class="head-actions">
-					<a class="link-btn alt" href="/">Ranking Page</a>
-					<a class="link-btn" href="/admin">Admin Panel</a>
-				</div>
+				<nav class="top-nav">
+					<a class="nav-btn" href="/">Ranking Page</a>
+					<a class="nav-btn" href="/dashboard">Dashboard</a>
+					<a class="nav-btn" href="/admin">Admin Panel</a>
+					<a class="nav-btn primary active" href="/about">About</a>
+					<a class="nav-btn" href="/wiki">fistingwiki</a>
+				</nav>
 			</section>
 
 			<section class="card">
@@ -1339,6 +1399,595 @@ fistingguide@proton.me
 </html>
 `;
 }
+
+export function renderWikiPage(): string {
+	return `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>fistingwiki</title>
+		<style>
+			:root {
+				--bg: #eef4fb;
+				--card: #ffffff;
+				--line: #dae3ef;
+				--text: #0f2744;
+				--muted: #4f657d;
+				--primary: #1f63ea;
+				--danger: #c62828;
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+				background: radial-gradient(circle at top right, #d7e7ff 0%, var(--bg) 52%, #edf3ff 100%);
+				color: var(--text);
+				padding: 20px;
+			}
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 14px; }
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 16px;
+				box-shadow: 0 8px 20px rgba(6, 24, 44, 0.08);
+			}
+			.head { display: grid; gap: 12px; }
+			.head h1 { margin: 0; font-size: 34px; }
+			.head p { margin: 0; color: var(--muted); }
+			.top-nav { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+			.nav-btn {
+				display: inline-flex;
+				align-items: center;
+				text-decoration: none;
+				background: #6f7f99;
+				color: #fff;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
+			}
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
+			.compose {
+				display: grid;
+				grid-template-columns: 1.1fr 1fr;
+				gap: 12px;
+				align-items: start;
+			}
+			.form { display: grid; gap: 10px; }
+			.field { display: grid; gap: 6px; }
+			.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
+			input, textarea, button {
+				font: inherit;
+				padding: 10px 12px;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+			}
+			textarea { min-height: 100px; resize: vertical; }
+			button { cursor: pointer; border: none; color: #fff; background: var(--primary); }
+			button.secondary { background: #6f7f99; }
+			button.danger { background: var(--danger); }
+			.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+			.status { font-size: 13px; color: var(--muted); }
+			.tips {
+				background: #f7f9ff;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				padding: 12px;
+				color: var(--muted);
+				font-size: 14px;
+				line-height: 1.6;
+			}
+			.blog-grid {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 12px;
+			}
+			.post-card {
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				padding: 12px;
+				background: #fff;
+				display: grid;
+				gap: 10px;
+				align-content: start;
+				min-height: 220px;
+			}
+			.post-title {
+				margin: 0;
+				font-size: 20px;
+				line-height: 1.3;
+				color: var(--text);
+				overflow: hidden;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+			}
+			.post-meta { font-size: 12px; color: var(--muted); }
+			.post-body {
+				font-size: 14px;
+				line-height: 1.6;
+				color: #233a57;
+				overflow: hidden;
+				display: -webkit-box;
+				-webkit-line-clamp: 5;
+				-webkit-box-orient: vertical;
+			}
+			.post-actions { display: flex; gap: 8px; margin-top: auto; }
+			.post-actions button {
+				padding: 8px 10px;
+				font-size: 13px;
+				border-radius: 9px;
+			}
+			.post-actions .danger { background: var(--danger); }
+			.post-link {
+				text-decoration: none;
+				color: inherit;
+				display: grid;
+				gap: 10px;
+			}
+			.post-link:hover .post-title { text-decoration: underline; }
+			.empty {
+				grid-column: 1 / -1;
+				border: 1px dashed var(--line);
+				border-radius: 12px;
+				padding: 20px;
+				text-align: center;
+				color: var(--muted);
+			}
+			.age-gate-overlay {
+				position: fixed;
+				inset: 0;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				background: rgba(10, 20, 40, 0.75);
+				z-index: 9999;
+				padding: 16px;
+			}
+			.age-gate-box {
+				background: #fff;
+				border-radius: 14px;
+				padding: 18px;
+				max-width: 420px;
+				width: 100%;
+				text-align: center;
+				border: 1px solid var(--line);
+			}
+			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+			.age-btn {
+				border: none;
+				border-radius: 10px;
+				padding: 9px 14px;
+				cursor: pointer;
+				font: inherit;
+				color: #fff;
+			}
+			.age-btn.yes { background: var(--primary); }
+			.age-btn.no { background: #6b778c; }
+			@media (max-width: 1000px) { .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+			@media (max-width: 840px) {
+				.top-nav { justify-content: flex-start; }
+				.compose { grid-template-columns: 1fr; }
+				.blog-grid { grid-template-columns: 1fr; }
+				.wrap { width: 94vw; max-width: 94vw; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="age-gate-overlay" id="ageGate">
+			<div class="age-gate-box">
+				<h2>Age Confirmation</h2>
+				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<div class="age-gate-actions">
+					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo">No</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="wrap">
+			<section class="card">
+				<div class="head">
+					<div>
+						<h1>fistingwiki</h1>
+						<p>A simple blog-style wiki with full CRUD support.</p>
+					</div>
+					<nav class="top-nav">
+						<a class="nav-btn" href="/">Ranking Page</a>
+						<a class="nav-btn" href="/dashboard">Dashboard</a>
+						<a class="nav-btn" href="/admin">Admin Panel</a>
+						<a class="nav-btn" href="/about">About</a>
+						<a class="nav-btn primary active" href="/wiki">fistingwiki</a>
+					</nav>
+				</div>
+			</section>
+
+			<section class="card">
+				<div class="compose">
+					<form id="wikiForm" class="form">
+						<input type="hidden" id="articleId" />
+						<div class="field">
+							<label for="author">Author</label>
+							<input id="author" placeholder="Author name" value="fistingguide" />
+						</div>
+						<div class="field">
+							<label for="title">Title</label>
+							<input id="title" placeholder="Article title" />
+						</div>
+						<div class="field">
+							<label for="content">Content</label>
+							<textarea id="content" placeholder="for test"></textarea>
+						</div>
+						<div class="actions">
+							<button type="submit" id="submitBtn">Create</button>
+							<button type="button" id="deleteBtn" class="danger" disabled>Delete</button>
+							<button type="button" id="resetBtn" class="secondary">Reset</button>
+						</div>
+					</form>
+					<div class="tips">
+						<strong>Blog Mode</strong><br />
+						1. Create a post with title + content.<br />
+						2. Click <code>Read</code> for full article view.<br />
+						3. Click <code>Edit</code> to load post into editor.<br />
+						4. Click <code>Delete</code> to remove a post.
+					</div>
+				</div>
+				<p class="status" id="status">Ready</p>
+			</section>
+
+			<section class="card">
+				<div id="rows" class="blog-grid"></div>
+			</section>
+		</div>
+
+		<script>
+			let currentRows = [];
+			let editingId = null;
+
+			const els = {
+				form: document.getElementById('wikiForm'),
+				articleId: document.getElementById('articleId'),
+				author: document.getElementById('author'),
+				title: document.getElementById('title'),
+				content: document.getElementById('content'),
+				submitBtn: document.getElementById('submitBtn'),
+				deleteBtn: document.getElementById('deleteBtn'),
+				resetBtn: document.getElementById('resetBtn'),
+				rows: document.getElementById('rows'),
+				status: document.getElementById('status')
+			};
+
+			function esc(v) {
+				return String(v || '')
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;')
+					.replace(/'/g, '&#39;');
+			}
+
+			function setStatus(text) {
+				els.status.textContent = text;
+			}
+
+			function resetForm() {
+				editingId = null;
+				els.articleId.value = '';
+				els.author.value = 'fistingguide';
+				els.title.value = '';
+				els.content.value = 'for test';
+				els.submitBtn.textContent = 'Create';
+				els.deleteBtn.disabled = true;
+			}
+
+			function fillForm(row) {
+				editingId = row.id;
+				els.articleId.value = String(row.id);
+				els.author.value = row.author || 'fistingguide';
+				els.title.value = row.title || '';
+				els.content.value = row.content || '';
+				els.submitBtn.textContent = 'Save Changes';
+				els.deleteBtn.disabled = false;
+			}
+
+			function renderRows() {
+				if (!currentRows.length) {
+					els.rows.innerHTML = '<div class="empty">No articles yet.</div>';
+					return;
+				}
+
+				els.rows.innerHTML = currentRows.map(function (row) {
+					return '<article class="post-card">' +
+						'<a class="post-link" href="/wiki/article/' + row.id + '">' +
+							'<h3 class="post-title">' + esc(row.title) + '</h3>' +
+							'<div class="post-meta">By ' + esc(row.author || 'fistingguide') + ' · ID #' + row.id + ' · Updated ' + esc(row.updated_at || row.created_at || '') + '</div>' +
+							'<div class="post-body">' + esc(row.content || '') + '</div>' +
+						'</a>' +
+						'<div class="post-actions">' +
+							'<button data-action="edit" data-id="' + row.id + '">Edit</button>' +
+							'<button class="danger" data-action="delete" data-id="' + row.id + '">Delete</button>' +
+						'</div>' +
+					'</article>';
+				}).join('');
+			}
+
+			async function loadRows() {
+				setStatus('Loading...');
+				const res = await fetch('/api/wiki');
+				const data = await res.json();
+				currentRows = Array.isArray(data.results) ? data.results : [];
+				renderRows();
+				setStatus('Total ' + currentRows.length + ' articles');
+			}
+
+			async function submitForm(event) {
+				event.preventDefault();
+				const title = els.title.value.trim();
+				if (!title) {
+					setStatus('Title is required');
+					return;
+				}
+				const author = els.author.value.trim() || 'fistingguide';
+
+				const payload = {
+					author: author,
+					title: title,
+					content: (els.content.value || 'for test')
+				};
+				const method = editingId ? 'PUT' : 'POST';
+				const url = editingId ? '/api/wiki/' + editingId : '/api/wiki';
+
+				const res = await fetch(url, {
+					method: method,
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+				if (!res.ok) {
+					setStatus('Save failed');
+					return;
+				}
+
+				window.alert(editingId ? 'Article updated successfully.' : 'Article created successfully.');
+				resetForm();
+				await loadRows();
+			}
+
+			async function deleteCurrent() {
+				if (!editingId) return;
+				if (!confirm('Delete article #' + editingId + '?')) return;
+
+				const res = await fetch('/api/wiki/' + editingId, { method: 'DELETE' });
+				if (!res.ok) {
+					setStatus('Delete failed');
+					return;
+				}
+
+				window.alert('Article deleted successfully.');
+				resetForm();
+				await loadRows();
+			}
+
+			async function deleteById(id) {
+				if (!confirm('Delete article #' + id + '?')) return;
+				const res = await fetch('/api/wiki/' + id, { method: 'DELETE' });
+				if (!res.ok) {
+					setStatus('Delete failed');
+					return;
+				}
+				window.alert('Article deleted successfully.');
+				if (editingId === id) {
+					resetForm();
+				}
+				await loadRows();
+			}
+
+			els.form.addEventListener('submit', submitForm);
+			els.deleteBtn.addEventListener('click', deleteCurrent);
+			els.resetBtn.addEventListener('click', resetForm);
+			els.rows.addEventListener('click', function (event) {
+				const target = event.target;
+				if (!(target instanceof HTMLElement)) return;
+				const action = target.dataset.action;
+				const id = Number(target.dataset.id || '0');
+				if (!id || !action) return;
+				const row = currentRows.find(function (item) { return item.id === id; });
+				if (!row) return;
+				if (action === 'edit') fillForm(row);
+				if (action === 'delete') deleteById(id);
+			});
+
+			resetForm();
+			loadRows();
+		</script>
+
+		<script>
+			(function () {
+				const key = 'age_verified_18_v1';
+				const overlay = document.getElementById('ageGate');
+				const yesBtn = document.getElementById('ageYes');
+				const noBtn = document.getElementById('ageNo');
+				if (!overlay || !yesBtn || !noBtn) return;
+
+				const verified = localStorage.getItem(key) === 'yes';
+				if (!verified) {
+					overlay.style.display = 'flex';
+				}
+
+				yesBtn.addEventListener('click', function () {
+					localStorage.setItem(key, 'yes');
+					overlay.style.display = 'none';
+				});
+
+				noBtn.addEventListener('click', function () {
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+				});
+			})();
+		</script>
+	</body>
+</html>
+`;
+}
+
+export function renderWikiArticlePage(article: WikiArticleRecord): string {
+	const title = escapeHtml(article.title || "Untitled");
+	const content = escapeHtml(article.content || "");
+	const updated = escapeHtml(article.updated_at || article.created_at || "");
+	const author = escapeHtml(article.author || "fistingguide");
+	return `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>${title} - fistingwiki</title>
+		<style>
+			:root {
+				--bg: #eef4fb;
+				--card: #ffffff;
+				--line: #dae3ef;
+				--text: #0f2744;
+				--muted: #4f657d;
+				--primary: #1f63ea;
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+				background: radial-gradient(circle at top right, #d7e7ff 0%, var(--bg) 52%, #edf3ff 100%);
+				color: var(--text);
+				padding: 20px;
+			}
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 14px; }
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 16px;
+				box-shadow: 0 8px 20px rgba(6, 24, 44, 0.08);
+			}
+			.head { display: grid; gap: 12px; }
+			.top-nav { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+			.nav-btn {
+				display: inline-flex;
+				align-items: center;
+				text-decoration: none;
+				background: #6f7f99;
+				color: #fff;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
+			}
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
+			.article {
+				max-width: 760px;
+				margin: 0 auto;
+				display: grid;
+				gap: 14px;
+			}
+			.article h1 { margin: 0; font-size: 44px; line-height: 1.15; }
+			.meta { color: var(--muted); font-size: 14px; }
+			.article-body {
+				white-space: pre-wrap;
+				line-height: 1.9;
+				font-size: 18px;
+				color: #1a3150;
+			}
+			.age-gate-overlay {
+				position: fixed;
+				inset: 0;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				background: rgba(10, 20, 40, 0.75);
+				z-index: 9999;
+				padding: 16px;
+			}
+			.age-gate-box {
+				background: #fff;
+				border-radius: 14px;
+				padding: 18px;
+				max-width: 420px;
+				width: 100%;
+				text-align: center;
+				border: 1px solid var(--line);
+			}
+			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+			.age-btn {
+				border: none;
+				border-radius: 10px;
+				padding: 9px 14px;
+				cursor: pointer;
+				font: inherit;
+				color: #fff;
+			}
+			.age-btn.yes { background: var(--primary); }
+			.age-btn.no { background: #6b778c; }
+			@media (max-width: 840px) {
+				.wrap { width: 94vw; max-width: 94vw; }
+				.top-nav { justify-content: flex-start; }
+				.article h1 { font-size: 34px; }
+				.article-body { font-size: 17px; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="age-gate-overlay" id="ageGate">
+			<div class="age-gate-box">
+				<h2>Age Confirmation</h2>
+				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<div class="age-gate-actions">
+					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo">No</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="wrap">
+			<section class="card head">
+				<nav class="top-nav">
+					<a class="nav-btn" href="/">Ranking Page</a>
+					<a class="nav-btn" href="/dashboard">Dashboard</a>
+					<a class="nav-btn" href="/admin">Admin Panel</a>
+					<a class="nav-btn" href="/about">About</a>
+					<a class="nav-btn primary active" href="/wiki">fistingwiki</a>
+				</nav>
+			</section>
+			<section class="card article">
+				<h1>${title}</h1>
+				<div class="meta">By ${author} · Updated ${updated}</div>
+				<div class="article-body">${content}</div>
+			</section>
+		</div>
+
+		<script>
+			(function () {
+				const key = 'age_verified_18_v1';
+				const overlay = document.getElementById('ageGate');
+				const yesBtn = document.getElementById('ageYes');
+				const noBtn = document.getElementById('ageNo');
+				if (!overlay || !yesBtn || !noBtn) return;
+				const verified = localStorage.getItem(key) === 'yes';
+				if (!verified) overlay.style.display = 'flex';
+				yesBtn.addEventListener('click', function () {
+					localStorage.setItem(key, 'yes');
+					overlay.style.display = 'none';
+				});
+				noBtn.addEventListener('click', function () {
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+				});
+			})();
+		</script>
+	</body>
+</html>
+`;
+}
+
 
 
 
