@@ -76,6 +76,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 }
 
 export function renderLeaderboardPage(rows: ProfileRecord[]): string {
+	const serializedRows = JSON.stringify(rows).replaceAll("<", "\\u003c").replaceAll("</", "<\\/");
 	return `
 <!DOCTYPE html>
 <html lang="en">
@@ -120,6 +121,33 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.header h1 { margin: 0; font-size: 30px; }
 			.header p { margin: 8px 0 0; opacity: 0.92; }
+			.header-main {
+				display: flex;
+				justify-content: space-between;
+				align-items: end;
+				gap: 12px;
+			}
+			.header-filter {
+				display: grid;
+				gap: 6px;
+				min-width: 220px;
+			}
+			.header-filter label {
+				font-size: 12px;
+				opacity: 0.92;
+			}
+			.header-filter select {
+				font: inherit;
+				border: 1px solid rgba(255, 255, 255, 0.4);
+				background: rgba(255, 255, 255, 0.2);
+				color: #fff;
+				padding: 8px 10px;
+				border-radius: 10px;
+			}
+			.header-filter option {
+				color: #172b4d;
+				background: #fff;
+			}
 			.top-nav {
 				display: flex;
 				flex-wrap: wrap;
@@ -145,6 +173,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(31, 99, 234, 0.28); }
 			@media (max-width: 720px) {
 				.top-nav { justify-content: flex-start; }
+				.header-main { flex-direction: column; align-items: flex-start; }
+				.header-filter { width: 100%; min-width: 0; }
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -270,9 +300,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		</div>
 		<section class="panel">
 			<header class="header">
-				<div>
-					<h1>Creator Ranking</h1>
-					<p>Sort: Fans DESC, ID ASC</p>
+				<div class="header-main">
+					<div>
+						<h1>Creator Ranking</h1>
+						<p>Sort: Fans DESC, ID ASC</p>
+					</div>
+					<div class="header-filter">
+						<label for="rankCountryFilter">Country (Region)</label>
+						<select id="rankCountryFilter">
+							<option value="">All</option>
+						</select>
+					</div>
 				</div>
 			</header>
 			<nav class="top-nav">
@@ -288,6 +326,96 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		</section>
 		<script>
 			(function () {
+				const initialRows = ${serializedRows};
+				const listEl = document.querySelector('.list');
+				const countrySelect = document.getElementById('rankCountryFilter');
+
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+
+				function renderRows(rows) {
+					if (!listEl) return;
+					if (!rows.length) {
+						listEl.innerHTML = '<li class="empty">No data yet. Add records in the admin panel.</li>';
+						return;
+					}
+					listEl.innerHTML = rows.map(function (row, index) {
+						const rank = index + 1;
+						const rankClass = rank <= 3 ? 'top-rank' : 'normal-rank';
+						const safeName = esc(row.name || 'Unnamed');
+						const safeHandle = esc(row.handle || '');
+						const safeOrientation = esc(row.sexual_orientation || 'Gay');
+						const safeUrl = esc(row.profile_url || '#');
+						const safeBio = esc(row.bio || 'No bio');
+						const safeAvatar = esc(row.avatar || '');
+						const safeCountry = esc(row.country || 'Japan');
+						const safeCity = esc(row.city || 'Tokyo');
+						const avatarEl = safeAvatar
+							? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
+							: '<div class="avatar placeholder">N/A</div>';
+						return '' +
+							'<li class="leaderboard-item">' +
+								'<div class="card-top">' +
+									'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
+									'<div class="badges">' +
+										'<div class="badge">Orientation ' + safeOrientation + '</div>' +
+										'<div class="badge">Fans ' + row.followers_count + '</div>' +
+									'</div>' +
+								'</div>' +
+								'<div class="identity">' +
+									avatarEl +
+									'<div>' +
+										'<a class="name-link" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' + safeName + '</a>' +
+										'<div class="handle">' + safeHandle + '</div>' +
+									'</div>' +
+								'</div>' +
+								'<div class="badge">' + safeCountry + ' / ' + safeCity + '</div>' +
+								'<div class="bio">' + safeBio + '</div>' +
+							'</li>';
+					}).join('');
+				}
+
+				async function loadCountries() {
+					if (!countrySelect) return;
+					const set = new Set();
+					initialRows.forEach(function (row) {
+						if (row && row.country) set.add(String(row.country));
+					});
+					const res = await fetch('/api/countries');
+					if (res.ok) {
+						const data = await res.json();
+						(Array.isArray(data.results) ? data.results : []).forEach(function (item) {
+							if (item) set.add(String(item));
+						});
+					}
+					countrySelect.innerHTML = '<option value="">All</option>' +
+						Array.from(set).sort().map(function (item) {
+							return '<option value="' + esc(item) + '">' + esc(item) + '</option>';
+						}).join('');
+				}
+
+				async function filterByCountry() {
+					if (!countrySelect) return;
+					const country = countrySelect.value.trim();
+					const query = country ? ('?country=' + encodeURIComponent(country)) : '';
+					const res = await fetch('/api/profiles' + query);
+					if (!res.ok) return;
+					const data = await res.json();
+					const rows = Array.isArray(data.results) ? data.results : [];
+					renderRows(rows);
+				}
+
+				if (countrySelect) {
+					countrySelect.addEventListener('change', filterByCountry);
+				}
+				loadCountries();
+
 				const key = 'age_verified_18_v1';
 				const overlay = document.getElementById('ageGate');
 				const yesBtn = document.getElementById('ageYes');
@@ -505,8 +633,8 @@ export function renderAdminPage(): string {
 						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" />
 					</div>
 					<div class="field">
-						<label for="country">Country / Region</label>
-						<input id="country" list="countrySuggestions" placeholder="Country / Region (map search)" value="Japan" />
+						<label for="country">Country (Region)</label>
+						<input id="country" list="countrySuggestions" placeholder="Country (Region) (map search)" value="Japan" />
 						<datalist id="countrySuggestions"></datalist>
 					</div>
 					<div class="field">
@@ -630,7 +758,7 @@ export function renderAdminPage(): string {
 					countryCandidates = Array.isArray(data.results) ? data.results : [];
 					renderCountrySuggestions(countryCandidates);
 				} catch {
-					setStatus('Country map search failed');
+					setStatus('Country (Region) map search failed');
 				}
 			}
 
@@ -1031,7 +1159,7 @@ export function renderDashboardPage(): string {
 				<div class="head">
 					<div class="head-meta">
 						<h1>Data Dashboard</h1>
-						<p>Filter by country/region, sort by fans, and display city-level locations on the map.</p>
+						<p>Filter by Country (Region), sort by fans, and display city-level locations on the map.</p>
 					</div>
 					<nav class="top-nav">
 						<a class="nav-btn" href="/">Ranking Page</a>
@@ -1044,7 +1172,7 @@ export function renderDashboardPage(): string {
 			</section>
 
 			<section class="card toolbar">
-				<select id="countryFilter"><option value="">All Countries/Regions</option></select>
+				<select id="countryFilter"><option value="">All Countries (Regions)</option></select>
 				<button id="reloadBtn">Reload Data</button>
 				<div id="status">Ready</div>
 			</section>
@@ -1059,7 +1187,7 @@ export function renderDashboardPage(): string {
 
 			<section class="card">
 				<table>
-					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>Country/City</th><th>Fans</th></tr></thead>
+					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>Country (Region)/City</th><th>Fans</th></tr></thead>
 					<tbody id="rows"></tbody>
 				</table>
 			</section>
@@ -1088,7 +1216,7 @@ export function renderDashboardPage(): string {
 				const res = await fetch('/api/countries');
 				const data = await res.json();
 				const countries = Array.isArray(data.results) ? data.results : [];
-				countryFilterEl.innerHTML = '<option value="">All Countries/Regions</option>';
+				countryFilterEl.innerHTML = '<option value="">All Countries (Regions)</option>';
 				countries.forEach(function (item) {
 					const opt = document.createElement('option');
 					opt.value = item;
