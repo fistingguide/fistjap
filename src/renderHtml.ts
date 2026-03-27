@@ -255,6 +255,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<div class="links">
 					<a href="/dashboard">Open Dashboard</a>
 					<a href="/admin">Open Admin Panel</a>
+					<a href="/about">About</a>
 				</div>
 			</header>
 			<ol class="list">
@@ -389,6 +390,21 @@ export function renderAdminPage(): string {
 			.field { display: grid; gap: 6px; }
 			.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
 			.form .full { grid-column: 1 / -1; }
+			.avatar-preview-wrap {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 8px 0;
+			}
+			.avatar-preview {
+				width: 64px;
+				height: 64px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 1px solid var(--line);
+				background: #f2f4f7;
+			}
+			.avatar-preview-note { color: var(--muted); font-size: 12px; }
 			.actions { display: flex; gap: 8px; }
 			.status { color: var(--muted); font-size: 13px; }
 			datalist { display: none; }
@@ -471,6 +487,13 @@ export function renderAdminPage(): string {
 						<input id="avatar" placeholder="Avatar URL" />
 					</div>
 					<div class="field full">
+						<label>Avatar Preview</label>
+						<div class="avatar-preview-wrap">
+							<img id="avatarPreview" class="avatar-preview" src="" alt="Avatar preview" />
+							<div class="avatar-preview-note" id="avatarPreviewNote">No avatar URL</div>
+						</div>
+					</div>
+					<div class="field full">
 						<label for="bio">Bio</label>
 						<textarea id="bio" placeholder="Bio"></textarea>
 					</div>
@@ -507,6 +530,8 @@ export function renderAdminPage(): string {
 				bio: document.getElementById('bio'),
 				profileUrl: document.getElementById('profileUrl'),
 				avatar: document.getElementById('avatar'),
+				avatarPreview: document.getElementById('avatarPreview'),
+				avatarPreviewNote: document.getElementById('avatarPreviewNote'),
 				orientation: document.getElementById('orientation'),
 				followers: document.getElementById('followers'),
 				country: document.getElementById('country'),
@@ -527,6 +552,21 @@ export function renderAdminPage(): string {
 
 			function setStatus(text) {
 				els.status.textContent = text;
+			}
+
+			function showSuccessDialog(message) {
+				window.alert(message);
+			}
+
+			function updateAvatarPreview() {
+				const url = String(els.avatar.value || '').trim();
+				if (!url) {
+					els.avatarPreview.removeAttribute('src');
+					els.avatarPreviewNote.textContent = 'No avatar URL';
+					return;
+				}
+				els.avatarPreview.src = url;
+				els.avatarPreviewNote.textContent = 'Previewing avatar from URL';
 			}
 
 			function renderCountrySuggestions(items) {
@@ -618,6 +658,7 @@ export function renderAdminPage(): string {
 				els.followers.value = '20';
 				els.country.value = 'Japan';
 				els.city.value = 'Tokyo';
+				updateAvatarPreview();
 				setEditingState(false);
 			}
 
@@ -633,6 +674,7 @@ export function renderAdminPage(): string {
 				els.followers.value = String(row.followers_count || 0);
 				els.country.value = row.country || 'Japan';
 				els.city.value = row.city || 'Tokyo';
+				updateAvatarPreview();
 				setEditingState(true);
 			}
 
@@ -702,8 +744,9 @@ export function renderAdminPage(): string {
 				}
 
 				const payload = collectPayload();
-				const method = editingId ? 'PUT' : 'POST';
-				const url = editingId ? '/api/profiles/' + editingId : '/api/profiles';
+				const isUpdate = Boolean(editingId);
+				const method = isUpdate ? 'PUT' : 'POST';
+				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
 
 				setStatus('Submitting...');
 				const res = await fetch(url, {
@@ -718,7 +761,8 @@ export function renderAdminPage(): string {
 					return;
 				}
 
-				setStatus(editingId ? 'Updated successfully' : 'Created successfully');
+				setStatus(isUpdate ? 'Updated successfully' : 'Created successfully');
+				showSuccessDialog(isUpdate ? 'Profile updated successfully.' : 'Profile created successfully.');
 				resetForm();
 				els.handleSearch.value = payload.handle;
 				await loadSuggestions();
@@ -748,6 +792,7 @@ export function renderAdminPage(): string {
 					return;
 				}
 				setStatus('Deleted successfully');
+				showSuccessDialog('Profile deleted successfully.');
 				const prev = els.handleSearch.value;
 				resetForm();
 				els.handleSearch.value = prev;
@@ -767,6 +812,10 @@ export function renderAdminPage(): string {
 				syncCountryFromCityChoice();
 				scheduleCitySearch();
 			});
+			els.avatar.addEventListener('input', updateAvatarPreview);
+			els.avatarPreview.addEventListener('error', function () {
+				els.avatarPreviewNote.textContent = 'Image failed to load';
+			});
 			els.deleteBtn.addEventListener('click', handleDelete);
 			els.resetBtn.addEventListener('click', function () {
 				els.handleSearch.value = '';
@@ -778,6 +827,7 @@ export function renderAdminPage(): string {
 			});
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
+			updateAvatarPreview();
 			setStatus('Enter a handle to search.');
 		</script>
 		<script>
@@ -1078,6 +1128,190 @@ export function renderDashboardPage(): string {
 				await loadData();
 			})();
 		</script>
+		<script>
+			(function () {
+				const key = 'age_verified_18_v1';
+				const overlay = document.getElementById('ageGate');
+				const yesBtn = document.getElementById('ageYes');
+				const noBtn = document.getElementById('ageNo');
+				if (!overlay || !yesBtn || !noBtn) return;
+
+				const verified = localStorage.getItem(key) === 'yes';
+				if (!verified) {
+					overlay.style.display = 'flex';
+				}
+
+				yesBtn.addEventListener('click', function () {
+					localStorage.setItem(key, 'yes');
+					overlay.style.display = 'none';
+				});
+
+				noBtn.addEventListener('click', function () {
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+				});
+			})();
+		</script>
+	</body>
+</html>
+`;
+}
+
+export function renderAboutPage(): string {
+	return `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>About</title>
+		<style>
+			:root {
+				--bg: #eef4fb;
+				--card: #ffffff;
+				--line: #dae3ef;
+				--text: #0f2744;
+				--muted: #4f657d;
+				--primary: #0f62fe;
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+				background: radial-gradient(circle at top right, #d7e7ff 0%, var(--bg) 52%, #edf3ff 100%);
+				color: var(--text);
+				padding: 20px;
+			}
+			.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 14px; }
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 16px;
+				box-shadow: 0 8px 20px rgba(6, 24, 44, 0.08);
+			}
+			.head {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 10px;
+			}
+			.head h1 { margin: 0; }
+			.head-actions { display: flex; gap: 8px; }
+			.link-btn {
+				display: inline-flex;
+				align-items: center;
+				text-decoration: none;
+				background: var(--primary);
+				color: #fff;
+				padding: 9px 12px;
+				border-radius: 10px;
+				font-size: 14px;
+			}
+			.link-btn.alt { background: #6b778c; }
+			.content {
+				white-space: pre-wrap;
+				line-height: 1.65;
+				font-size: 15px;
+			}
+			.age-gate-overlay {
+				position: fixed;
+				inset: 0;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				background: rgba(10, 20, 40, 0.75);
+				z-index: 9999;
+				padding: 16px;
+			}
+			.age-gate-box {
+				background: #fff;
+				border-radius: 14px;
+				padding: 18px;
+				max-width: 420px;
+				width: 100%;
+				text-align: center;
+				border: 1px solid var(--line);
+			}
+			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+			.age-btn {
+				border: none;
+				border-radius: 10px;
+				padding: 9px 14px;
+				cursor: pointer;
+				font: inherit;
+				color: #fff;
+			}
+			.age-btn.yes { background: var(--primary); }
+			.age-btn.no { background: #6b778c; }
+			@media (max-width: 700px) {
+				.head { flex-direction: column; align-items: flex-start; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="age-gate-overlay" id="ageGate">
+			<div class="age-gate-box">
+				<h2>Age Confirmation</h2>
+				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<div class="age-gate-actions">
+					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo">No</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="wrap">
+			<section class="card head">
+				<h1>About</h1>
+				<div class="head-actions">
+					<a class="link-btn alt" href="/">Ranking Page</a>
+					<a class="link-btn" href="/admin">Admin Panel</a>
+				</div>
+			</section>
+
+			<section class="card">
+				<div class="content">Hello,
+
+I’m a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community.
+
+The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests.
+
+If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out.
+
+You can contact me on X:
+@fistingguide
+
+Or by email:
+fistingguide@proton.me
+
+If you prefer not to appear on the website, just let me know and I will remove your listing.
+
+Thank you and I hope this project can help the community grow.
+
+Best regards
+
+
+
+你好，
+
+我是一个拳交爱好者，最近做了一个简单的导航网站，希望帮助大家更方便地发现社区里的创作者和账号。
+
+这个网站的目标是让大家更容易找到创作者、探索新的内容，也让拥有相同兴趣的人更容易彼此连接。
+
+如果你有任何建议、反馈，或者有兴趣一起参与这个项目的开发和改进，欢迎随时联系我。
+
+你可以通过 X 联系我：
+@fistingguide
+
+或者通过邮箱：
+fistingguide@proton.me
+
+如果你不希望自己的账号出现在网站上，也可以告诉我，我会删除对应的条目。
+
+谢谢，也希望这个项目能帮助社区更好地发展。</div>
+			</section>
+		</div>
+
 		<script>
 			(function () {
 				const key = 'age_verified_18_v1';

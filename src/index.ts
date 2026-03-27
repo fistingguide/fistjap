@@ -1,16 +1,16 @@
 import {
 	renderAdminPage,
+	renderAboutPage,
 	renderDashboardPage,
 	renderLeaderboardPage,
 	type ProfileRecord,
 } from "./renderHtml";
 import { seedProfiles } from "./seedProfiles";
-import { EmailMessage } from "cloudflare:email";
 
 type RuntimeEnv = Env & {
 	ADMIN_NOTIFICATION_EMAIL?: string;
-	ADMIN_NOTIFICATION_FROM?: string;
-	SEND_EMAIL?: SendEmail;
+	RESEND_API_KEY?: string;
+	RESEND_FROM?: string;
 };
 
 type GeoSuggestion = {
@@ -221,7 +221,8 @@ async function sendAdminNotification(
 	action: "CREATE" | "UPDATE" | "DELETE",
 	row: Record<string, unknown>,
 ): Promise<void> {
-	if (!env.SEND_EMAIL) {
+	const apiKey = (env.RESEND_API_KEY || "").trim();
+	if (!apiKey) {
 		return;
 	}
 
@@ -230,17 +231,32 @@ async function sendAdminNotification(
 		return;
 	}
 
-	const from = (env.ADMIN_NOTIFICATION_FROM || "noreply@notice.local").trim();
+	const from = (env.RESEND_FROM || "").trim();
+	if (!from) {
+		return;
+	}
+
 	const subject = `[Admin Notice] ${action} profile #${String(row.id ?? "")}`;
-	const body = [
-		`Subject: ${subject}`,
-		"Content-Type: text/plain; charset=UTF-8",
-		"",
-		formatOperationSummary(action, row),
-	].join("\n");
+	const text = formatOperationSummary(action, row);
 
 	try {
-		await env.SEND_EMAIL.send(new EmailMessage(from, to, body));
+		const res = await fetch("https://api.resend.com/emails", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${apiKey}`,
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({
+				from,
+				to: [to],
+				subject,
+				text,
+			}),
+		});
+		if (!res.ok) {
+			const err = await res.text();
+			console.error("resend send failed", res.status, err);
+		}
 	} catch (error) {
 		console.error("send admin notification failed", error);
 	}
@@ -280,7 +296,13 @@ export default {
 		const method = request.method.toUpperCase();
 		const idMatch = pathname.match(/^\/api\/profiles\/(\d+)$/);
 
-		if (pathname === "/" || pathname === "/admin" || pathname === "/dashboard" || pathname.startsWith("/api/profiles")) {
+		if (
+			pathname === "/" ||
+			pathname === "/admin" ||
+			pathname === "/dashboard" ||
+			pathname === "/about" ||
+			pathname.startsWith("/api/profiles")
+		) {
 			await ensureSeeded(env.DB);
 		}
 
@@ -299,6 +321,12 @@ export default {
 
 		if (method === "GET" && pathname === "/dashboard") {
 			return new Response(renderDashboardPage(), {
+				headers: { "content-type": "text/html; charset=UTF-8" },
+			});
+		}
+
+		if (method === "GET" && pathname === "/about") {
+			return new Response(renderAboutPage(), {
 				headers: { "content-type": "text/html; charset=UTF-8" },
 			});
 		}
