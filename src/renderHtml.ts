@@ -7,6 +7,7 @@ export type ProfileRecord = {
 	avatar: string;
 	sexual_orientation: string;
 	followers_count: number;
+	province: string;
 	country: string;
 	city: string;
 	created_at: string;
@@ -45,6 +46,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 			const safeUrl = escapeHtml(row.profile_url || "#");
 			const safeBio = escapeHtml(row.bio || "No bio");
 			const safeAvatar = escapeHtml(row.avatar || "");
+			const safeProvince = escapeHtml(row.province || "Tokyo");
 			const safeCountry = escapeHtml(row.country || "Japan");
 			const safeCity = escapeHtml(row.city || "Tokyo");
 			const avatarEl = safeAvatar
@@ -67,7 +69,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 							<div class="handle">${safeHandle}</div>
 						</div>
 					</div>
-					<div class="badge">${safeCountry} / ${safeCity}</div>
+					<div class="badge">${safeCity} / ${safeProvince} / ${safeCountry}</div>
 					<div class="bio">${safeBio}</div>
 				</li>
 			`;
@@ -240,7 +242,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			.age-btn.no { background: #71767B; }
 			.list {
 				margin: 0;
-				padding: 14px;
+				padding: 0;
 				list-style: none;
 				display: grid;
 				grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -396,6 +398,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						const safeUrl = esc(row.profile_url || '#');
 						const safeBio = esc(row.bio || 'No bio');
 						const safeAvatar = esc(row.avatar || '');
+						const safeProvince = esc(row.province || 'Tokyo');
 						const safeCountry = esc(row.country || 'Japan');
 						const safeCity = esc(row.city || 'Tokyo');
 						const avatarEl = safeAvatar
@@ -417,7 +420,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 										'<div class="handle">' + safeHandle + '</div>' +
 									'</div>' +
 								'</div>' +
-								'<div class="badge">' + safeCountry + ' / ' + safeCity + '</div>' +
+								'<div class="badge">' + safeCity + ' / ' + safeProvince + ' / ' + safeCountry + '</div>' +
 								'<div class="bio">' + safeBio + '</div>' +
 							'</li>';
 					}).join('');
@@ -492,6 +495,7 @@ export function renderAdminPage(): string {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Database Admin Panel</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 		<style>
 			:root {
 				--bg: #000000;
@@ -627,6 +631,67 @@ export function renderAdminPage(): string {
 			.avatar-preview-note { color: var(--muted); font-size: 12px; }
 			.actions { display: flex; gap: 8px; }
 			.status { color: var(--muted); font-size: 13px; }
+			.location-selected { color: var(--muted); font-size: 12px; }
+			.location-meta {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 10px;
+			}
+			.location-meta .field { margin-top: 2px; }
+			.location-meta input[readonly] {
+				background: #111418;
+				color: var(--text);
+			}
+			.location-search-wrap { position: relative; width: 100%; }
+			#locationSearch { width: 100%; }
+			.location-dropdown {
+				position: absolute;
+				top: calc(100% + 4px);
+				left: 0;
+				right: 0;
+				background: #16181C;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				max-height: 240px;
+				overflow-y: auto;
+				z-index: 20;
+				display: none;
+				padding: 4px;
+			}
+			.location-dropdown.show { display: block; }
+			.location-option {
+				width: 100%;
+				text-align: left;
+				background: transparent;
+				border: none;
+				color: var(--text);
+				padding: 10px 10px;
+				border-radius: 8px;
+				cursor: pointer;
+			}
+			.location-option:hover { background: #0F1419; }
+			.location-option .sub {
+				display: block;
+				margin-top: 2px;
+				font-size: 12px;
+				color: var(--muted);
+			}
+			.location-preview {
+				width: 100%;
+				height: 280px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				overflow: hidden;
+				background: #0F1419;
+			}
+			.map-pin {
+				width: 18px;
+				height: 18px;
+				border-radius: 50%;
+				background: #1D9BF0;
+				border: 2px solid #FFFFFF;
+				box-shadow: 0 0 0 1px rgba(15, 20, 25, 0.5);
+			}
 			datalist { display: none; }
 			@media (max-width: 900px) {
 				body { font-size: 14px; }
@@ -635,6 +700,7 @@ export function renderAdminPage(): string {
 				.mobile-nav-row { display: block; }
 				.toolbar { grid-template-columns: 1fr; }
 				.form { grid-template-columns: 1fr; }
+				.location-meta { grid-template-columns: 1fr; }
 				.wrap { width: 100%; max-width: 100%; }
 			}
 		</style>
@@ -703,15 +769,21 @@ export function renderAdminPage(): string {
 						<label for="followers">Fans Count</label>
 						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" />
 					</div>
-					<div class="field">
-						<label for="country">Country (Region)</label>
-						<input id="country" list="countrySuggestions" placeholder="Country (Region) (map search)" value="Japan" />
-						<datalist id="countrySuggestions"></datalist>
+					<div class="field full">
+						<label for="locationSearch">City / Province / Country (Region)</label>
+						<div class="location-search-wrap">
+							<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" value="Tokyo, Japan" autocomplete="off" />
+							<div id="locationDropdown" class="location-dropdown"></div>
+						</div>
+						<datalist id="locationSuggestions"></datalist>
+						<input id="country" type="hidden" value="Japan" />
+						<input id="province" type="hidden" value="Tokyo" />
+						<input id="city" type="hidden" value="Tokyo" />
+						<div class="location-selected" id="locationSelected">Selected: Tokyo / Tokyo / Japan</div>
 					</div>
-					<div class="field">
-						<label for="city">City</label>
-						<input id="city" list="citySuggestions" placeholder="City (map search)" value="Tokyo" />
-						<datalist id="citySuggestions"></datalist>
+					<div class="field full">
+						<label>Location Map Preview</label>
+						<div id="locationPreview" class="location-preview"></div>
 					</div>
 					<div class="field full">
 						<label for="profileUrl">Profile URL</label>
@@ -742,19 +814,24 @@ export function renderAdminPage(): string {
 			</section>
 		</div>
 
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 		<script>
 			let currentRows = [];
 			let editingId = null;
-			let countryCandidates = [];
-			let cityCandidates = [];
-			let countryDebounce = null;
-			let cityDebounce = null;
+			let locationCandidates = [];
+			let locationDebounce = null;
+			let locationMap = null;
+			let locationMarker = null;
+			let reverseRequestSeq = 0;
 
 			const els = {
 				handleSearch: document.getElementById('handleSearch'),
 				handleSuggestions: document.getElementById('handleSuggestions'),
-				countrySuggestions: document.getElementById('countrySuggestions'),
-				citySuggestions: document.getElementById('citySuggestions'),
+				locationSearch: document.getElementById('locationSearch'),
+				locationSuggestions: document.getElementById('locationSuggestions'),
+				locationDropdown: document.getElementById('locationDropdown'),
+				locationSelected: document.getElementById('locationSelected'),
+				locationPreview: document.getElementById('locationPreview'),
 				searchBtn: document.getElementById('searchBtn'),
 				resetBtn: document.getElementById('resetBtn'),
 				status: document.getElementById('status'),
@@ -770,6 +847,7 @@ export function renderAdminPage(): string {
 				orientation: document.getElementById('orientation'),
 				followers: document.getElementById('followers'),
 				country: document.getElementById('country'),
+				province: document.getElementById('province'),
 				city: document.getElementById('city'),
 				submitBtn: document.getElementById('submitBtn'),
 				deleteBtn: document.getElementById('deleteBtn'),
@@ -804,81 +882,310 @@ export function renderAdminPage(): string {
 				els.avatarPreviewNote.textContent = 'Previewing avatar from URL';
 			}
 
-			function renderCountrySuggestions(items) {
-				els.countrySuggestions.innerHTML = items.map(function (item) {
-					return '<option value="' + esc(item.country) + '" label="' + esc(item.label) + '"></option>';
-				}).join('');
+			function buildLocationLabel(item) {
+				if (item.city && item.province && item.country) return item.city + ', ' + item.province + ', ' + item.country;
+				if (item.city && item.country) return item.city + ', ' + item.country;
+				if (item.province && item.country) return item.province + ', ' + item.country;
+				if (item.country) return item.country;
+				return item.label || '';
 			}
 
-			function renderCitySuggestions(items) {
-				els.citySuggestions.innerHTML = items.map(function (item) {
-					return '<option value="' + esc(item.city) + '" label="' + esc(item.label) + '"></option>';
-				}).join('');
-			}
-
-			async function fetchCountrySuggestions(keyword) {
-				if (!keyword) {
-					countryCandidates = [];
-					renderCountrySuggestions([]);
-					return;
+			function normalizeReverseResult(raw) {
+				if (!raw || typeof raw !== 'object') return null;
+				const address = raw.address && typeof raw.address === 'object' ? raw.address : {};
+				const countryName =
+					String(address.country || '').trim() ||
+					String(raw.country || '').trim() ||
+					String(raw.countryName || '').trim() ||
+					'';
+				const province =
+					String(address.state || '').trim() ||
+					String(address.province || '').trim() ||
+					String(address.region || '').trim() ||
+					String(address.state_district || '').trim() ||
+					String(raw.admin1 || '').trim() ||
+					'';
+				const cityRaw =
+					String(address.city || '').trim() ||
+					String(address.town || '').trim() ||
+					String(address.village || '').trim() ||
+					String(address.municipality || '').trim() ||
+					String(raw.name || '').trim() ||
+					'';
+				const county = String(address.county || '').trim();
+				let city = cityRaw;
+				if (county && cityRaw && /city$/i.test(cityRaw) && county.toLowerCase() !== cityRaw.toLowerCase()) {
+					city = county;
+				} else if (!city && county) {
+					city = county;
 				}
+				const label = String(raw.display_name || raw.label || '').trim();
+				const country = countryName || String(address.country_code || '').trim().toUpperCase() || '';
+				if (!city && !province && !country) return null;
+				return {
+					city: city || '',
+					province: province || '',
+					country: country || '',
+					label: label || [city, province, country].filter(Boolean).join(', ')
+				};
+			}
+
+			async function browserReverseLookup(lat, lng) {
+				const nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&accept-language=en&lat=' +
+					encodeURIComponent(String(lat)) + '&lon=' + encodeURIComponent(String(lng));
+				const omUrl = 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=' +
+					encodeURIComponent(String(lat)) + '&longitude=' + encodeURIComponent(String(lng)) + '&language=en&count=1';
 				try {
-					const url = '/api/geo/suggest?type=country&q=' + encodeURIComponent(keyword);
-					const res = await fetch(url);
-					const data = await res.json();
-					countryCandidates = Array.isArray(data.results) ? data.results : [];
-					renderCountrySuggestions(countryCandidates);
-				} catch {
-					setStatus('Country (Region) map search failed');
-				}
+					const [nomRes, omRes] = await Promise.allSettled([fetch(nominatimUrl), fetch(omUrl)]);
+					if (nomRes.status === 'fulfilled' && nomRes.value.ok) {
+						const data = await nomRes.value.json();
+						const normalized = normalizeReverseResult(data);
+						if (normalized) return normalized;
+					}
+					if (omRes.status === 'fulfilled' && omRes.value.ok) {
+						const data = await omRes.value.json();
+						const item = data && Array.isArray(data.results) ? data.results[0] : null;
+						const normalized = normalizeReverseResult(item);
+						if (normalized) return normalized;
+					}
+				} catch {}
+
+				return null;
 			}
 
-			async function fetchCitySuggestions(keyword) {
-				if (!keyword) {
-					cityCandidates = [];
-					renderCitySuggestions([]);
-					return;
-				}
-				try {
-					const country = els.country.value.trim();
-					const url = '/api/geo/suggest?type=city&q=' + encodeURIComponent(keyword) + '&country=' + encodeURIComponent(country);
-					const res = await fetch(url);
-					const data = await res.json();
-					cityCandidates = Array.isArray(data.results) ? data.results : [];
-					renderCitySuggestions(cityCandidates);
-				} catch {
-					setStatus('City map search failed');
-				}
+			function inferCityFromLabel(label, country) {
+				const text = String(label || '').trim();
+				if (!text) return '';
+				const parts = text.split(',').map(function (p) { return p.trim(); }).filter(Boolean);
+				if (!parts.length) return '';
+				if (parts.length === 1) return parts[0];
+				const c = String(country || '').trim().toLowerCase();
+				const first = parts[0];
+				const last = parts[parts.length - 1].toLowerCase();
+				if (c && last === c) return first;
+				return first;
 			}
 
-			function scheduleCountrySearch() {
-				if (countryDebounce) clearTimeout(countryDebounce);
-				countryDebounce = setTimeout(function () {
-					fetchCountrySuggestions(els.country.value.trim());
-				}, 250);
-			}
-
-			function scheduleCitySearch() {
-				if (cityDebounce) clearTimeout(cityDebounce);
-				cityDebounce = setTimeout(function () {
-					fetchCitySuggestions(els.city.value.trim());
-				}, 250);
-			}
-
-			function syncCountryFromCityChoice() {
-				const city = els.city.value.trim().toLowerCase();
-				if (!city) return;
-				const found = cityCandidates.find(function (item) {
-					return String(item.city || '').toLowerCase() === city;
+			function ensureLocationMap() {
+				if (locationMap || !window.L || !els.locationPreview) return;
+				locationMap = L.map(els.locationPreview).setView([35.6764, 139.65], 5);
+				L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 18,
+					attribution: '&copy; OpenStreetMap contributors'
+				}).addTo(locationMap);
+				const pinIcon = L.divIcon({
+					className: '',
+					html: '<div class="map-pin"></div>',
+					iconSize: [18, 18],
+					iconAnchor: [9, 9]
 				});
-				if (found && found.country && !els.country.value.trim()) {
-					els.country.value = found.country;
+				locationMarker = L.marker([35.6764, 139.65], { draggable: true, icon: pinIcon }).addTo(locationMap);
+				locationMarker.on('dragend', function () {
+					const latlng = locationMarker.getLatLng();
+					reverseLookupAndApply(latlng.lat, latlng.lng);
+				});
+				locationMap.on('click', function (event) {
+					const latlng = event.latlng;
+					reverseLookupAndApply(latlng.lat, latlng.lng);
+				});
+				setTimeout(function () { locationMap.invalidateSize(); }, 0);
+			}
+
+			async function reverseLookupAndApply(lat, lng) {
+				ensureLocationMap();
+				const requestSeq = ++reverseRequestSeq;
+				if (locationMarker) {
+					locationMarker.setLatLng([lat, lng]);
+				}
+				if (locationMap) {
+					locationMap.panTo([lat, lng]);
+				}
+				try {
+					setStatus('Resolving location...');
+					const res = await fetch('/api/geo/reverse?lat=' + encodeURIComponent(String(lat)) + '&lng=' + encodeURIComponent(String(lng)));
+					if (requestSeq !== reverseRequestSeq) return;
+					const data = await res.json();
+					const result = data && data.result ? data.result : null;
+					let effective = result;
+					if (!effective) {
+						effective = await browserReverseLookup(lat, lng);
+					}
+					if (!effective) {
+						setStatus('No location match for this point, keeping previous location');
+						return;
+					}
+					const hasCountry = String(effective.country || '').trim().length > 0;
+					const hasProvince = String(effective.province || '').trim().length > 0;
+					const hasCity = String(effective.city || '').trim().length > 0;
+					if (!hasCountry && !hasProvince && !hasCity) {
+						setStatus('No location match for this point, keeping previous location');
+						return;
+					}
+					applyLocationChoice({
+						country: effective.country || '',
+						province: effective.province || '',
+						city: effective.city || '',
+						label: effective.label || '',
+						lat: Number(effective.lat || lat),
+						lng: Number(effective.lng || lng)
+					});
+					setStatus('Location selected from map');
+				} catch {
+					if (requestSeq !== reverseRequestSeq) return;
+					setStatus('Reverse location lookup failed');
+				}
+			}
+
+			function renderLocationPreview(lat, lng) {
+				if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+				ensureLocationMap();
+				if (locationMarker) {
+					locationMarker.setLatLng([lat, lng]);
+				}
+				if (locationMap) {
+					locationMap.setView([lat, lng], 6);
+				}
+			}
+
+			function renderLocationSuggestions(items) {
+				els.locationSuggestions.innerHTML = items.map(function (item) {
+					const label = buildLocationLabel(item);
+					return '<option value="' + esc(label) + '" label="' + esc(item.label || label) + '"></option>';
+				}).join('');
+				if (!items.length) {
+					els.locationDropdown.classList.remove('show');
+					els.locationDropdown.style.display = 'none';
+					els.locationDropdown.innerHTML = '';
+					return;
+				}
+				els.locationDropdown.innerHTML = items.map(function (item, idx) {
+					const label = buildLocationLabel(item);
+					const sub = item.city ? ('City / ' + (item.province || '-') + ' / ' + (item.country || '-')) : 'Country (Region)';
+					return '<button type="button" class="location-option" data-index="' + idx + '">' +
+						esc(label) + '<span class="sub">' + esc(sub) + '</span></button>';
+				}).join('');
+				els.locationDropdown.classList.add('show');
+				els.locationDropdown.style.display = 'block';
+			}
+
+			function applyLocationChoice(item) {
+				if (!item) return;
+				const nextCountry = String(item.country || '').trim() || 'Unknown';
+				const nextProvince = String(item.province || '').trim() || 'Unknown';
+				const nextCityRaw = String(item.city || '').trim();
+				const inferredCity = inferCityFromLabel(item.label, nextProvince || nextCountry);
+				const nextCity = nextCityRaw || inferredCity || 'Unknown';
+				els.country.value = nextCountry;
+				els.province.value = nextProvince;
+				els.city.value = nextCity;
+				els.locationSearch.value = buildLocationLabel({ country: nextCountry, province: nextProvince, city: nextCity, label: '' });
+				els.locationSelected.textContent = 'Selected: ' + nextCity + ' / ' + nextProvince + ' / ' + nextCountry;
+				renderLocationPreview(Number(item.lat), Number(item.lng));
+				els.locationDropdown.classList.remove('show');
+				els.locationDropdown.style.display = 'none';
+			}
+
+			async function fetchLocationSuggestions(keyword) {
+				if (!keyword) {
+					locationCandidates = [];
+					renderLocationSuggestions([]);
+					return;
+				}
+				try {
+					const [cityRes, countryRes] = await Promise.all([
+						fetch('/api/geo/suggest?type=city&q=' + encodeURIComponent(keyword) + '&country='),
+						fetch('/api/geo/suggest?type=country&q=' + encodeURIComponent(keyword))
+					]);
+					const cityData = cityRes.ok ? await cityRes.json() : { results: [] };
+					const countryData = countryRes.ok ? await countryRes.json() : { results: [] };
+					const cityItems = (Array.isArray(cityData.results) ? cityData.results : []).map(function (item) {
+						return {
+							country: item.country || '',
+							province: item.province || '',
+							city: item.city || '',
+							label: item.label || '',
+							lat: Number(item.lat),
+							lng: Number(item.lng)
+						};
+					});
+					const countryItems = (Array.isArray(countryData.results) ? countryData.results : []).map(function (item) {
+						return {
+							country: item.country || '',
+							province: '',
+							city: '',
+							label: item.label || '',
+							lat: Number(item.lat),
+							lng: Number(item.lng)
+						};
+					});
+					const dedup = new Map();
+					cityItems.concat(countryItems).forEach(function (item) {
+						const key = buildLocationLabel(item).toLowerCase();
+						if (!key || dedup.has(key)) return;
+						dedup.set(key, item);
+					});
+					locationCandidates = Array.from(dedup.values()).slice(0, 15);
+					renderLocationSuggestions(locationCandidates);
+				} catch {
+					setStatus('Location map search failed');
+				}
+			}
+
+			function scheduleLocationSearch() {
+				if (locationDebounce) clearTimeout(locationDebounce);
+				locationDebounce = setTimeout(function () {
+					fetchLocationSuggestions(els.locationSearch.value.trim());
+				}, 250);
+			}
+
+			function applyLocationFromInput() {
+				const input = String(els.locationSearch.value || '').trim().toLowerCase();
+				if (!input) {
+					els.locationDropdown.classList.remove('show');
+					els.locationDropdown.style.display = 'none';
+					return;
+				}
+				const found = locationCandidates.find(function (item) {
+					const label = buildLocationLabel(item).toLowerCase();
+					return label === input || String(item.label || '').toLowerCase() === input;
+				}) || locationCandidates.find(function (item) {
+					return buildLocationLabel(item).toLowerCase().includes(input);
+				});
+				if (found) {
+					applyLocationChoice(found);
 				}
 			}
 
 			function setEditingState(isEditing) {
 				els.submitBtn.textContent = isEditing ? 'Save Changes' : 'Create';
 				els.deleteBtn.disabled = !isEditing;
+			}
+
+			async function refreshLocationPreviewByValue() {
+				const city = String(els.city.value || '').trim();
+				const province = String(els.province.value || '').trim();
+				const country = String(els.country.value || '').trim();
+				const keyword = city || province || country;
+				if (!keyword) {
+					renderLocationPreview(NaN, NaN);
+					return;
+				}
+				try {
+					const type = city ? 'city' : 'country';
+					const hint = province || country;
+					const url = '/api/geo/suggest?type=' + type + '&q=' + encodeURIComponent(keyword) + '&country=' + encodeURIComponent(hint);
+					const res = await fetch(url);
+					const data = await res.json();
+					const rows = Array.isArray(data.results) ? data.results : [];
+					const hit = rows[0];
+					if (hit) {
+						renderLocationPreview(Number(hit.lat), Number(hit.lng));
+					} else {
+						renderLocationPreview(NaN, NaN);
+					}
+				} catch {
+					renderLocationPreview(NaN, NaN);
+				}
 			}
 
 			function resetForm() {
@@ -892,7 +1199,11 @@ export function renderAdminPage(): string {
 				els.orientation.value = 'Gay';
 				els.followers.value = '20';
 				els.country.value = 'Japan';
+				els.province.value = 'Tokyo';
 				els.city.value = 'Tokyo';
+				els.locationSearch.value = 'Tokyo, Tokyo, Japan';
+				els.locationSelected.textContent = 'Selected: Tokyo / Tokyo / Japan';
+				renderLocationPreview(35.6764, 139.6500);
 				updateAvatarPreview();
 				setEditingState(false);
 			}
@@ -908,14 +1219,18 @@ export function renderAdminPage(): string {
 				els.orientation.value = row.sexual_orientation || 'Gay';
 				els.followers.value = String(row.followers_count || 0);
 				els.country.value = row.country || 'Japan';
+				els.province.value = row.province || 'Tokyo';
 				els.city.value = row.city || 'Tokyo';
+				els.locationSearch.value = [els.city.value, els.province.value, els.country.value].filter(Boolean).join(', ');
+				els.locationSelected.textContent = 'Selected: ' + els.city.value + ' / ' + els.province.value + ' / ' + els.country.value;
+				refreshLocationPreviewByValue();
 				updateAvatarPreview();
 				setEditingState(true);
 			}
 
 			function renderSuggestions(rows) {
 				els.handleSuggestions.innerHTML = rows.map(function (row) {
-					const label = (row.name || 'Unnamed') + ' | ' + (row.country || 'Japan') + '/' + (row.city || 'Tokyo');
+					const label = (row.name || 'Unnamed') + ' | ' + (row.city || 'Tokyo') + '/' + (row.province || 'Tokyo') + '/' + (row.country || 'Japan');
 					return '<option value="' + esc(row.handle) + '" label="' + esc(label) + '"></option>';
 				}).join('');
 			}
@@ -966,6 +1281,7 @@ export function renderAdminPage(): string {
 					avatar: els.avatar.value,
 					sexualOrientation: els.orientation.value,
 					followersCount: Number(els.followers.value || '0'),
+					province: els.province.value || 'Tokyo',
 					country: els.country.value || 'Japan',
 					city: els.city.value || 'Tokyo'
 				};
@@ -1040,12 +1356,29 @@ export function renderAdminPage(): string {
 			els.handleSearch.addEventListener('change', function () {
 				selectByHandle(els.handleSearch.value.trim());
 			});
-			els.country.addEventListener('input', scheduleCountrySearch);
-			els.country.addEventListener('change', scheduleCountrySearch);
-			els.city.addEventListener('input', scheduleCitySearch);
-			els.city.addEventListener('change', function () {
-				syncCountryFromCityChoice();
-				scheduleCitySearch();
+			els.locationSearch.addEventListener('input', scheduleLocationSearch);
+			els.locationSearch.addEventListener('change', function () {
+				applyLocationFromInput();
+				scheduleLocationSearch();
+			});
+			els.locationSearch.addEventListener('focus', function () {
+				if (locationCandidates.length) {
+					renderLocationSuggestions(locationCandidates);
+				}
+			});
+			els.locationSearch.addEventListener('blur', function () {
+				setTimeout(function () {
+					els.locationDropdown.classList.remove('show');
+					els.locationDropdown.style.display = 'none';
+				}, 150);
+			});
+			els.locationDropdown.addEventListener('click', function (event) {
+				const target = event.target.closest('.location-option');
+				if (!target) return;
+				const idx = Number(target.getAttribute('data-index'));
+				if (!Number.isFinite(idx)) return;
+				const picked = locationCandidates[idx];
+				if (picked) applyLocationChoice(picked);
 			});
 			els.avatar.addEventListener('input', updateAvatarPreview);
 			els.avatarPreview.addEventListener('error', function () {
@@ -1055,14 +1388,17 @@ export function renderAdminPage(): string {
 			els.resetBtn.addEventListener('click', function () {
 				els.handleSearch.value = '';
 				renderSuggestions([]);
-				renderCountrySuggestions([]);
-				renderCitySuggestions([]);
+				renderLocationSuggestions([]);
+				locationCandidates = [];
+				els.locationDropdown.classList.remove('show');
+				els.locationDropdown.style.display = 'none';
 				resetForm();
 				setStatus('Ready');
 			});
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
 			updateAvatarPreview();
+			renderLocationPreview(35.6764, 139.6500);
 			setStatus('Enter a handle to search.');
 		</script>
 		<script>
@@ -1299,7 +1635,7 @@ export function renderDashboardPage(): string {
 
 			<section class="card">
 				<table>
-					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>Country (Region)/City</th><th>Fans</th></tr></thead>
+					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>City / Province / Country</th><th>Fans</th></tr></thead>
 					<tbody id="rows"></tbody>
 				</table>
 			</section>
@@ -1344,16 +1680,16 @@ export function renderDashboardPage(): string {
 						'<td>#' + (idx + 1) + '</td>' +
 						'<td>' + (row.name || 'Unnamed') + '</td>' +
 						'<td>' + (row.handle || '') + '</td>' +
-						'<td>' + (row.country || 'Japan') + ' / ' + (row.city || 'Tokyo') + '</td>' +
+						'<td>' + (row.city || 'Tokyo') + ' / ' + (row.province || 'Tokyo') + ' / ' + (row.country || 'Japan') + '</td>' +
 						'<td>' + formatNum(row.followers_count) + '</td>' +
 					'</tr>';
 				}).join('');
 			}
 
-			async function geocode(city, country) {
-				const key = (city + '|' + country).toLowerCase();
+			async function geocode(city, province, country) {
+				const key = (city + '|' + province + '|' + country).toLowerCase();
 				if (geoCache.has(key)) return geoCache.get(key);
-				const q = encodeURIComponent(city + ', ' + country);
+				const q = encodeURIComponent([city, province, country].filter(Boolean).join(', '));
 				const res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=' + q);
 				const data = await res.json();
 				const first = Array.isArray(data) && data.length ? data[0] : null;
@@ -1367,13 +1703,14 @@ export function renderDashboardPage(): string {
 				const bounds = [];
 				for (const row of rows) {
 					const city = row.city || 'Tokyo';
+					const province = row.province || 'Tokyo';
 					const country = row.country || 'Japan';
 					try {
-						const point = await geocode(city, country);
+						const point = await geocode(city, province, country);
 						if (!point) continue;
 						bounds.push([point.lat, point.lon]);
 						L.marker([point.lat, point.lon])
-							.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + country + ' / ' + city + '<br/>Fans: ' + formatNum(row.followers_count))
+							.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + city + ' / ' + province + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
 							.addTo(markerLayer);
 					} catch {
 						// ignore single geocoding failure

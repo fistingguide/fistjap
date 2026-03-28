@@ -19,7 +19,11 @@ type RuntimeEnv = Env & {
 type GeoSuggestion = {
 	label: string;
 	country: string;
+	province?: string;
 	city?: string;
+	lat?: number;
+	lng?: number;
+	type?: "country" | "city";
 };
 
 type ProfilePayload = {
@@ -31,6 +35,7 @@ type ProfilePayload = {
 	sexualOrientation?: unknown;
 	followersCount?: unknown;
 	country?: unknown;
+	province?: unknown;
 	city?: unknown;
 };
 
@@ -97,6 +102,8 @@ async function queryGeoSuggestions(
 	const raw = (await res.json()) as Array<{
 		display_name?: string;
 		address?: Record<string, string | undefined>;
+		lat?: string;
+		lon?: string;
 	}>;
 
 	if (type === "country") {
@@ -107,6 +114,9 @@ async function queryGeoSuggestions(
 			dedup.set(country.toLowerCase(), {
 				country,
 				label: item.display_name?.trim() || country,
+				lat: Number(item.lat ?? "0") || undefined,
+				lng: Number(item.lon ?? "0") || undefined,
+				type: "country",
 			});
 		}
 		return Array.from(dedup.values());
@@ -121,17 +131,178 @@ async function queryGeoSuggestions(
 			item.address?.municipality?.trim() ||
 			item.address?.county?.trim() ||
 			"";
+		const province =
+			item.address?.state?.trim() ||
+			item.address?.province?.trim() ||
+			item.address?.region?.trim() ||
+			"";
 		const country = item.address?.country?.trim() ?? "";
 		if (!city) continue;
-		const key = `${city}|${country}`.toLowerCase();
+		const key = `${city}|${province}|${country}`.toLowerCase();
 		if (dedup.has(key)) continue;
 		dedup.set(key, {
 			city,
+			province,
 			country,
-			label: country ? `${city}, ${country}` : city,
+			label: [city, province, country].filter(Boolean).join(", "),
+			lat: Number(item.lat ?? "0") || undefined,
+			lng: Number(item.lon ?? "0") || undefined,
+			type: "city",
 		});
 	}
 	return Array.from(dedup.values());
+}
+
+async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion | null> {
+	if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+		return null;
+	}
+
+	const params = new URLSearchParams({
+		format: "jsonv2",
+		addressdetails: "1",
+		lat: String(lat),
+		lon: String(lng),
+	});
+
+	const res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
+		headers: {
+			"accept-language": "en",
+		},
+	});
+	if (!res.ok) {
+		return queryGeoReverseFallback(lat, lng);
+	}
+
+	const raw = (await res.json()) as {
+		display_name?: string;
+		address?: Record<string, string | undefined>;
+		error?: string;
+	};
+
+	if (raw?.error) {
+		return queryGeoReverseFallback(lat, lng);
+	}
+
+	const display = String(raw.display_name ?? "").trim();
+	const displayParts = display
+		.split(",")
+		.map((part) => part.trim())
+		.filter(Boolean);
+
+	const country = raw.address?.country?.trim() || displayParts[displayParts.length - 1] || "";
+	const province =
+		raw.address?.state?.trim() ||
+		raw.address?.province?.trim() ||
+		raw.address?.region?.trim() ||
+		raw.address?.state_district?.trim() ||
+		"";
+	const cityRaw =
+		raw.address?.city?.trim() ||
+		raw.address?.town?.trim() ||
+		raw.address?.village?.trim() ||
+		raw.address?.municipality?.trim() ||
+		raw.address?.hamlet?.trim() ||
+		raw.address?.suburb?.trim() ||
+		raw.address?.city_district?.trim() ||
+		raw.address?.district?.trim() ||
+		raw.address?.locality?.trim() ||
+		displayParts[0] ||
+		"";
+	const county = raw.address?.county?.trim() || "";
+	const city =
+		county && cityRaw && /city$/i.test(cityRaw) && county.toLowerCase() !== cityRaw.toLowerCase()
+			? county
+			: cityRaw || county;
+	if (!country && !province && !city) {
+		return queryGeoReverseFallback(lat, lng);
+	}
+
+	return {
+		country: country || "Unknown",
+		province: province || "Unknown",
+		city,
+		label: raw.display_name?.trim() || [city, province, country].filter(Boolean).join(", "),
+		lat,
+		lng,
+		type: city ? "city" : "country",
+	};
+}
+
+async function queryGeoReverseFallback(lat: number, lng: number): Promise<GeoSuggestion | null> {
+	try {
+		const params = new URLSearchParams({
+			latitude: String(lat),
+			longitude: String(lng),
+			language: "en",
+			count: "1",
+		});
+		const res = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?${params.toString()}`);
+		if (!res.ok) return null;
+
+		const raw = (await res.json()) as {
+			results?: Array<{
+				name?: string;
+				admin1?: string;
+				country?: string;
+			}>;
+		};
+		const item = Array.isArray(raw.results) ? raw.results[0] : undefined;
+		if (!item) return null;
+
+		const country = String(item.country ?? "").trim();
+		const province = String(item.admin1 ?? "").trim();
+		const city = String(item.name ?? item.admin1 ?? "").trim();
+		if (country || city) {
+			return {
+				country: country || "Unknown",
+				province: province || "Unknown",
+				city,
+				label: [city, province, country].filter(Boolean).join(", "),
+				lat,
+				lng,
+				type: city ? "city" : "country",
+			};
+		}
+	} catch {
+		// try next fallback
+	}
+
+	try {
+		const params = new URLSearchParams({
+			latitude: String(lat),
+			longitude: String(lng),
+			localityLanguage: "en",
+		});
+		const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?${params.toString()}`);
+		if (!res.ok) return null;
+
+		const raw = (await res.json()) as {
+			countryName?: string;
+			city?: string;
+			locality?: string;
+			principalSubdivision?: string;
+		};
+		const country = String(raw.countryName ?? "").trim();
+		const province = String(raw.principalSubdivision ?? "").trim();
+		const city =
+			String(raw.city ?? "").trim() ||
+			String(raw.locality ?? "").trim() ||
+			String(raw.principalSubdivision ?? "").trim();
+		if (!country && !city) return null;
+
+		return {
+			country: country || "Unknown",
+			province: province || "Unknown",
+			city,
+			label: [city, province, country].filter(Boolean).join(", "),
+			lat,
+			lng,
+			type: city ? "city" : "country",
+		};
+	} catch {
+		return null;
+	}
 }
 
 async function ensureSeeded(db: D1Database): Promise<void> {
@@ -147,8 +318,8 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 			db
 				.prepare(
 					`INSERT OR IGNORE INTO profiles (
-						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, city
-					) VALUES (?, ?, ?, ?, ?, 'Gay', 20, 'Japan', 'Tokyo')`,
+						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
+					) VALUES (?, ?, ?, ?, ?, 'Gay', 20, 'Japan', 'Tokyo', 'Tokyo')`,
 				)
 				.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar),
 		);
@@ -209,7 +380,7 @@ async function queryProfiles(
 
 	const whereClause = conditions.length > 0 ? ` WHERE ${conditions.join(" AND ")}` : "";
 	const sql = `
-		SELECT id, name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, city, created_at
+		SELECT id, name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY followers_count DESC, id ASC
@@ -273,6 +444,7 @@ function formatOperationSummary(action: "CREATE" | "UPDATE" | "DELETE", row: Rec
 		`Name: ${String(row.name ?? "")}`,
 		`Handle: ${String(row.handle ?? "")}`,
 		`Country: ${String(row.country ?? "")}`,
+		`Province: ${String(row.province ?? "")}`,
 		`City: ${String(row.city ?? "")}`,
 		`Fans: ${String(row.followers_count ?? "")}`,
 		`Time: ${new Date().toISOString()}`,
@@ -340,6 +512,7 @@ function normalizePayload(payload: ProfilePayload) {
 		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
 		followersCount: toFollowers(payload.followersCount),
 		country: toText(payload.country, "Japan") || "Japan",
+		province: toText(payload.province, "Tokyo") || "Tokyo",
 		city: toText(payload.city, "Tokyo") || "Tokyo",
 	};
 }
@@ -440,6 +613,16 @@ export default {
 			return json({ results });
 		}
 
+		if (method === "GET" && pathname === "/api/geo/reverse") {
+			const lat = Number(url.searchParams.get("lat") || "");
+			const lng = Number(url.searchParams.get("lng") || "");
+			if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+				return badRequest("lat and lng are required numbers");
+			}
+			const result = await queryGeoReverse(lat, lng);
+			return json({ result });
+		}
+
 		if (method === "GET" && pathname === "/api/wiki") {
 			const rows = await queryWikiArticles(env.DB);
 			return json({ results: rows });
@@ -485,8 +668,8 @@ export default {
 			try {
 				await env.DB.prepare(
 					`INSERT INTO profiles (
-						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, city
-					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
+					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				)
 					.bind(
 						input.name,
@@ -497,6 +680,7 @@ export default {
 						input.sexualOrientation,
 						input.followersCount,
 						input.country,
+						input.province,
 						input.city,
 					)
 					.run();
@@ -506,7 +690,7 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, country, city, followers_count
+					`SELECT id, name, handle, country, province, city, followers_count
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
@@ -540,7 +724,7 @@ export default {
 				try {
 					const result = await env.DB.prepare(
 						`UPDATE profiles
-						 SET name = ?, handle = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, city = ?
+						 SET name = ?, handle = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?
 						 WHERE id = ?`,
 					)
 						.bind(
@@ -552,6 +736,7 @@ export default {
 							input.sexualOrientation,
 							input.followersCount,
 							input.country,
+							input.province,
 							input.city,
 							id,
 						)
@@ -566,7 +751,7 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, country, city, followers_count
+						`SELECT id, name, handle, country, province, city, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -582,7 +767,7 @@ export default {
 			if (method === "DELETE") {
 				const deletedRow = await env.DB
 					.prepare(
-						`SELECT id, name, handle, country, city, followers_count
+						`SELECT id, name, handle, country, province, city, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
