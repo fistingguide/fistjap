@@ -7,9 +7,11 @@ export type ProfileRecord = {
 	avatar: string;
 	sexual_orientation: string;
 	followers_count: number;
-	province: string;
 	country: string;
-	city: string;
+	region: string;
+	district: string;
+	province?: string;
+	city?: string;
 	created_at: string;
 };
 
@@ -46,9 +48,9 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 			const safeUrl = escapeHtml(row.profile_url || "#");
 			const safeBio = escapeHtml(row.bio || "No bio");
 			const safeAvatar = escapeHtml(row.avatar || "");
-			const safeProvince = escapeHtml(row.province || "Tokyo");
+			const safeRegion = escapeHtml((row.region || row.province) || "Tokyo");
 			const safeCountry = escapeHtml(row.country || "Japan");
-			const safeCity = escapeHtml(row.city || "Itabashi");
+			const safeDistrict = escapeHtml((row.district || row.city) || "Itabashi");
 			const avatarEl = safeAvatar
 				? `<img class="avatar" src="${safeAvatar}" alt="${safeName}" referrerpolicy="no-referrer" loading="lazy" />`
 				: `<div class="avatar placeholder">N/A</div>`;
@@ -69,7 +71,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 							<div class="handle">${safeHandle}</div>
 						</div>
 					</div>
-					<div class="badge">${safeCity} / ${safeProvince} / ${safeCountry}</div>
+					<div class="badge">${safeDistrict} / ${safeRegion} / ${safeCountry}</div>
 					<div class="bio">${safeBio}</div>
 				</li>
 			`;
@@ -398,9 +400,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						const safeUrl = esc(row.profile_url || '#');
 						const safeBio = esc(row.bio || 'No bio');
 						const safeAvatar = esc(row.avatar || '');
-						const safeProvince = esc(row.province || 'Tokyo');
+						const safeRegion = esc((row.region || row.province) || 'Tokyo');
 						const safeCountry = esc(row.country || 'Japan');
-						const safeCity = esc(row.city || 'Tokyo');
+						const safeDistrict = esc((row.district || row.city) || 'Itabashi');
 						const avatarEl = safeAvatar
 							? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
 							: '<div class="avatar placeholder">N/A</div>';
@@ -420,7 +422,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 										'<div class="handle">' + safeHandle + '</div>' +
 									'</div>' +
 								'</div>' +
-								'<div class="badge">' + safeCity + ' / ' + safeProvince + ' / ' + safeCountry + '</div>' +
+								'<div class="badge">' + safeDistrict + ' / ' + safeRegion + ' / ' + safeCountry + '</div>' +
 								'<div class="bio">' + safeBio + '</div>' +
 							'</li>';
 					}).join('');
@@ -770,15 +772,15 @@ export function renderAdminPage(): string {
 						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" />
 					</div>
 					<div class="field full">
-						<label for="locationSearch">City / Province / Country (Region)</label>
+						<label for="locationSearch">District / Region / Country (Region)</label>
 						<div class="location-search-wrap">
 						<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" value="Itabashi, Tokyo, Japan" autocomplete="off" />
 							<div id="locationDropdown" class="location-dropdown"></div>
 						</div>
 						<datalist id="locationSuggestions"></datalist>
 						<input id="country" type="hidden" value="Japan" />
-						<input id="province" type="hidden" value="Tokyo" />
-						<input id="city" type="hidden" value="Itabashi" />
+						<input id="region" type="hidden" value="Tokyo" />
+						<input id="district" type="hidden" value="Itabashi" />
 						<div class="location-selected" id="locationSelected">Selected: Itabashi / Tokyo / Japan</div>
 					</div>
 					<div class="field full">
@@ -847,8 +849,8 @@ export function renderAdminPage(): string {
 				orientation: document.getElementById('orientation'),
 				followers: document.getElementById('followers'),
 				country: document.getElementById('country'),
-				province: document.getElementById('province'),
-				city: document.getElementById('city'),
+				region: document.getElementById('region'),
+				district: document.getElementById('district'),
 				submitBtn: document.getElementById('submitBtn'),
 				deleteBtn: document.getElementById('deleteBtn'),
 				cancelEditBtn: document.getElementById('cancelEditBtn')
@@ -883,9 +885,9 @@ export function renderAdminPage(): string {
 			}
 
 			function buildLocationLabel(item) {
-				if (item.city && item.province && item.country) return item.city + ', ' + item.province + ', ' + item.country;
-				if (item.city && item.country) return item.city + ', ' + item.country;
-				if (item.province && item.country) return item.province + ', ' + item.country;
+				if (item.district && item.region && item.country) return item.district + ', ' + item.region + ', ' + item.country;
+				if (item.district && item.country) return item.district + ', ' + item.country;
+				if (item.region && item.country) return item.region + ', ' + item.country;
 				if (item.country) return item.country;
 				return item.label || '';
 			}
@@ -900,49 +902,51 @@ export function renderAdminPage(): string {
 					String(raw.country || '').trim() ||
 					String(raw.countryName || '').trim() ||
 					'';
-				const province =
+				const region =
 					String(address.state || '').trim() ||
 					String(address.province || '').trim() ||
 					String(address.region || '').trim() ||
 					String(address.state_district || '').trim() ||
 					String(raw.admin1 || '').trim() ||
+					String(raw.region || '').trim() ||
 					'';
-				const cityBase =
+				const districtBase =
 					String(address.city || '').trim() ||
 					String(address.town || '').trim() ||
 					String(address.village || '').trim() ||
 					String(address.municipality || '').trim() ||
 					String(raw.name || '').trim() ||
+					String(raw.district || '').trim() ||
 					'';
 				const county = String(address.county || '').trim();
-				let cityRaw = cityBase;
-				if (county && cityBase && /city$/i.test(cityBase) && county.toLowerCase() !== cityBase.toLowerCase()) {
-					cityRaw = county;
-				} else if (!cityBase && county) {
-					cityRaw = county;
+				let districtRaw = districtBase;
+				if (county && districtBase && /city$/i.test(districtBase) && county.toLowerCase() !== districtBase.toLowerCase()) {
+					districtRaw = county;
+				} else if (!districtBase && county) {
+					districtRaw = county;
 				}
-				let city = cityRaw;
-				if (/district/i.test(cityRaw)) {
+				let district = districtRaw;
+				if (/district/i.test(districtRaw)) {
 					const idx = displayParts.findIndex(function (part) {
-						return part.toLowerCase() === cityRaw.toLowerCase();
+						return part.toLowerCase() === districtRaw.toLowerCase();
 					});
 					if (idx >= 0 && idx + 1 < displayParts.length) {
 						const next = displayParts[idx + 1];
-						if (!/^[0-9]{4,10}$/.test(next)) city = next;
+						if (!/^[0-9]{4,10}$/.test(next)) district = next;
 					}
 				}
 				const label = display;
 				const country = countryName || String(address.country_code || '').trim().toUpperCase() || '';
-				if (!city && !province && !country) return null;
+				if (!district && !region && !country) return null;
 				return {
-					city: city || '',
-					province: province || '',
+					district: district || '',
+					region: region || '',
 					country: country || '',
-					label: label || [city, province, country].filter(Boolean).join(', ')
+					label: label || [district, region, country].filter(Boolean).join(', ')
 				};
 			}
 
-			function inferCityFromLabel(label, country) {
+			function inferDistrictFromLabel(label, country) {
 				const text = String(label || '').trim();
 				if (!text) return '';
 				const parts = text.split(',').map(function (p) { return p.trim(); }).filter(Boolean);
@@ -955,19 +959,19 @@ export function renderAdminPage(): string {
 				return first;
 			}
 
-			function inferProvinceFromLabel(label, city, country) {
+			function inferRegionFromLabel(label, district, country) {
 				const text = String(label || '').trim();
 				if (!text) return '';
 				const parts = text.split(',').map(function (p) { return p.trim(); }).filter(Boolean);
 				if (!parts.length) return '';
-				const cityLower = String(city || '').trim().toLowerCase();
+				const districtLower = String(district || '').trim().toLowerCase();
 				const countryLower = String(country || '').trim().toLowerCase();
 				for (let i = parts.length - 1; i >= 0; i -= 1) {
 					const part = parts[i];
 					const lower = part.toLowerCase();
 					if (!part) continue;
 					if (countryLower && lower === countryLower) continue;
-					if (cityLower && lower === cityLower) continue;
+					if (districtLower && lower === districtLower) continue;
 					if (/^[0-9]{4,10}$/.test(part)) continue;
 					return part;
 				}
@@ -1020,16 +1024,16 @@ export function renderAdminPage(): string {
 						return;
 					}
 					const hasCountry = String(effective.country || '').trim().length > 0;
-					const hasProvince = String(effective.province || '').trim().length > 0;
-					const hasCity = String(effective.city || '').trim().length > 0;
-					if (!hasCountry && !hasProvince && !hasCity) {
+					const hasRegion = String(effective.region || '').trim().length > 0;
+					const hasDistrict = String(effective.district || '').trim().length > 0;
+					if (!hasCountry && !hasRegion && !hasDistrict) {
 						setStatus('No location match for this point, keeping previous location');
 						return;
 					}
 					applyLocationChoice({
 						country: effective.country || '',
-						province: effective.province || '',
-						city: effective.city || '',
+						region: effective.region || '',
+						district: effective.district || '',
 						label: effective.label || '',
 						lat: Number(effective.lat || lat),
 						lng: Number(effective.lng || lng)
@@ -1065,7 +1069,7 @@ export function renderAdminPage(): string {
 				}
 				els.locationDropdown.innerHTML = items.map(function (item, idx) {
 					const label = buildLocationLabel(item);
-					const sub = item.city ? ('City / ' + (item.province || '-') + ' / ' + (item.country || '-')) : 'Country (Region)';
+					const sub = item.district ? ('District / ' + (item.region || '-') + ' / ' + (item.country || '-')) : 'Country (Region)';
 					return '<button type="button" class="location-option" data-index="' + idx + '">' +
 						esc(label) + '<span class="sub">' + esc(sub) + '</span></button>';
 				}).join('');
@@ -1076,21 +1080,21 @@ export function renderAdminPage(): string {
 			function applyLocationChoice(item) {
 				if (!item) return;
 				const nextCountry = String(item.country || '').trim() || 'Unknown';
-				const nextCityRaw = String(item.city || '').trim();
-				const inferredCity = inferCityFromLabel(item.label, nextCountry);
-				const nextCity = nextCityRaw || inferredCity || 'Unknown';
-				const nextProvinceRaw = String(item.province || '').trim();
-				const inferredProvince = inferProvinceFromLabel(item.label, nextCity, nextCountry);
-				const nextProvince =
-					(nextProvinceRaw && nextProvinceRaw.toLowerCase() !== 'unknown' ? nextProvinceRaw : '') ||
-					inferredProvince ||
-					nextCity ||
+				const nextDistrictRaw = String(item.district || '').trim();
+				const inferredDistrict = inferDistrictFromLabel(item.label, nextCountry);
+				const nextDistrict = nextDistrictRaw || inferredDistrict || 'Unknown';
+				const nextRegionRaw = String(item.region || '').trim();
+				const inferredRegion = inferRegionFromLabel(item.label, nextDistrict, nextCountry);
+				const nextRegion =
+					(nextRegionRaw && nextRegionRaw.toLowerCase() !== 'unknown' ? nextRegionRaw : '') ||
+					inferredRegion ||
+					nextDistrict ||
 					'Unknown';
 				els.country.value = nextCountry;
-				els.province.value = nextProvince;
-				els.city.value = nextCity;
-				els.locationSearch.value = buildLocationLabel({ country: nextCountry, province: nextProvince, city: nextCity, label: '' });
-				els.locationSelected.textContent = 'Selected: ' + nextCity + ' / ' + nextProvince + ' / ' + nextCountry;
+				els.region.value = nextRegion;
+				els.district.value = nextDistrict;
+				els.locationSearch.value = buildLocationLabel({ country: nextCountry, region: nextRegion, district: nextDistrict, label: '' });
+				els.locationSelected.textContent = 'Selected: ' + nextDistrict + ' / ' + nextRegion + ' / ' + nextCountry;
 				renderLocationPreview(Number(item.lat), Number(item.lng));
 				els.locationDropdown.classList.remove('show');
 				els.locationDropdown.style.display = 'none';
@@ -1103,17 +1107,17 @@ export function renderAdminPage(): string {
 					return;
 				}
 				try {
-					const [cityRes, countryRes] = await Promise.all([
+					const [districtRes, countryRes] = await Promise.all([
 						fetch('/api/geo/suggest?type=city&q=' + encodeURIComponent(keyword) + '&country='),
 						fetch('/api/geo/suggest?type=country&q=' + encodeURIComponent(keyword))
 					]);
-					const cityData = cityRes.ok ? await cityRes.json() : { results: [] };
+					const districtData = districtRes.ok ? await districtRes.json() : { results: [] };
 					const countryData = countryRes.ok ? await countryRes.json() : { results: [] };
-					const cityItems = (Array.isArray(cityData.results) ? cityData.results : []).map(function (item) {
+					const districtItems = (Array.isArray(districtData.results) ? districtData.results : []).map(function (item) {
 						return {
 							country: item.country || '',
-							province: item.province || '',
-							city: item.city || '',
+							region: item.region || '',
+							district: item.district || '',
 							label: item.label || '',
 							lat: Number(item.lat),
 							lng: Number(item.lng)
@@ -1122,15 +1126,15 @@ export function renderAdminPage(): string {
 					const countryItems = (Array.isArray(countryData.results) ? countryData.results : []).map(function (item) {
 						return {
 							country: item.country || '',
-							province: '',
-							city: '',
+							region: '',
+							district: '',
 							label: item.label || '',
 							lat: Number(item.lat),
 							lng: Number(item.lng)
 						};
 					});
 					const dedup = new Map();
-					cityItems.concat(countryItems).forEach(function (item) {
+					districtItems.concat(countryItems).forEach(function (item) {
 						const key = buildLocationLabel(item).toLowerCase();
 						if (!key || dedup.has(key)) return;
 						dedup.set(key, item);
@@ -1173,17 +1177,17 @@ export function renderAdminPage(): string {
 			}
 
 			async function refreshLocationPreviewByValue() {
-				const city = String(els.city.value || '').trim();
-				const province = String(els.province.value || '').trim();
+				const district = String(els.district.value || '').trim();
+				const region = String(els.region.value || '').trim();
 				const country = String(els.country.value || '').trim();
-				const keyword = city || province || country;
+				const keyword = district || region || country;
 				if (!keyword) {
 					renderLocationPreview(NaN, NaN);
 					return;
 				}
 				try {
-					const type = city ? 'city' : 'country';
-					const hint = province || country;
+					const type = district ? 'city' : 'country';
+					const hint = region || country;
 					const url = '/api/geo/suggest?type=' + type + '&q=' + encodeURIComponent(keyword) + '&country=' + encodeURIComponent(hint);
 					const res = await fetch(url);
 					const data = await res.json();
@@ -1210,8 +1214,8 @@ export function renderAdminPage(): string {
 				els.orientation.value = 'Gay';
 				els.followers.value = '20';
 				els.country.value = 'Japan';
-				els.province.value = 'Tokyo';
-				els.city.value = 'Itabashi';
+				els.region.value = 'Tokyo';
+				els.district.value = 'Itabashi';
 				els.locationSearch.value = 'Itabashi, Tokyo, Japan';
 				els.locationSelected.textContent = 'Selected: Itabashi / Tokyo / Japan';
 				renderLocationPreview(35.7512, 139.7093);
@@ -1230,10 +1234,10 @@ export function renderAdminPage(): string {
 				els.orientation.value = row.sexual_orientation || 'Gay';
 				els.followers.value = String(row.followers_count || 0);
 				els.country.value = row.country || 'Japan';
-				els.province.value = row.province || 'Tokyo';
-				els.city.value = row.city || 'Itabashi';
-				els.locationSearch.value = [els.city.value, els.province.value, els.country.value].filter(Boolean).join(', ');
-				els.locationSelected.textContent = 'Selected: ' + els.city.value + ' / ' + els.province.value + ' / ' + els.country.value;
+				els.region.value = (row.region || row.province) || 'Tokyo';
+				els.district.value = (row.district || row.city) || 'Itabashi';
+				els.locationSearch.value = [els.district.value, els.region.value, els.country.value].filter(Boolean).join(', ');
+				els.locationSelected.textContent = 'Selected: ' + els.district.value + ' / ' + els.region.value + ' / ' + els.country.value;
 				refreshLocationPreviewByValue();
 				updateAvatarPreview();
 				setEditingState(true);
@@ -1241,7 +1245,7 @@ export function renderAdminPage(): string {
 
 			function renderSuggestions(rows) {
 				els.handleSuggestions.innerHTML = rows.map(function (row) {
-					const label = (row.name || 'Unnamed') + ' | ' + (row.city || 'Itabashi') + '/' + (row.province || 'Tokyo') + '/' + (row.country || 'Japan');
+					const label = (row.name || 'Unnamed') + ' | ' + ((row.district || row.city) || 'Itabashi') + '/' + ((row.region || row.province) || 'Tokyo') + '/' + (row.country || 'Japan');
 					return '<option value="' + esc(row.handle) + '" label="' + esc(label) + '"></option>';
 				}).join('');
 			}
@@ -1292,9 +1296,9 @@ export function renderAdminPage(): string {
 					avatar: els.avatar.value,
 					sexualOrientation: els.orientation.value,
 					followersCount: Number(els.followers.value || '0'),
-					province: els.province.value || 'Tokyo',
+					region: els.region.value || 'Tokyo',
 					country: els.country.value || 'Japan',
-					city: els.city.value || 'Tokyo'
+					district: els.district.value || 'Itabashi'
 				};
 			}
 
@@ -1646,7 +1650,7 @@ export function renderDashboardPage(): string {
 
 			<section class="card">
 				<table>
-					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>City / Province / Country</th><th>Fans</th></tr></thead>
+					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>District / Region / Country</th><th>Fans</th></tr></thead>
 					<tbody id="rows"></tbody>
 				</table>
 			</section>
@@ -1691,16 +1695,16 @@ export function renderDashboardPage(): string {
 						'<td>#' + (idx + 1) + '</td>' +
 						'<td>' + (row.name || 'Unnamed') + '</td>' +
 						'<td>' + (row.handle || '') + '</td>' +
-						'<td>' + (row.city || 'Itabashi') + ' / ' + (row.province || 'Tokyo') + ' / ' + (row.country || 'Japan') + '</td>' +
+						'<td>' + ((row.district || row.city) || 'Itabashi') + ' / ' + ((row.region || row.province) || 'Tokyo') + ' / ' + (row.country || 'Japan') + '</td>' +
 						'<td>' + formatNum(row.followers_count) + '</td>' +
 					'</tr>';
 				}).join('');
 			}
 
-			async function geocode(city, province, country) {
-				const key = (city + '|' + province + '|' + country).toLowerCase();
+			async function geocode(district, region, country) {
+				const key = (district + '|' + region + '|' + country).toLowerCase();
 				if (geoCache.has(key)) return geoCache.get(key);
-				const q = encodeURIComponent([city, province, country].filter(Boolean).join(', '));
+				const q = encodeURIComponent([district, region, country].filter(Boolean).join(', '));
 				try {
 					const res = await fetch('/api/geo/point?q=' + q);
 					const data = await res.json();
@@ -1722,11 +1726,11 @@ export function renderDashboardPage(): string {
 				const bounds = [];
 				const pointUsage = new Map();
 				for (const row of rows) {
-					const city = row.city || 'Itabashi';
-					const province = row.province || 'Tokyo';
+					const district = (row.district || row.city) || 'Itabashi';
+					const region = (row.region || row.province) || 'Tokyo';
 					const country = row.country || 'Japan';
 					try {
-						const point = await geocode(city, province, country);
+						const point = await geocode(district, region, country);
 						if (!point) continue;
 						const key = point.lat.toFixed(5) + '|' + point.lon.toFixed(5);
 						const used = pointUsage.get(key) || 0;
@@ -1747,7 +1751,7 @@ export function renderDashboardPage(): string {
 							fillColor: '#1D9BF0',
 							fillOpacity: 0.9
 						})
-							.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + city + ' / ' + province + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
+							.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + district + ' / ' + region + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
 							.addTo(markerLayer);
 					} catch {
 						// ignore single geocoding failure

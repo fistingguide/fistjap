@@ -19,8 +19,9 @@ type RuntimeEnv = Env & {
 type GeoSuggestion = {
 	label: string;
 	country: string;
-	province?: string;
-	city?: string;
+	region?: string;
+	district?: string;
+	locality?: string;
 	lat?: number;
 	lng?: number;
 	type?: "country" | "city";
@@ -35,13 +36,15 @@ type ProfilePayload = {
 	sexualOrientation?: unknown;
 	followersCount?: unknown;
 	country?: unknown;
+	region?: unknown;
+	district?: unknown;
 	province?: unknown;
 	city?: unknown;
 };
 
 const DEFAULT_COUNTRY = "Japan";
-const DEFAULT_PROVINCE = "Tokyo";
-const DEFAULT_CITY = "Itabashi";
+const DEFAULT_REGION = "Tokyo";
+const DEFAULT_DISTRICT = "Itabashi";
 
 type WikiPayload = {
 	title?: unknown;
@@ -76,6 +79,8 @@ function badRequest(message: string): Response {
 
 const reverseGeoCache = new Map<string, GeoSuggestion | null>();
 const pointGeoCache = new Map<string, { lat: number; lon: number } | null>();
+const countryIso3Cache = new Map<string, string | null>();
+const geoBoundaryLayerCache = new Map<string, BoundaryFeature[] | null>();
 
 function reverseCacheKey(lat: number, lng: number): string {
 	return `${lat.toFixed(4)}|${lng.toFixed(4)}`;
@@ -83,6 +88,177 @@ function reverseCacheKey(lat: number, lng: number): string {
 
 function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+type BoundaryGeometry =
+	| { type: "Polygon"; coordinates: number[][][] }
+	| { type: "MultiPolygon"; coordinates: number[][][][] };
+
+type BoundaryFeature = {
+	name: string;
+	geometry: BoundaryGeometry;
+};
+
+function pointInRing(lat: number, lng: number, ring: number[][]): boolean {
+	let inside = false;
+	for (let i = 0, j = ring.length - 1; i < ring.length; j = i, i += 1) {
+		const xi = Number(ring[i]?.[0]);
+		const yi = Number(ring[i]?.[1]);
+		const xj = Number(ring[j]?.[0]);
+		const yj = Number(ring[j]?.[1]);
+		if (!Number.isFinite(xi) || !Number.isFinite(yi) || !Number.isFinite(xj) || !Number.isFinite(yj)) {
+			continue;
+		}
+		const intersects =
+			yi > lat !== yj > lat &&
+			lng < ((xj - xi) * (lat - yi)) / (yj - yi + Number.EPSILON) + xi;
+		if (intersects) inside = !inside;
+	}
+	return inside;
+}
+
+function pointInPolygon(lat: number, lng: number, coordinates: number[][][]): boolean {
+	if (!Array.isArray(coordinates) || !coordinates.length) return false;
+	if (!pointInRing(lat, lng, coordinates[0] ?? [])) return false;
+	for (let i = 1; i < coordinates.length; i += 1) {
+		if (pointInRing(lat, lng, coordinates[i] ?? [])) return false;
+	}
+	return true;
+}
+
+function pointInBoundaryGeometry(lat: number, lng: number, geometry: BoundaryGeometry): boolean {
+	if (geometry.type === "Polygon") {
+		return pointInPolygon(lat, lng, geometry.coordinates);
+	}
+	for (const polygon of geometry.coordinates) {
+		if (pointInPolygon(lat, lng, polygon)) return true;
+	}
+	return false;
+}
+
+function pickBoundaryName(properties: Record<string, unknown> | null | undefined): string {
+	if (!properties || typeof properties !== "object") return "";
+	const keys = [
+		"shapeName",
+		"name",
+		"shapeType",
+		"NAME_1",
+		"NAME_2",
+		"NAME_3",
+		"ADM1_EN",
+		"ADM2_EN",
+	];
+	for (const key of keys) {
+		const value = properties[key];
+		if (typeof value === "string" && value.trim()) return value.trim();
+	}
+	for (const value of Object.values(properties)) {
+		if (typeof value === "string" && value.trim() && !/^[A-Z0-9_-]{2,32}$/.test(value.trim())) {
+			return value.trim();
+		}
+	}
+	return "";
+}
+
+async function lookupIso3FromIso2(countryCode2: string): Promise<string | null> {
+	const code = countryCode2.trim().toUpperCase();
+	if (!/^[A-Z]{2}$/.test(code)) return null;
+	if (countryIso3Cache.has(code)) return countryIso3Cache.get(code) ?? null;
+	try {
+		const res = await fetch(`https://restcountries.com/v3.1/alpha/${encodeURIComponent(code)}?fields=cca3`);
+		if (!res.ok) {
+			countryIso3Cache.set(code, null);
+			return null;
+		}
+		const raw = (await res.json()) as Array<{ cca3?: string }> | { cca3?: string };
+		const value = Array.isArray(raw) ? raw[0]?.cca3 : raw?.cca3;
+		const iso3 = typeof value === "string" ? value.trim().toUpperCase() : "";
+		const normalized = /^[A-Z]{3}$/.test(iso3) ? iso3 : null;
+		countryIso3Cache.set(code, normalized);
+		return normalized;
+	} catch {
+		countryIso3Cache.set(code, null);
+		return null;
+	}
+}
+
+async function fetchGeoBoundaryLayer(iso3: string, adm: "ADM1" | "ADM2"): Promise<BoundaryFeature[] | null> {
+	const key = `${iso3}|${adm}`;
+	if (geoBoundaryLayerCache.has(key)) return geoBoundaryLayerCache.get(key) ?? null;
+
+	try {
+		const metaRes = await fetch(`https://www.geoboundaries.org/api/current/gbOpen/${iso3}/${adm}/`);
+		if (!metaRes.ok) {
+			geoBoundaryLayerCache.set(key, null);
+			return null;
+		}
+		const meta = (await metaRes.json()) as { simplifiedGeometryGeoJSON?: string; gjDownloadURL?: string };
+		const url = String(meta?.simplifiedGeometryGeoJSON || meta?.gjDownloadURL || "").trim();
+		if (!url) {
+			geoBoundaryLayerCache.set(key, null);
+			return null;
+		}
+
+		const geoRes = await fetch(url);
+		if (!geoRes.ok) {
+			geoBoundaryLayerCache.set(key, null);
+			return null;
+		}
+		const geo = (await geoRes.json()) as {
+			features?: Array<{
+				properties?: Record<string, unknown>;
+				geometry?: { type?: string; coordinates?: unknown };
+			}>;
+		};
+		const features: BoundaryFeature[] = [];
+		for (const feature of geo.features ?? []) {
+			const type = feature.geometry?.type;
+			const coords = feature.geometry?.coordinates;
+			if (type !== "Polygon" && type !== "MultiPolygon") continue;
+			if (!coords) continue;
+			const name = pickBoundaryName(feature.properties);
+			if (!name) continue;
+			features.push({
+				name,
+				geometry:
+					type === "Polygon"
+						? { type: "Polygon", coordinates: coords as number[][][] }
+						: { type: "MultiPolygon", coordinates: coords as number[][][][] },
+			});
+		}
+		geoBoundaryLayerCache.set(key, features);
+		return features;
+	} catch {
+		geoBoundaryLayerCache.set(key, null);
+		return null;
+	}
+}
+
+async function resolveBoundaryHierarchy(
+	lat: number,
+	lng: number,
+	countryCode2: string,
+): Promise<{ adm1?: string; adm2?: string } | null> {
+	const iso3 = await lookupIso3FromIso2(countryCode2);
+	if (!iso3) return null;
+
+	const [adm1Layer, adm2Layer] = await Promise.all([
+		fetchGeoBoundaryLayer(iso3, "ADM1"),
+		fetchGeoBoundaryLayer(iso3, "ADM2"),
+	]);
+
+	const findHit = (features: BoundaryFeature[] | null): string => {
+		if (!features?.length) return "";
+		for (const feature of features) {
+			if (pointInBoundaryGeometry(lat, lng, feature.geometry)) return feature.name;
+		}
+		return "";
+	};
+
+	const adm1 = findHit(adm1Layer);
+	const adm2 = findHit(adm2Layer);
+	if (!adm1 && !adm2) return null;
+	return { adm1: adm1 || undefined, adm2: adm2 || undefined };
 }
 
 async function proxyTextAsset(url: string, contentType: string): Promise<Response> {
@@ -117,6 +293,108 @@ function pickMajorCity(cityRaw: string, displayParts: string[]): string {
 		if (next && !isPostcodeLike(next)) return next;
 	}
 	return city;
+}
+
+function isPostalPart(value: string): boolean {
+	return /^[0-9]{4,10}$/.test(value.trim());
+}
+
+function isMinorAdminName(value: string): boolean {
+	const lower = value.toLowerCase();
+	return (
+		lower.includes("district") ||
+		lower.includes("sub-district") ||
+		lower.includes("subdistrict") ||
+		lower.includes("county") ||
+		lower.includes("ward") ||
+		lower.includes("borough") ||
+		lower.includes("township")
+	);
+}
+
+function pickDisplayCityNearProvince(displayParts: string[], province: string, country: string): string {
+	if (!displayParts.length) return "";
+	const countryLower = country.toLowerCase();
+	const provinceLower = province.toLowerCase();
+	const countryIdx = displayParts.findIndex((part) => part.toLowerCase() === countryLower);
+	const provinceIdx = displayParts.findIndex((part) => part.toLowerCase() === provinceLower);
+	const stopIdx = provinceIdx >= 0 ? provinceIdx : countryIdx;
+	if (stopIdx <= 0) return "";
+	for (let i = stopIdx - 1; i >= 0; i -= 1) {
+		const part = displayParts[i].trim();
+		if (!part || isPostalPart(part)) continue;
+		return part;
+	}
+	return "";
+}
+
+function chooseDistrictValue(candidateA: string, candidateB: string, region: string): string {
+	const a = candidateA.trim();
+	const b = candidateB.trim();
+	const r = region.trim().toLowerCase();
+	const lowerA = a.toLowerCase();
+	const lowerB = b.toLowerCase();
+	const isTooGranular = (value: string): boolean =>
+		value.includes("sub-district") ||
+		value.includes("subdistrict") ||
+		value.includes("village") ||
+		value.includes("hamlet") ||
+		value.includes("neighbourhood") ||
+		value.includes("neighborhood") ||
+		value.includes("residential") ||
+		value.includes("quarter") ||
+		value.includes("street");
+	const validA = a && lowerA !== r;
+	const validB = b && lowerB !== r;
+
+	// Prefer broader city-level names when A is too granular.
+	if (validA && isTooGranular(lowerA) && validB) return b;
+	// Prefer broader city-level names when A is district-level but B is city-like.
+	if (
+		validA &&
+		lowerA.includes("district") &&
+		validB &&
+		!lowerB.includes("district") &&
+		!lowerB.includes("county")
+	) {
+		return b;
+	}
+
+	if (validA) return a;
+	if (validB) return b;
+	return a || b || "Unknown";
+}
+
+function looksWeakGeoName(value: string): boolean {
+	const v = value.trim().toLowerCase();
+	if (!v || v === "unknown") return true;
+	return (
+		v.includes("sub-district") ||
+		v.includes("subdistrict") ||
+		v.includes("village") ||
+		v.includes("hamlet") ||
+		v.includes("neighbourhood") ||
+		v.includes("neighborhood") ||
+		v.includes("residential") ||
+		v.includes("quarter") ||
+		v.includes("street")
+	);
+}
+
+function pickPreferredRegion(geoRegion: string, boundaryRegion: string): string {
+	const g = geoRegion.trim();
+	const b = boundaryRegion.trim();
+	if (g && g.toLowerCase() !== "unknown") return g;
+	if (b) return b;
+	return g || b || "Unknown";
+}
+
+function pickPreferredDistrict(geoDistrict: string, boundaryDistrict: string): string {
+	const g = geoDistrict.trim();
+	const b = boundaryDistrict.trim();
+	if (!g || g.toLowerCase() === "unknown") return b || g || "Unknown";
+	if (!looksWeakGeoName(g)) return g;
+	return b || g || "Unknown";
 }
 
 async function queryGeoSuggestions(
@@ -173,27 +451,29 @@ async function queryGeoSuggestions(
 
 	const dedup = new Map<string, GeoSuggestion>();
 	for (const item of raw ?? []) {
-		const city =
+		const district =
+			item.address?.county?.trim() ||
 			item.address?.city?.trim() ||
+			item.address?.municipality?.trim() ||
+			item.address?.city_district?.trim() ||
+			item.address?.district?.trim() ||
 			item.address?.town?.trim() ||
 			item.address?.village?.trim() ||
-			item.address?.municipality?.trim() ||
-			item.address?.county?.trim() ||
 			"";
-		const province =
+		const region =
 			item.address?.state?.trim() ||
 			item.address?.province?.trim() ||
 			item.address?.region?.trim() ||
 			"";
 		const country = item.address?.country?.trim() ?? "";
-		if (!city) continue;
-		const key = `${city}|${province}|${country}`.toLowerCase();
+		if (!district) continue;
+		const key = `${district}|${region}|${country}`.toLowerCase();
 		if (dedup.has(key)) continue;
 		dedup.set(key, {
-			city,
-			province,
+			district,
+			region,
 			country,
-			label: [city, province, country].filter(Boolean).join(", "),
+			label: [district, region, country].filter(Boolean).join(", "),
 			lat: Number(item.lat ?? "0") || undefined,
 			lng: Number(item.lon ?? "0") || undefined,
 			type: "city",
@@ -350,42 +630,63 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 		.split(",")
 		.map((part) => part.trim())
 		.filter(Boolean);
+	const countryCode2 = String(raw.address?.country_code ?? "").trim().toUpperCase();
+	const boundaryHierarchy = countryCode2 ? await resolveBoundaryHierarchy(lat, lng, countryCode2) : null;
 
 	const country = raw.address?.country?.trim() || displayParts[displayParts.length - 1] || "";
-	const province =
+	const locality =
+		raw.address?.village?.trim() ||
+		raw.address?.hamlet?.trim() ||
+		raw.address?.quarter?.trim() ||
+		raw.address?.neighbourhood?.trim() ||
+		raw.address?.residential?.trim() ||
+		"";
+	const districtRaw =
+		raw.address?.city_district?.trim() ||
+		raw.address?.district?.trim() ||
+		raw.address?.suburb?.trim() ||
+		raw.address?.borough?.trim() ||
+		raw.address?.county?.trim() ||
+		"";
+	const adminCityRaw =
+		raw.address?.city?.trim() ||
+		raw.address?.municipality?.trim() ||
+		raw.address?.town?.trim() ||
+		raw.address?.village?.trim() ||
+		raw.address?.county?.trim() ||
+		"";
+	const provinceRaw =
 		raw.address?.state?.trim() ||
 		raw.address?.province?.trim() ||
 		raw.address?.region?.trim() ||
 		raw.address?.state_district?.trim() ||
 		"";
-	const cityBase =
-		raw.address?.city?.trim() ||
-		raw.address?.town?.trim() ||
-		raw.address?.village?.trim() ||
-		raw.address?.municipality?.trim() ||
-		raw.address?.hamlet?.trim() ||
-		raw.address?.suburb?.trim() ||
-		raw.address?.city_district?.trim() ||
-		raw.address?.district?.trim() ||
-		raw.address?.locality?.trim() ||
-		displayParts[0] ||
-		"";
-	const county = raw.address?.county?.trim() || "";
-	const cityRaw = county && cityBase && /city$/i.test(cityBase) && county.toLowerCase() !== cityBase.toLowerCase() ? county : cityBase || county;
-	const city = pickMajorCity(cityRaw, displayParts);
-	if (!country && !province && !city) {
+	const displayCity = pickDisplayCityNearProvince(displayParts, provinceRaw || adminCityRaw, country);
+	const normalizedAdminCity =
+		adminCityRaw && isMinorAdminName(adminCityRaw) && displayCity ? displayCity : adminCityRaw || displayCity;
+	const districtName = pickMajorCity(normalizedAdminCity || districtRaw || displayParts[0] || "", displayParts);
+	const geoRegion = provinceRaw || (!isMinorAdminName(adminCityRaw) ? adminCityRaw : "") || "Unknown";
+	const region = pickPreferredRegion(geoRegion, boundaryHierarchy?.adm1 ?? "");
+	// Prefer district/city_district level first, then city-level fallback; avoid repeating region name.
+	const geoDistrict = chooseDistrictValue(districtRaw, districtName, region);
+	const effectiveDistrict = pickPreferredDistrict(geoDistrict, boundaryHierarchy?.adm2 ?? "");
+
+	if (!country && !region && !districtName) {
 		reverseGeoCache.set(key, null);
 		return null;
 	}
 
 	const result: GeoSuggestion = {
 		country: country || "Unknown",
-		province: province || "Unknown",
-		city,
-		label: raw.display_name?.trim() || [city, province, country].filter(Boolean).join(", "),
+		region: region || "Unknown",
+		district: effectiveDistrict || "Unknown",
+		locality: locality || undefined,
+		label:
+			raw.display_name?.trim() ||
+			[effectiveDistrict || districtName, region, country].filter(Boolean).join(", "),
 		lat,
 		lng,
-		type: city ? "city" : "country",
+		type: districtName ? "city" : "country",
 	};
 	reverseGeoCache.set(key, result);
 	return result;
@@ -413,17 +714,18 @@ async function queryGeoReverseFallback(lat: number, lng: number): Promise<GeoSug
 		if (!item) return null;
 
 		const country = String(item.country ?? "").trim();
-		const province = String(item.admin1 ?? "").trim();
-		const city = String(item.name ?? item.admin1 ?? "").trim();
-		if (country || city) {
+		const region = String(item.admin1 ?? "").trim();
+		const district = String(item.name ?? item.admin1 ?? "").trim();
+		if (country || district) {
+			const resolvedRegion = region || district || "Unknown";
 			return {
 				country: country || "Unknown",
-				province: province || "Unknown",
-				city,
-				label: [city, province, country].filter(Boolean).join(", "),
+				region: resolvedRegion,
+				district: district || "Unknown",
+				label: [district, resolvedRegion, country].filter(Boolean).join(", "),
 				lat,
 				lng,
-				type: city ? "city" : "country",
+				type: district ? "city" : "country",
 			};
 		}
 	} catch {
@@ -446,21 +748,22 @@ async function queryGeoReverseFallback(lat: number, lng: number): Promise<GeoSug
 			principalSubdivision?: string;
 		};
 		const country = String(raw.countryName ?? "").trim();
-		const province = String(raw.principalSubdivision ?? "").trim();
-		const city =
+		const region = String(raw.principalSubdivision ?? "").trim();
+		const district =
 			String(raw.city ?? "").trim() ||
 			String(raw.locality ?? "").trim() ||
 			String(raw.principalSubdivision ?? "").trim();
-		if (!country && !city) return null;
+		if (!country && !district) return null;
+		const resolvedRegion = region || district || "Unknown";
 
 		return {
 			country: country || "Unknown",
-			province: province || "Unknown",
-			city,
-			label: [city, province, country].filter(Boolean).join(", "),
+			region: resolvedRegion,
+			district: district || "Unknown",
+			label: [district, resolvedRegion, country].filter(Boolean).join(", "),
 			lat,
 			lng,
-			type: city ? "city" : "country",
+			type: district ? "city" : "country",
 		};
 	} catch {
 		return null;
@@ -483,7 +786,7 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
 					) VALUES (?, ?, ?, ?, ?, 'Gay', 20, ?, ?, ?)`,
 				)
-				.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar, DEFAULT_COUNTRY, DEFAULT_PROVINCE, DEFAULT_CITY),
+				.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar, DEFAULT_COUNTRY, DEFAULT_REGION, DEFAULT_DISTRICT),
 		);
 
 	if (statements.length > 0) {
@@ -542,7 +845,8 @@ async function queryProfiles(
 
 	const whereClause = conditions.length > 0 ? ` WHERE ${conditions.join(" AND ")}` : "";
 	const sql = `
-		SELECT id, name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city, created_at
+		SELECT id, name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country,
+			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY followers_count DESC, id ASC
@@ -606,8 +910,8 @@ function formatOperationSummary(action: "CREATE" | "UPDATE" | "DELETE", row: Rec
 		`Name: ${String(row.name ?? "")}`,
 		`Handle: ${String(row.handle ?? "")}`,
 		`Country: ${String(row.country ?? "")}`,
-		`Province: ${String(row.province ?? "")}`,
-		`City: ${String(row.city ?? "")}`,
+		`Region: ${String(row.region ?? row.province ?? "")}`,
+		`District: ${String(row.district ?? row.city ?? "")}`,
 		`Fans: ${String(row.followers_count ?? "")}`,
 		`Time: ${new Date().toISOString()}`,
 	].join("\n");
@@ -674,8 +978,8 @@ function normalizePayload(payload: ProfilePayload) {
 		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
 		followersCount: toFollowers(payload.followersCount),
 		country: toText(payload.country, DEFAULT_COUNTRY) || DEFAULT_COUNTRY,
-		province: toText(payload.province, DEFAULT_PROVINCE) || DEFAULT_PROVINCE,
-		city: toText(payload.city, DEFAULT_CITY) || DEFAULT_CITY,
+		region: toText(payload.region, toText(payload.province, DEFAULT_REGION)) || DEFAULT_REGION,
+		district: toText(payload.district, toText(payload.city, DEFAULT_DISTRICT)) || DEFAULT_DISTRICT,
 	};
 }
 
@@ -857,8 +1161,8 @@ export default {
 						input.sexualOrientation,
 						input.followersCount,
 						input.country,
-						input.province,
-						input.city,
+						input.region,
+						input.district,
 					)
 					.run();
 			} catch (error) {
@@ -867,7 +1171,7 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, country, province, city, followers_count
+					`SELECT id, name, handle, country, province AS region, city AS district, followers_count
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
@@ -913,8 +1217,8 @@ export default {
 							input.sexualOrientation,
 							input.followersCount,
 							input.country,
-							input.province,
-							input.city,
+							input.region,
+							input.district,
 							id,
 						)
 						.run();
@@ -928,7 +1232,7 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, country, province, city, followers_count
+						`SELECT id, name, handle, country, province AS region, city AS district, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -944,7 +1248,7 @@ export default {
 			if (method === "DELETE") {
 				const deletedRow = await env.DB
 					.prepare(
-						`SELECT id, name, handle, country, province, city, followers_count
+						`SELECT id, name, handle, country, province AS region, city AS district, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
