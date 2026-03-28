@@ -186,14 +186,27 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn:hover { filter: brightness(1.03); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
 			@media (max-width: 720px) {
-				.top-nav { justify-content: flex-start; width: 100%; }
+				body { font-size: 14px; }
+				.top-nav { display: none; }
+				.mobile-nav-row { display: block; }
 				.header-main { flex-direction: column; align-items: flex-start; }
 				.header-left { width: 100%; }
 				.header-title-row { width: 100%; }
 				.header-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
 				.header-filter { width: 100%; min-width: 0; }
-				.header-filter select { width: 100%; }
+				.header-filter select { width: 100%; height: 42px; }
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -298,7 +311,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			@media (max-width: 1280px) { .list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 			@media (max-width: 980px) { .list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 			@media (max-width: 720px) {
-				.header h1 { font-size: 24px; }
+				.header h1 { font-size: 22px; }
 				.list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 				.panel { width: 100%; max-width: 100%; }
 			}
@@ -337,6 +350,15 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							<a class="nav-btn secondary" href="/wiki">Fisting Wiki</a>
 							<a class="nav-btn secondary" href="/about">About</a>
 						</nav>
+						<div class="mobile-nav-row">
+							<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+								<option value="/" selected>Ranking Page</option>
+								<option value="/admin">Add new</option>
+								<option value="/dashboard">Star Map</option>
+								<option value="/wiki">Fisting Wiki</option>
+								<option value="/about">About</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			</header>
@@ -524,6 +546,17 @@ export function renderAdminPage(): string {
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
 			.age-gate-overlay {
 				position: fixed;
 				inset: 0;
@@ -596,8 +629,10 @@ export function renderAdminPage(): string {
 			.status { color: var(--muted); font-size: 13px; }
 			datalist { display: none; }
 			@media (max-width: 900px) {
+				body { font-size: 14px; }
 				.head { flex-direction: column; align-items: flex-start; }
-				.top-nav { justify-content: flex-start; }
+				.top-nav { display: none; }
+				.mobile-nav-row { display: block; }
 				.toolbar { grid-template-columns: 1fr; }
 				.form { grid-template-columns: 1fr; }
 				.wrap { width: 100%; max-width: 100%; }
@@ -628,6 +663,15 @@ export function renderAdminPage(): string {
 						<a class="nav-btn" href="/wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about">About</a>
 					</nav>
+					<div class="mobile-nav-row">
+						<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<option value="/">Ranking Page</option>
+							<option value="/admin" selected>Add new</option>
+							<option value="/dashboard">Star Map</option>
+							<option value="/wiki">Fisting Wiki</option>
+							<option value="/about">About</option>
+						</select>
+					</div>
 				</div>
 			</section>
 
@@ -1111,6 +1155,17 @@ export function renderDashboardPage(): string {
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
 			.toolbar {
 				display: grid;
 				grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) minmax(220px, 1fr);
@@ -1176,15 +1231,25 @@ export function renderDashboardPage(): string {
 			}
 			.age-btn.yes { background: var(--primary); }
 			.age-btn.no { background: #71767B; }
-			table { width: 100%; border-collapse: collapse; }
-			th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; font-size: 14px; }
+			table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+			th, td {
+				border-bottom: 1px solid var(--line);
+				padding: 8px;
+				text-align: left;
+				font-size: 14px;
+				overflow-wrap: anywhere;
+				word-break: break-word;
+			}
 			#map { width: 100%; height: 480px; border-radius: 12px; overflow: hidden; }
 			@media (max-width: 900px) {
+				body { font-size: 14px; }
 				.head { flex-direction: column; align-items: flex-start; }
-				.top-nav { justify-content: flex-start; }
+				.top-nav { display: none; }
+				.mobile-nav-row { display: block; }
 				.toolbar { grid-template-columns: 1fr; }
 				#map { height: 360px; }
 				.wrap { width: 100%; max-width: 100%; }
+				th, td { font-size: 12px; padding: 7px 6px; }
 			}
 		</style>
 	</head>
@@ -1212,6 +1277,15 @@ export function renderDashboardPage(): string {
 						<a class="nav-btn" href="/wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about">About</a>
 					</nav>
+					<div class="mobile-nav-row">
+						<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<option value="/">Ranking Page</option>
+							<option value="/admin">Add new</option>
+							<option value="/dashboard" selected>Star Map</option>
+							<option value="/wiki">Fisting Wiki</option>
+							<option value="/about">About</option>
+						</select>
+					</div>
 				</div>
 			</section>
 
@@ -1418,6 +1492,17 @@ export function renderAboutPage(): string {
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
 			.content {
 				white-space: pre-wrap;
 				line-height: 1.65;
@@ -1454,8 +1539,10 @@ export function renderAboutPage(): string {
 			.age-btn.yes { background: var(--primary); }
 			.age-btn.no { background: #71767B; }
 			@media (max-width: 700px) {
+				body { font-size: 14px; }
 				.head { flex-direction: column; align-items: flex-start; }
-				.top-nav { justify-content: flex-start; }
+				.top-nav { display: none; }
+				.mobile-nav-row { display: block; }
 				.wrap { width: 100%; max-width: 100%; }
 			}
 		</style>
@@ -1482,10 +1569,19 @@ export function renderAboutPage(): string {
 					<a class="nav-btn" href="/wiki">Fisting Wiki</a>
 					<a class="nav-btn primary active" href="/about">About</a>
 				</nav>
+				<div class="mobile-nav-row">
+					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+						<option value="/">Ranking Page</option>
+						<option value="/admin">Add new</option>
+						<option value="/dashboard">Star Map</option>
+						<option value="/wiki">Fisting Wiki</option>
+						<option value="/about" selected>About</option>
+					</select>
+				</div>
 			</section>
 
 			<section class="card">
-				<div class="content">Hello,I'm a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community.The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests.If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out.You can contact me on X:@fistingguideOr by email:fistingguide@proton.meIf you prefer not to appear on the website, just let me know and I will remove your listing.Thank you and I hope this project can help the community grow.
+				<div class="content">Hello,I'm a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community.The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests.If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out.You can contact me on X: @fistingguide Or by email: fistingguide@proton.meIf you prefer not to appear on the website, just let me know and I will remove your listing.Thank you and I hope this project can help the community grow.
 
 </div>
 			</section>
@@ -1575,6 +1671,17 @@ export function renderWikiPage(): string {
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
 			.compose {
 				display: grid;
 				grid-template-columns: 1.1fr 1fr;
@@ -1702,7 +1809,9 @@ export function renderWikiPage(): string {
 			.age-btn.no { background: #71767B; }
 			@media (max-width: 1000px) { .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 			@media (max-width: 840px) {
-				.top-nav { justify-content: flex-start; }
+				body { font-size: 14px; }
+				.top-nav { display: none; }
+				.mobile-nav-row { display: block; }
 				.head { flex-direction: column; align-items: flex-start; }
 				.compose { grid-template-columns: 1fr; }
 				.blog-grid { grid-template-columns: 1fr; }
@@ -1735,6 +1844,15 @@ export function renderWikiPage(): string {
 						<a class="nav-btn primary active" href="/wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about">About</a>
 					</nav>
+					<div class="mobile-nav-row">
+						<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<option value="/">Ranking Page</option>
+							<option value="/admin">Add new</option>
+							<option value="/dashboard">Star Map</option>
+							<option value="/wiki" selected>Fisting Wiki</option>
+							<option value="/about">About</option>
+						</select>
+					</div>
 				</div>
 			</section>
 
@@ -2016,6 +2134,17 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
 			.article {
 				max-width: 760px;
 				margin: 0 auto;
@@ -2061,10 +2190,12 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 			.age-btn.yes { background: var(--primary); }
 			.age-btn.no { background: #71767B; }
 			@media (max-width: 840px) {
+				body { font-size: 14px; }
 				.wrap { width: 100%; max-width: 100%; }
-				.top-nav { justify-content: flex-start; }
-				.article h1 { font-size: 34px; }
-				.article-body { font-size: 17px; }
+				.top-nav { display: none; }
+				.mobile-nav-row { display: block; }
+				.article h1 { font-size: 30px; }
+				.article-body { font-size: 16px; }
 			}
 		</style>
 	</head>
@@ -2089,6 +2220,15 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 					<a class="nav-btn primary active" href="/wiki">Fisting Wiki</a>
 					<a class="nav-btn" href="/about">About</a>
 				</nav>
+				<div class="mobile-nav-row">
+					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+						<option value="/">Ranking Page</option>
+						<option value="/admin">Add new</option>
+						<option value="/dashboard">Star Map</option>
+						<option value="/wiki" selected>Fisting Wiki</option>
+						<option value="/about">About</option>
+					</select>
+				</div>
 			</section>
 			<section class="card article">
 				<h1>${title}</h1>
