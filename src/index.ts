@@ -70,6 +70,22 @@ function badRequest(message: string): Response {
 	return new Response(message, { status: 400 });
 }
 
+function isPostcodeLike(value: string): boolean {
+	return /^[0-9]{4,10}$/.test(value.trim());
+}
+
+function pickMajorCity(cityRaw: string, displayParts: string[]): string {
+	const city = cityRaw.trim();
+	if (!city) return "";
+	if (!/district/i.test(city)) return city;
+	const idx = displayParts.findIndex((part) => part.toLowerCase() === city.toLowerCase());
+	if (idx >= 0 && idx + 1 < displayParts.length) {
+		const next = displayParts[idx + 1].trim();
+		if (next && !isPostcodeLike(next)) return next;
+	}
+	return city;
+}
+
 async function queryGeoSuggestions(
 	type: "country" | "city",
 	keyword: string,
@@ -153,6 +169,54 @@ async function queryGeoSuggestions(
 	return Array.from(dedup.values());
 }
 
+async function queryGeoPoint(query: string): Promise<{ lat: number; lon: number } | null> {
+	const q = query.trim();
+	if (!q) return null;
+
+	try {
+		const params = new URLSearchParams({
+			format: "jsonv2",
+			limit: "1",
+			q,
+		});
+		const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+			headers: { "accept-language": "en" },
+		});
+		if (res.ok) {
+			const data = (await res.json()) as Array<{ lat?: string; lon?: string }>;
+			const first = Array.isArray(data) && data.length ? data[0] : null;
+			if (first) {
+				const lat = Number(first.lat);
+				const lon = Number(first.lon);
+				if (Number.isFinite(lat) && Number.isFinite(lon)) {
+					return { lat, lon };
+				}
+			}
+		}
+	} catch {
+		// continue fallback
+	}
+
+	try {
+		const params = new URLSearchParams({
+			name: q,
+			count: "1",
+			language: "en",
+		});
+		const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`);
+		if (!res.ok) return null;
+		const data = (await res.json()) as { results?: Array<{ latitude?: number; longitude?: number }> };
+		const first = Array.isArray(data.results) ? data.results[0] : undefined;
+		if (!first) return null;
+		const lat = Number(first.latitude);
+		const lon = Number(first.longitude);
+		if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
+		return null;
+	} catch {
+		return null;
+	}
+}
+
 async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion | null> {
 	if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
 		return null;
@@ -197,7 +261,7 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 		raw.address?.region?.trim() ||
 		raw.address?.state_district?.trim() ||
 		"";
-	const cityRaw =
+	const cityBase =
 		raw.address?.city?.trim() ||
 		raw.address?.town?.trim() ||
 		raw.address?.village?.trim() ||
@@ -210,10 +274,8 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 		displayParts[0] ||
 		"";
 	const county = raw.address?.county?.trim() || "";
-	const city =
-		county && cityRaw && /city$/i.test(cityRaw) && county.toLowerCase() !== cityRaw.toLowerCase()
-			? county
-			: cityRaw || county;
+	const cityRaw = county && cityBase && /city$/i.test(cityBase) && county.toLowerCase() !== cityBase.toLowerCase() ? county : cityBase || county;
+	const city = pickMajorCity(cityRaw, displayParts);
 	if (!country && !province && !city) {
 		return queryGeoReverseFallback(lat, lng);
 	}
@@ -621,6 +683,13 @@ export default {
 			}
 			const result = await queryGeoReverse(lat, lng);
 			return json({ result });
+		}
+
+		if (method === "GET" && pathname === "/api/geo/point") {
+			const q = (url.searchParams.get("q") || "").trim();
+			if (!q) return badRequest("q is required");
+			const point = await queryGeoPoint(q);
+			return json({ point });
 		}
 
 		if (method === "GET" && pathname === "/api/wiki") {

@@ -893,6 +893,8 @@ export function renderAdminPage(): string {
 			function normalizeReverseResult(raw) {
 				if (!raw || typeof raw !== 'object') return null;
 				const address = raw.address && typeof raw.address === 'object' ? raw.address : {};
+				const display = String(raw.display_name || raw.label || '').trim();
+				const displayParts = display.split(',').map(function (part) { return String(part || '').trim(); }).filter(Boolean);
 				const countryName =
 					String(address.country || '').trim() ||
 					String(raw.country || '').trim() ||
@@ -905,7 +907,7 @@ export function renderAdminPage(): string {
 					String(address.state_district || '').trim() ||
 					String(raw.admin1 || '').trim() ||
 					'';
-				const cityRaw =
+				const cityBase =
 					String(address.city || '').trim() ||
 					String(address.town || '').trim() ||
 					String(address.village || '').trim() ||
@@ -913,13 +915,23 @@ export function renderAdminPage(): string {
 					String(raw.name || '').trim() ||
 					'';
 				const county = String(address.county || '').trim();
-				let city = cityRaw;
-				if (county && cityRaw && /city$/i.test(cityRaw) && county.toLowerCase() !== cityRaw.toLowerCase()) {
-					city = county;
-				} else if (!city && county) {
-					city = county;
+				let cityRaw = cityBase;
+				if (county && cityBase && /city$/i.test(cityBase) && county.toLowerCase() !== cityBase.toLowerCase()) {
+					cityRaw = county;
+				} else if (!cityBase && county) {
+					cityRaw = county;
 				}
-				const label = String(raw.display_name || raw.label || '').trim();
+				let city = cityRaw;
+				if (/district/i.test(cityRaw)) {
+					const idx = displayParts.findIndex(function (part) {
+						return part.toLowerCase() === cityRaw.toLowerCase();
+					});
+					if (idx >= 0 && idx + 1 < displayParts.length) {
+						const next = displayParts[idx + 1];
+						if (!/^[0-9]{4,10}$/.test(next)) city = next;
+					}
+				}
+				const label = display;
 				const country = countryName || String(address.country_code || '').trim().toUpperCase() || '';
 				if (!city && !province && !country) return null;
 				return {
@@ -1690,12 +1702,19 @@ export function renderDashboardPage(): string {
 				const key = (city + '|' + province + '|' + country).toLowerCase();
 				if (geoCache.has(key)) return geoCache.get(key);
 				const q = encodeURIComponent([city, province, country].filter(Boolean).join(', '));
-				const res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=' + q);
-				const data = await res.json();
-				const first = Array.isArray(data) && data.length ? data[0] : null;
-				const point = first ? { lat: Number(first.lat), lon: Number(first.lon) } : null;
-				geoCache.set(key, point);
-				return point;
+				try {
+					const res = await fetch('/api/geo/point?q=' + q);
+					const data = await res.json();
+					const point = data && data.point ? data.point : null;
+					const normalized = point && Number.isFinite(Number(point.lat)) && Number.isFinite(Number(point.lon))
+						? { lat: Number(point.lat), lon: Number(point.lon) }
+						: null;
+					geoCache.set(key, normalized);
+					return normalized;
+				} catch {
+					geoCache.set(key, null);
+					return null;
+				}
 			}
 
 			async function drawMap(rows) {
