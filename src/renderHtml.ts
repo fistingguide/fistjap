@@ -1727,7 +1727,13 @@ export function renderDashboardPage(): string {
 						const point = await geocode(city, province, country);
 						if (!point) continue;
 						bounds.push([point.lat, point.lon]);
-						L.marker([point.lat, point.lon])
+						L.circleMarker([point.lat, point.lon], {
+							radius: 6,
+							color: '#ffffff',
+							weight: 2,
+							fillColor: '#1D9BF0',
+							fillOpacity: 0.9
+						})
 							.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + city + ' / ' + province + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
 							.addTo(markerLayer);
 					} catch {
@@ -1738,7 +1744,13 @@ export function renderDashboardPage(): string {
 					map.fitBounds(bounds, { padding: [30, 30] });
 				} else {
 					const fallback = [35.7512, 139.7093];
-					L.marker(fallback).bindPopup('Itabashi / Tokyo / Japan').addTo(markerLayer);
+					L.circleMarker(fallback, {
+						radius: 6,
+						color: '#ffffff',
+						weight: 2,
+						fillColor: '#1D9BF0',
+						fillOpacity: 0.9
+					}).bindPopup('Itabashi / Tokyo / Japan').addTo(markerLayer);
 					map.setView(fallback, 10);
 				}
 			}
