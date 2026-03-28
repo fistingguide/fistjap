@@ -146,6 +146,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				gap: 12px;
 				flex: 1;
 				min-width: 0;
+				flex-wrap: nowrap;
 			}
 			.header-filter {
 				display: flex;
@@ -160,11 +161,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				padding: 0 12px;
 				border-radius: 10px;
 				height: 46px;
-				width: 220px;
+				width: 200px;
 			}
 			.top-nav {
 				display: flex;
-				flex-wrap: wrap;
+				flex-wrap: nowrap;
 				gap: 12px;
 				justify-content: flex-end;
 			}
@@ -179,6 +180,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				color: #FFFFFF;
 				font-size: 16px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 			.nav-btn.secondary { background: #71767B; }
 			.nav-btn.primary { background: #1D9BF0; }
