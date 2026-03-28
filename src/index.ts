@@ -39,6 +39,10 @@ type ProfilePayload = {
 	city?: unknown;
 };
 
+const DEFAULT_COUNTRY = "Japan";
+const DEFAULT_PROVINCE = "Tokyo";
+const DEFAULT_CITY = "Itabashi";
+
 type WikiPayload = {
 	title?: unknown;
 	content?: unknown;
@@ -201,6 +205,32 @@ async function queryGeoPoint(query: string): Promise<{ lat: number; lon: number 
 	const q = query.trim();
 	if (!q) return null;
 
+	if (q.toLowerCase() === "itabashi, tokyo, japan") {
+		return { lat: 35.7512, lon: 139.7093 };
+	}
+
+	try {
+		const params = new URLSearchParams({
+			name: q,
+			count: "1",
+			language: "en",
+		});
+		const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`);
+		if (res.ok) {
+			const data = (await res.json()) as { results?: Array<{ latitude?: number; longitude?: number }> };
+			const first = Array.isArray(data.results) ? data.results[0] : undefined;
+			if (first) {
+				const lat = Number(first.latitude);
+				const lon = Number(first.longitude);
+				if (Number.isFinite(lat) && Number.isFinite(lon)) {
+					return { lat, lon };
+				}
+			}
+		}
+	} catch {
+		// continue fallback
+	}
+
 	try {
 		const params = new URLSearchParams({
 			format: "jsonv2",
@@ -222,27 +252,10 @@ async function queryGeoPoint(query: string): Promise<{ lat: number; lon: number 
 			}
 		}
 	} catch {
-		// continue fallback
+		return null;
 	}
 
-	try {
-		const params = new URLSearchParams({
-			name: q,
-			count: "1",
-			language: "en",
-		});
-		const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`);
-		if (!res.ok) return null;
-		const data = (await res.json()) as { results?: Array<{ latitude?: number; longitude?: number }> };
-		const first = Array.isArray(data.results) ? data.results[0] : undefined;
-		if (!first) return null;
-		const lat = Number(first.latitude);
-		const lon = Number(first.longitude);
-		if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
-		return null;
-	} catch {
-		return null;
-	}
+	return null;
 }
 
 async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion | null> {
@@ -430,9 +443,9 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 				.prepare(
 					`INSERT OR IGNORE INTO profiles (
 						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
-					) VALUES (?, ?, ?, ?, ?, 'Gay', 20, 'Japan', 'Tokyo', 'Tokyo')`,
+					) VALUES (?, ?, ?, ?, ?, 'Gay', 20, ?, ?, ?)`,
 				)
-				.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar),
+				.bind(item.name, item.handle, item.bio, item.profileUrl, item.avatar, DEFAULT_COUNTRY, DEFAULT_PROVINCE, DEFAULT_CITY),
 		);
 
 	if (statements.length > 0) {
@@ -622,9 +635,9 @@ function normalizePayload(payload: ProfilePayload) {
 		avatar: toText(payload.avatar),
 		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
 		followersCount: toFollowers(payload.followersCount),
-		country: toText(payload.country, "Japan") || "Japan",
-		province: toText(payload.province, "Tokyo") || "Tokyo",
-		city: toText(payload.city, "Tokyo") || "Tokyo",
+		country: toText(payload.country, DEFAULT_COUNTRY) || DEFAULT_COUNTRY,
+		province: toText(payload.province, DEFAULT_PROVINCE) || DEFAULT_PROVINCE,
+		city: toText(payload.city, DEFAULT_CITY) || DEFAULT_CITY,
 	};
 }
 

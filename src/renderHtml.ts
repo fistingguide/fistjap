@@ -48,7 +48,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 			const safeAvatar = escapeHtml(row.avatar || "");
 			const safeProvince = escapeHtml(row.province || "Tokyo");
 			const safeCountry = escapeHtml(row.country || "Japan");
-			const safeCity = escapeHtml(row.city || "Tokyo");
+			const safeCity = escapeHtml(row.city || "Itabashi");
 			const avatarEl = safeAvatar
 				? `<img class="avatar" src="${safeAvatar}" alt="${safeName}" referrerpolicy="no-referrer" loading="lazy" />`
 				: `<div class="avatar placeholder">N/A</div>`;
@@ -772,14 +772,14 @@ export function renderAdminPage(): string {
 					<div class="field full">
 						<label for="locationSearch">City / Province / Country (Region)</label>
 						<div class="location-search-wrap">
-							<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" value="Tokyo, Japan" autocomplete="off" />
+						<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" value="Itabashi, Tokyo, Japan" autocomplete="off" />
 							<div id="locationDropdown" class="location-dropdown"></div>
 						</div>
 						<datalist id="locationSuggestions"></datalist>
 						<input id="country" type="hidden" value="Japan" />
 						<input id="province" type="hidden" value="Tokyo" />
-						<input id="city" type="hidden" value="Tokyo" />
-						<div class="location-selected" id="locationSelected">Selected: Tokyo / Tokyo / Japan</div>
+						<input id="city" type="hidden" value="Itabashi" />
+						<div class="location-selected" id="locationSelected">Selected: Itabashi / Tokyo / Japan</div>
 					</div>
 					<div class="field full">
 						<label>Location Map Preview</label>
@@ -976,7 +976,7 @@ export function renderAdminPage(): string {
 
 			function ensureLocationMap() {
 				if (locationMap || !window.L || !els.locationPreview) return;
-				locationMap = L.map(els.locationPreview).setView([35.6764, 139.65], 5);
+				locationMap = L.map(els.locationPreview).setView([35.7512, 139.7093], 10);
 				L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 					maxZoom: 18,
 					attribution: '&copy; OpenStreetMap contributors'
@@ -987,7 +987,7 @@ export function renderAdminPage(): string {
 					iconSize: [18, 18],
 					iconAnchor: [9, 9]
 				});
-				locationMarker = L.marker([35.6764, 139.65], { draggable: true, icon: pinIcon }).addTo(locationMap);
+				locationMarker = L.marker([35.7512, 139.7093], { draggable: true, icon: pinIcon }).addTo(locationMap);
 				locationMarker.on('dragend', function () {
 					const latlng = locationMarker.getLatLng();
 					reverseLookupAndApply(latlng.lat, latlng.lng);
@@ -1211,10 +1211,10 @@ export function renderAdminPage(): string {
 				els.followers.value = '20';
 				els.country.value = 'Japan';
 				els.province.value = 'Tokyo';
-				els.city.value = 'Tokyo';
-				els.locationSearch.value = 'Tokyo, Tokyo, Japan';
-				els.locationSelected.textContent = 'Selected: Tokyo / Tokyo / Japan';
-				renderLocationPreview(35.6764, 139.6500);
+				els.city.value = 'Itabashi';
+				els.locationSearch.value = 'Itabashi, Tokyo, Japan';
+				els.locationSelected.textContent = 'Selected: Itabashi / Tokyo / Japan';
+				renderLocationPreview(35.7512, 139.7093);
 				updateAvatarPreview();
 				setEditingState(false);
 			}
@@ -1231,7 +1231,7 @@ export function renderAdminPage(): string {
 				els.followers.value = String(row.followers_count || 0);
 				els.country.value = row.country || 'Japan';
 				els.province.value = row.province || 'Tokyo';
-				els.city.value = row.city || 'Tokyo';
+				els.city.value = row.city || 'Itabashi';
 				els.locationSearch.value = [els.city.value, els.province.value, els.country.value].filter(Boolean).join(', ');
 				els.locationSelected.textContent = 'Selected: ' + els.city.value + ' / ' + els.province.value + ' / ' + els.country.value;
 				refreshLocationPreviewByValue();
@@ -1241,7 +1241,7 @@ export function renderAdminPage(): string {
 
 			function renderSuggestions(rows) {
 				els.handleSuggestions.innerHTML = rows.map(function (row) {
-					const label = (row.name || 'Unnamed') + ' | ' + (row.city || 'Tokyo') + '/' + (row.province || 'Tokyo') + '/' + (row.country || 'Japan');
+					const label = (row.name || 'Unnamed') + ' | ' + (row.city || 'Itabashi') + '/' + (row.province || 'Tokyo') + '/' + (row.country || 'Japan');
 					return '<option value="' + esc(row.handle) + '" label="' + esc(label) + '"></option>';
 				}).join('');
 			}
@@ -1409,7 +1409,7 @@ export function renderAdminPage(): string {
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
 			updateAvatarPreview();
-			renderLocationPreview(35.6764, 139.6500);
+			renderLocationPreview(35.7512, 139.7093);
 			setStatus('Enter a handle to search.');
 		</script>
 		<script>
@@ -1691,7 +1691,7 @@ export function renderDashboardPage(): string {
 						'<td>#' + (idx + 1) + '</td>' +
 						'<td>' + (row.name || 'Unnamed') + '</td>' +
 						'<td>' + (row.handle || '') + '</td>' +
-						'<td>' + (row.city || 'Tokyo') + ' / ' + (row.province || 'Tokyo') + ' / ' + (row.country || 'Japan') + '</td>' +
+						'<td>' + (row.city || 'Itabashi') + ' / ' + (row.province || 'Tokyo') + ' / ' + (row.country || 'Japan') + '</td>' +
 						'<td>' + formatNum(row.followers_count) + '</td>' +
 					'</tr>';
 				}).join('');
@@ -1720,7 +1720,7 @@ export function renderDashboardPage(): string {
 				markerLayer.clearLayers();
 				const bounds = [];
 				for (const row of rows) {
-					const city = row.city || 'Tokyo';
+					const city = row.city || 'Itabashi';
 					const province = row.province || 'Tokyo';
 					const country = row.country || 'Japan';
 					try {
@@ -1736,6 +1736,10 @@ export function renderDashboardPage(): string {
 				}
 				if (bounds.length) {
 					map.fitBounds(bounds, { padding: [30, 30] });
+				} else {
+					const fallback = [35.7512, 139.7093];
+					L.marker(fallback).bindPopup('Itabashi / Tokyo / Japan').addTo(markerLayer);
+					map.setView(fallback, 10);
 				}
 			}
 
