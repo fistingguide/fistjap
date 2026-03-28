@@ -1708,10 +1708,11 @@ export function renderDashboardPage(): string {
 					const normalized = point && Number.isFinite(Number(point.lat)) && Number.isFinite(Number(point.lon))
 						? { lat: Number(point.lat), lon: Number(point.lon) }
 						: null;
-					geoCache.set(key, normalized);
+					if (normalized) {
+						geoCache.set(key, normalized);
+					}
 					return normalized;
 				} catch {
-					geoCache.set(key, null);
 					return null;
 				}
 			}
@@ -1719,6 +1720,7 @@ export function renderDashboardPage(): string {
 			async function drawMap(rows) {
 				markerLayer.clearLayers();
 				const bounds = [];
+				const pointUsage = new Map();
 				for (const row of rows) {
 					const city = row.city || 'Itabashi';
 					const province = row.province || 'Tokyo';
@@ -1726,8 +1728,19 @@ export function renderDashboardPage(): string {
 					try {
 						const point = await geocode(city, province, country);
 						if (!point) continue;
-						bounds.push([point.lat, point.lon]);
-						L.circleMarker([point.lat, point.lon], {
+						const key = point.lat.toFixed(5) + '|' + point.lon.toFixed(5);
+						const used = pointUsage.get(key) || 0;
+						pointUsage.set(key, used + 1);
+						let lat = point.lat;
+						let lon = point.lon;
+						if (used > 0) {
+							const angle = (used * 55) * Math.PI / 180;
+							const r = 0.008 + used * 0.0015;
+							lat = point.lat + Math.sin(angle) * r;
+							lon = point.lon + Math.cos(angle) * r;
+						}
+						bounds.push([lat, lon]);
+						L.circleMarker([lat, lon], {
 							radius: 6,
 							color: '#ffffff',
 							weight: 2,

@@ -75,6 +75,7 @@ function badRequest(message: string): Response {
 }
 
 const reverseGeoCache = new Map<string, GeoSuggestion | null>();
+const pointGeoCache = new Map<string, { lat: number; lon: number } | null>();
 
 function reverseCacheKey(lat: number, lng: number): string {
 	return `${lat.toFixed(4)}|${lng.toFixed(4)}`;
@@ -204,57 +205,94 @@ async function queryGeoSuggestions(
 async function queryGeoPoint(query: string): Promise<{ lat: number; lon: number } | null> {
 	const q = query.trim();
 	if (!q) return null;
+	const cacheKey = q.toLowerCase();
+	if (pointGeoCache.has(cacheKey)) {
+		return pointGeoCache.get(cacheKey) ?? null;
+	}
 
 	if (q.toLowerCase() === "itabashi, tokyo, japan") {
-		return { lat: 35.7512, lon: 139.7093 };
+		const point = { lat: 35.7512, lon: 139.7093 };
+		pointGeoCache.set(cacheKey, point);
+		return point;
 	}
 
-	try {
-		const params = new URLSearchParams({
-			name: q,
-			count: "1",
-			language: "en",
-		});
-		const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`);
-		if (res.ok) {
+	const parts = q
+		.split(",")
+		.map((part) => part.trim())
+		.filter(Boolean);
+	const queryCandidates = new Set<string>([q]);
+	if (parts.length >= 2) {
+		queryCandidates.add(parts.slice(0, 2).join(", "));
+		queryCandidates.add([parts[0], parts[parts.length - 1]].join(", "));
+	}
+	if (parts.length >= 3) {
+		queryCandidates.add([parts[0], parts[1], parts[parts.length - 1]].join(", "));
+	}
+	if (parts.length >= 1) {
+		queryCandidates.add(parts[0]);
+	}
+
+	const openMeteoLookup = async (name: string): Promise<{ lat: number; lon: number } | null> => {
+		try {
+			const params = new URLSearchParams({
+				name,
+				count: "1",
+				language: "en",
+			});
+			const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`);
+			if (!res.ok) return null;
 			const data = (await res.json()) as { results?: Array<{ latitude?: number; longitude?: number }> };
 			const first = Array.isArray(data.results) ? data.results[0] : undefined;
-			if (first) {
-				const lat = Number(first.latitude);
-				const lon = Number(first.longitude);
-				if (Number.isFinite(lat) && Number.isFinite(lon)) {
-					return { lat, lon };
-				}
-			}
+			if (!first) return null;
+			const lat = Number(first.latitude);
+			const lon = Number(first.longitude);
+			if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+			return { lat, lon };
+		} catch {
+			return null;
 		}
-	} catch {
-		// continue fallback
-	}
+	};
 
-	try {
+	const nominatimLookup = async (name: string): Promise<{ lat: number; lon: number } | null> => {
 		const params = new URLSearchParams({
 			format: "jsonv2",
 			limit: "1",
-			q,
+			q: name,
 		});
-		const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
-			headers: { "accept-language": "en" },
+		let res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+			headers: {
+				"accept-language": "en",
+				"user-agent": "fistjap-worker/1.0",
+			},
 		});
-		if (res.ok) {
-			const data = (await res.json()) as Array<{ lat?: string; lon?: string }>;
-			const first = Array.isArray(data) && data.length ? data[0] : null;
-			if (first) {
-				const lat = Number(first.lat);
-				const lon = Number(first.lon);
-				if (Number.isFinite(lat) && Number.isFinite(lon)) {
-					return { lat, lon };
-				}
-			}
+		if (res.status === 429 || res.status === 503) {
+			await sleep(700);
+			res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+				headers: {
+					"accept-language": "en",
+					"user-agent": "fistjap-worker/1.0",
+				},
+			});
 		}
-	} catch {
-		return null;
+		if (!res.ok) return null;
+		const data = (await res.json()) as Array<{ lat?: string; lon?: string }>;
+		const first = Array.isArray(data) && data.length ? data[0] : null;
+		if (!first) return null;
+		const lat = Number(first.lat);
+		const lon = Number(first.lon);
+		if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+		return { lat, lon };
+	};
+
+	for (const name of queryCandidates) {
+		const point = (await openMeteoLookup(name)) ?? (await nominatimLookup(name));
+		if (point) {
+			pointGeoCache.set(cacheKey, point);
+			return point;
+		}
 	}
 
+	pointGeoCache.set(cacheKey, null);
 	return null;
 }
 
