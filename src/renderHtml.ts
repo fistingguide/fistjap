@@ -495,7 +495,7 @@ export function renderAdminPage(): string {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Database Admin Panel</title>
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+		<link rel="stylesheet" href="/assets/leaflet.css" />
 		<style>
 			:root {
 				--bg: #000000;
@@ -814,7 +814,7 @@ export function renderAdminPage(): string {
 			</section>
 		</div>
 
-		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+		<script src="/assets/leaflet.js"></script>
 		<script>
 			let currentRows = [];
 			let editingId = null;
@@ -942,29 +942,6 @@ export function renderAdminPage(): string {
 				};
 			}
 
-			async function browserReverseLookup(lat, lng) {
-				const nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&accept-language=en&lat=' +
-					encodeURIComponent(String(lat)) + '&lon=' + encodeURIComponent(String(lng));
-				const omUrl = 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=' +
-					encodeURIComponent(String(lat)) + '&longitude=' + encodeURIComponent(String(lng)) + '&language=en&count=1';
-				try {
-					const [nomRes, omRes] = await Promise.allSettled([fetch(nominatimUrl), fetch(omUrl)]);
-					if (nomRes.status === 'fulfilled' && nomRes.value.ok) {
-						const data = await nomRes.value.json();
-						const normalized = normalizeReverseResult(data);
-						if (normalized) return normalized;
-					}
-					if (omRes.status === 'fulfilled' && omRes.value.ok) {
-						const data = await omRes.value.json();
-						const item = data && Array.isArray(data.results) ? data.results[0] : null;
-						const normalized = normalizeReverseResult(item);
-						if (normalized) return normalized;
-					}
-				} catch {}
-
-				return null;
-			}
-
 			function inferCityFromLabel(label, country) {
 				const text = String(label || '').trim();
 				if (!text) return '';
@@ -976,6 +953,25 @@ export function renderAdminPage(): string {
 				const last = parts[parts.length - 1].toLowerCase();
 				if (c && last === c) return first;
 				return first;
+			}
+
+			function inferProvinceFromLabel(label, city, country) {
+				const text = String(label || '').trim();
+				if (!text) return '';
+				const parts = text.split(',').map(function (p) { return p.trim(); }).filter(Boolean);
+				if (!parts.length) return '';
+				const cityLower = String(city || '').trim().toLowerCase();
+				const countryLower = String(country || '').trim().toLowerCase();
+				for (let i = parts.length - 1; i >= 0; i -= 1) {
+					const part = parts[i];
+					const lower = part.toLowerCase();
+					if (!part) continue;
+					if (countryLower && lower === countryLower) continue;
+					if (cityLower && lower === cityLower) continue;
+					if (/^[0-9]{4,10}$/.test(part)) continue;
+					return part;
+				}
+				return '';
 			}
 
 			function ensureLocationMap() {
@@ -1018,10 +1014,7 @@ export function renderAdminPage(): string {
 					if (requestSeq !== reverseRequestSeq) return;
 					const data = await res.json();
 					const result = data && data.result ? data.result : null;
-					let effective = result;
-					if (!effective) {
-						effective = await browserReverseLookup(lat, lng);
-					}
+					const effective = result;
 					if (!effective) {
 						setStatus('No location match for this point, keeping previous location');
 						return;
@@ -1083,10 +1076,16 @@ export function renderAdminPage(): string {
 			function applyLocationChoice(item) {
 				if (!item) return;
 				const nextCountry = String(item.country || '').trim() || 'Unknown';
-				const nextProvince = String(item.province || '').trim() || 'Unknown';
 				const nextCityRaw = String(item.city || '').trim();
-				const inferredCity = inferCityFromLabel(item.label, nextProvince || nextCountry);
+				const inferredCity = inferCityFromLabel(item.label, nextCountry);
 				const nextCity = nextCityRaw || inferredCity || 'Unknown';
+				const nextProvinceRaw = String(item.province || '').trim();
+				const inferredProvince = inferProvinceFromLabel(item.label, nextCity, nextCountry);
+				const nextProvince =
+					(nextProvinceRaw && nextProvinceRaw.toLowerCase() !== 'unknown' ? nextProvinceRaw : '') ||
+					inferredProvince ||
+					nextCity ||
+					'Unknown';
 				els.country.value = nextCountry;
 				els.province.value = nextProvince;
 				els.city.value = nextCity;
@@ -1449,7 +1448,7 @@ export function renderDashboardPage(): string {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Data Dashboard</title>
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+		<link rel="stylesheet" href="/assets/leaflet.css" />
 		<style>
 			:root {
 				--bg: #000000;
@@ -1653,7 +1652,7 @@ export function renderDashboardPage(): string {
 			</section>
 		</div>
 
-		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+		<script src="/assets/leaflet.js"></script>
 		<script>
 			const statusEl = document.getElementById('status');
 			const countryFilterEl = document.getElementById('countryFilter');

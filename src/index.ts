@@ -70,6 +70,34 @@ function badRequest(message: string): Response {
 	return new Response(message, { status: 400 });
 }
 
+const reverseGeoCache = new Map<string, GeoSuggestion | null>();
+
+function reverseCacheKey(lat: number, lng: number): string {
+	return `${lat.toFixed(4)}|${lng.toFixed(4)}`;
+}
+
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function proxyTextAsset(url: string, contentType: string): Promise<Response> {
+	const res = await fetch(url, {
+		headers: {
+			"user-agent": "fistjap-worker/1.0",
+		},
+	});
+	if (!res.ok) {
+		return new Response("asset fetch failed", { status: 502 });
+	}
+	const text = await res.text();
+	return new Response(text, {
+		headers: {
+			"content-type": contentType,
+			"cache-control": "public, max-age=86400",
+		},
+	});
+}
+
 function isPostcodeLike(value: string): boolean {
 	return /^[0-9]{4,10}$/.test(value.trim());
 }
@@ -222,20 +250,37 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 		return null;
 	}
 
+	const key = reverseCacheKey(lat, lng);
+	if (reverseGeoCache.has(key)) {
+		return reverseGeoCache.get(key) ?? null;
+	}
+
 	const params = new URLSearchParams({
 		format: "jsonv2",
 		addressdetails: "1",
+		zoom: "14",
 		lat: String(lat),
 		lon: String(lng),
 	});
 
-	const res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
+	let res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
 		headers: {
 			"accept-language": "en",
+			"user-agent": "fistjap-worker/1.0",
 		},
 	});
+	if (res.status === 429 || res.status === 503) {
+		await sleep(700);
+		res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
+			headers: {
+				"accept-language": "en",
+				"user-agent": "fistjap-worker/1.0",
+			},
+		});
+	}
 	if (!res.ok) {
-		return queryGeoReverseFallback(lat, lng);
+		reverseGeoCache.set(key, null);
+		return null;
 	}
 
 	const raw = (await res.json()) as {
@@ -245,7 +290,8 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 	};
 
 	if (raw?.error) {
-		return queryGeoReverseFallback(lat, lng);
+		reverseGeoCache.set(key, null);
+		return null;
 	}
 
 	const display = String(raw.display_name ?? "").trim();
@@ -277,10 +323,11 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 	const cityRaw = county && cityBase && /city$/i.test(cityBase) && county.toLowerCase() !== cityBase.toLowerCase() ? county : cityBase || county;
 	const city = pickMajorCity(cityRaw, displayParts);
 	if (!country && !province && !city) {
-		return queryGeoReverseFallback(lat, lng);
+		reverseGeoCache.set(key, null);
+		return null;
 	}
 
-	return {
+	const result: GeoSuggestion = {
 		country: country || "Unknown",
 		province: province || "Unknown",
 		city,
@@ -289,6 +336,8 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 		lng,
 		type: city ? "city" : "country",
 	};
+	reverseGeoCache.set(key, result);
+	return result;
 }
 
 async function queryGeoReverseFallback(lat: number, lng: number): Promise<GeoSuggestion | null> {
@@ -607,6 +656,14 @@ export default {
 		) {
 			await ensureSeeded(env.DB);
 			await ensureWikiSeeded(env.DB);
+		}
+
+		if (method === "GET" && pathname === "/assets/leaflet.css") {
+			return proxyTextAsset("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", "text/css; charset=UTF-8");
+		}
+
+		if (method === "GET" && pathname === "/assets/leaflet.js") {
+			return proxyTextAsset("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "application/javascript; charset=UTF-8");
 		}
 
 		if (method === "GET" && pathname === "/") {
