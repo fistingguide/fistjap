@@ -885,10 +885,22 @@ export function renderAdminPage(): string {
 			}
 
 			function buildLocationLabel(item) {
-				if (item.district && item.region && item.country) return item.district + ', ' + item.region + ', ' + item.country;
-				if (item.district && item.country) return item.district + ', ' + item.country;
-				if (item.region && item.country) return item.region + ', ' + item.country;
-				if (item.country) return item.country;
+				const district = String(item.district || '').trim();
+				const region = String(item.region || '').trim();
+				const country = String(item.country || '').trim();
+				const normDistrict = district && district.toLowerCase() !== 'unknown' ? district : '';
+				const normRegion = region && region.toLowerCase() !== 'unknown' ? region : '';
+				const normCountry = country && country.toLowerCase() !== 'unknown' ? country : '';
+				if (normDistrict && normRegion && normDistrict.toLowerCase() === normRegion.toLowerCase()) {
+					if (normCountry) return normRegion + ', ' + normCountry;
+					return normRegion;
+				}
+				if (normDistrict && normRegion && normCountry) return normDistrict + ', ' + normRegion + ', ' + normCountry;
+				if (normDistrict && normCountry) return normDistrict + ', ' + normCountry;
+				if (normRegion && normCountry) return normRegion + ', ' + normCountry;
+				if (normCountry) return normCountry;
+				if (normRegion) return normRegion;
+				if (normDistrict) return normDistrict;
 				return item.label || '';
 			}
 

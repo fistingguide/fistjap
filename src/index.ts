@@ -397,6 +397,96 @@ function pickPreferredDistrict(geoDistrict: string, boundaryDistrict: string): s
 	return b || g || "Unknown";
 }
 
+function pickDistrictFromDisplayParts(displayParts: string[], region: string, country: string): string {
+	if (!displayParts.length) return "";
+	const regionLower = region.trim().toLowerCase();
+	const countryLower = country.trim().toLowerCase();
+	const regionIdx = displayParts.findIndex((part) => part.trim().toLowerCase() === regionLower);
+	const stopIdx = regionIdx >= 0 ? regionIdx : displayParts.length - 1;
+	for (let i = stopIdx - 1; i >= 0; i -= 1) {
+		const part = displayParts[i]?.trim() ?? "";
+		if (!part) continue;
+		const lower = part.toLowerCase();
+		if (lower === regionLower || lower === countryLower) continue;
+		if (isPostalPart(part)) continue;
+		return part;
+	}
+	return "";
+}
+
+function pickPromotedCityFromDisplay(
+	displayParts: string[],
+	currentDistrict: string,
+	region: string,
+	country: string,
+): string {
+	if (!displayParts.length) return "";
+	const districtLower = currentDistrict.trim().toLowerCase();
+	const regionLower = region.trim().toLowerCase();
+	const countryLower = country.trim().toLowerCase();
+	const regionIdx = displayParts.findIndex((part) => part.trim().toLowerCase() === regionLower);
+	const stopIdx = regionIdx >= 0 ? regionIdx : displayParts.length - 1;
+	const isAdminToken = (value: string): boolean =>
+		/(district|county|borough|ward|sub-district|subdistrict)$/i.test(value.trim());
+
+	for (let i = 0; i < stopIdx; i += 1) {
+		const part = displayParts[i]?.trim() ?? "";
+		if (!part) continue;
+		const next = displayParts[i + 1]?.trim() ?? "";
+		const afterNext = displayParts[i + 2]?.trim() ?? "";
+		const partLower = part.toLowerCase();
+		const nextLower = next.toLowerCase();
+		if (isAdminToken(part) && next && !isPostalPart(next) && nextLower !== regionLower && nextLower !== countryLower) {
+			return next;
+		}
+		if (
+			districtLower &&
+			partLower === districtLower &&
+			next &&
+			isAdminToken(next) &&
+			afterNext &&
+			!isPostalPart(afterNext)
+		) {
+			const afterNextLower = afterNext.toLowerCase();
+			if (afterNextLower !== regionLower && afterNextLower !== countryLower) {
+				return afterNext;
+			}
+		}
+	}
+	return "";
+}
+
+function tokenBeforeCountry(displayParts: string[], country: string): string {
+	if (!displayParts.length) return "";
+	const countryLower = country.trim().toLowerCase();
+	const countryIdx = displayParts.findIndex((part) => part.trim().toLowerCase() === countryLower);
+	if (countryIdx > 0) return displayParts[countryIdx - 1]?.trim() ?? "";
+	return displayParts.length >= 2 ? displayParts[displayParts.length - 2]?.trim() ?? "" : "";
+}
+
+function shouldKeepSpecificDistrict(
+	districtRaw: string,
+	geoDistrict: string,
+	displayParts: string[],
+	region: string,
+	country: string,
+): boolean {
+	const raw = districtRaw.trim();
+	const geo = geoDistrict.trim();
+	if (!raw || !geo) return false;
+	const rawLower = raw.toLowerCase();
+	if (!/(district|county|borough|ward|sub-district|subdistrict)/i.test(raw)) return false;
+	const broadToken = tokenBeforeCountry(displayParts, country).toLowerCase();
+	const geoLower = geo.toLowerCase();
+	const regionLower = region.trim().toLowerCase();
+	if (!broadToken || broadToken === country.trim().toLowerCase()) return false;
+	// If geoDistrict collapses to broad country-adjacent token, keep finer raw district.
+	if (geoLower === broadToken && rawLower !== geoLower && rawLower !== regionLower) {
+		return true;
+	}
+	return false;
+}
+
 async function queryGeoSuggestions(
 	type: "country" | "city",
 	keyword: string,
@@ -668,8 +758,24 @@ async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion 
 	const geoRegion = provinceRaw || (!isMinorAdminName(adminCityRaw) ? adminCityRaw : "") || "Unknown";
 	const region = pickPreferredRegion(geoRegion, boundaryHierarchy?.adm1 ?? "");
 	// Prefer district/city_district level first, then city-level fallback; avoid repeating region name.
-	const geoDistrict = chooseDistrictValue(districtRaw, districtName, region);
-	const effectiveDistrict = pickPreferredDistrict(geoDistrict, boundaryHierarchy?.adm2 ?? "");
+	let geoDistrict = chooseDistrictValue(districtRaw, districtName, region);
+	if (shouldKeepSpecificDistrict(districtRaw, geoDistrict, displayParts, region, country)) {
+		geoDistrict = districtRaw;
+	}
+	let effectiveDistrict = pickPreferredDistrict(geoDistrict, boundaryHierarchy?.adm2 ?? "");
+	const promotedCity = pickPromotedCityFromDisplay(displayParts, effectiveDistrict, region, country);
+	if (promotedCity) {
+		effectiveDistrict = promotedCity;
+	}
+	if (effectiveDistrict.trim().toLowerCase() === region.trim().toLowerCase()) {
+		const displayDistrict = pickDistrictFromDisplayParts(displayParts, region, country);
+		if (displayDistrict) {
+			effectiveDistrict = displayDistrict;
+		}
+	}
+	if (effectiveDistrict.trim().toLowerCase() === region.trim().toLowerCase()) {
+		effectiveDistrict = "Unknown";
+	}
 
 	if (!country && !region && !districtName) {
 		reverseGeoCache.set(key, null);
