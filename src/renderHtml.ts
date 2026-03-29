@@ -57,22 +57,24 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 
 			return `
 				<li class="leaderboard-item">
-					<div class="card-top">
-						<div class="rank ${rankClass}">#${rank}</div>
-						<div class="badges">
-							<div class="badge">Orientation ${safeOrientation}</div>
-							<div class="badge">Fans ${row.followers_count}</div>
+					<a class="card-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Open ${safeName} on X">
+						<div class="card-top">
+							<div class="rank ${rankClass}">#${rank}</div>
+							<div class="badges">
+								<div class="badge">Orientation ${safeOrientation}</div>
+								<div class="badge">Fans ${row.followers_count}</div>
+							</div>
 						</div>
-					</div>
-					<div class="identity">
-						${avatarEl}
-						<div>
-							<a class="name-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeName}</a>
-							<div class="handle">${safeHandle}</div>
+						<div class="identity">
+							${avatarEl}
+							<div>
+								<div class="name-link">${safeName}</div>
+								<div class="handle">${safeHandle}</div>
+							</div>
 						</div>
-					</div>
-					<div class="badge location-badge">${safeDistrict} / ${safeRegion} / ${safeCountry}</div>
-					<div class="bio">${safeBio}</div>
+						<div class="badge location-badge">${safeDistrict} / ${safeRegion} / ${safeCountry}</div>
+						<div class="bio">${safeBio}</div>
+					</a>
 				</li>
 			`;
 		})
@@ -261,6 +263,12 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				align-content: start;
 				transition: transform 0.15s ease, box-shadow 0.15s ease;
 			}
+			.card-link {
+				display: grid;
+				gap: 12px;
+				color: inherit;
+				text-decoration: none;
+			}
 			.leaderboard-item:hover {
 				transform: translateY(-2px);
 				box-shadow: 0 10px 24px rgba(15, 20, 25, 0.09);
@@ -293,7 +301,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.placeholder { display: grid; place-items: center; font-size: 11px; color: var(--muted); }
 			.name-link { font-size: 21px; font-weight: 700; color: var(--text); text-decoration: none; }
-			.name-link:hover { color: var(--primary); text-decoration: underline; }
 			.handle { margin-top: 5px; color: var(--muted); font-size: 14px; }
 			.bio {
 				font-size: 13px;
@@ -335,6 +342,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					transform: none;
 					box-shadow: none;
 				}
+				.card-link { gap: 6px; }
 				.card-top { display: none; }
 				.rank { display: none; }
 				.card-top .badges { display: none; }
@@ -448,22 +456,24 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							: '<div class="avatar placeholder">N/A</div>';
 						return '' +
 							'<li class="leaderboard-item">' +
-								'<div class="card-top">' +
-									'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
-									'<div class="badges">' +
-										'<div class="badge">Orientation ' + safeOrientation + '</div>' +
-										'<div class="badge">Fans ' + row.followers_count + '</div>' +
+								'<a class="card-link" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" aria-label="Open ' + safeName + ' on X">' +
+									'<div class="card-top">' +
+										'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
+										'<div class="badges">' +
+											'<div class="badge">Orientation ' + safeOrientation + '</div>' +
+											'<div class="badge">Fans ' + row.followers_count + '</div>' +
+										'</div>' +
 									'</div>' +
-								'</div>' +
-								'<div class="identity">' +
-									avatarEl +
-									'<div>' +
-										'<a class="name-link" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' + safeName + '</a>' +
-										'<div class="handle">' + safeHandle + '</div>' +
+									'<div class="identity">' +
+										avatarEl +
+										'<div>' +
+											'<div class="name-link">' + safeName + '</div>' +
+											'<div class="handle">' + safeHandle + '</div>' +
+										'</div>' +
 									'</div>' +
-								'</div>' +
-								'<div class="badge location-badge">' + safeDistrict + ' / ' + safeRegion + ' / ' + safeCountry + '</div>' +
-								'<div class="bio">' + safeBio + '</div>' +
+									'<div class="badge location-badge">' + safeDistrict + ' / ' + safeRegion + ' / ' + safeCountry + '</div>' +
+									'<div class="bio">' + safeBio + '</div>' +
+								'</a>' +
 							'</li>';
 					}).join('');
 				}
