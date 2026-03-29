@@ -316,32 +316,47 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			@media (max-width: 980px) { .list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 			@media (max-width: 720px) {
 				.header h1 { font-size: 22px; }
-				.list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+				.list {
+					grid-template-columns: 1fr;
+					gap: 0;
+				}
 				.panel { width: 100%; max-width: 100%; }
 				.leaderboard-item {
-					padding: 12px;
-					gap: 8px;
+					padding: 10px 0;
+					gap: 6px;
 					min-height: auto;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
 				}
+				.leaderboard-item:hover {
+					transform: none;
+					box-shadow: none;
+				}
+				.card-top { display: none; }
 				.rank { display: none; }
 				.card-top .badges { display: none; }
 				.location-badge { display: none; }
 				.identity {
-					grid-template-columns: 56px 1fr;
+					grid-template-columns: 48px 1fr;
 					gap: 10px;
+					align-items: start;
 				}
 				.avatar {
-					width: 56px;
-					height: 56px;
+					width: 48px;
+					height: 48px;
 				}
-				.name-link { font-size: 18px; }
+				.name-link { font-size: 16px; }
 				.handle {
-					margin-top: 2px;
-					font-size: 13px;
+					margin-top: 1px;
+					font-size: 12px;
 				}
 				.bio {
+					font-size: 12px;
 					-webkit-line-clamp: 2;
-					line-height: 1.4;
+					line-height: 1.35;
 				}
 			}
 			@media (max-width: 460px) { .list { grid-template-columns: 1fr; } }
