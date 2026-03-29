@@ -1,4 +1,4 @@
-export type ProfileRecord = {
+﻿export type ProfileRecord = {
 	id: number;
 	name: string;
 	handle: string;

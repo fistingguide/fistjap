@@ -14,6 +14,7 @@ type RuntimeEnv = Env & {
 	ADMIN_NOTIFICATION_EMAIL?: string;
 	RESEND_API_KEY?: string;
 	RESEND_FROM?: string;
+	TEST_EMAIL_TOKEN?: string;
 };
 
 type GeoSuggestion = {
@@ -1038,10 +1039,7 @@ async function sendAdminNotification(
 		return;
 	}
 
-	const from = (env.RESEND_FROM || "").trim();
-	if (!from) {
-		return;
-	}
+	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
 
 	const subject = `[Admin Notice] ${action} profile #${String(row.id ?? "")}`;
 	const text = formatOperationSummary(action, row);
@@ -1066,6 +1064,49 @@ async function sendAdminNotification(
 		}
 	} catch (error) {
 		console.error("send admin notification failed", error);
+	}
+}
+
+async function sendTestNotification(env: RuntimeEnv, triggerIp: string): Promise<{ ok: boolean; error?: string }> {
+	const apiKey = (env.RESEND_API_KEY || "").trim();
+	if (!apiKey) return { ok: false, error: "RESEND_API_KEY is missing" };
+
+	const to = (env.ADMIN_NOTIFICATION_EMAIL || "fistingguide@proton.me").trim();
+	if (!to) return { ok: false, error: "ADMIN_NOTIFICATION_EMAIL is missing" };
+
+	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
+
+	const subject = "[Admin Notice] TEST email";
+	const text = [
+		"This is a test email from /api/test-email.",
+		`Time: ${new Date().toISOString()}`,
+		`Target: ${to}`,
+		`Trigger IP: ${triggerIp || "unknown"}`,
+	].join("\n");
+
+	try {
+		const res = await fetch("https://api.resend.com/emails", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${apiKey}`,
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({
+				from,
+				to: [to],
+				subject,
+				text,
+			}),
+		});
+		if (!res.ok) {
+			const err = await res.text();
+			console.error("resend test send failed", res.status, err);
+			return { ok: false, error: `resend failed: ${res.status}` };
+		}
+		return { ok: true };
+	} catch (error) {
+		console.error("send test notification failed", error);
+		return { ok: false, error: "send failed" };
 	}
 }
 
@@ -1208,6 +1249,23 @@ export default {
 			if (!q) return badRequest("q is required");
 			const point = await queryGeoPoint(q);
 			return json({ point });
+		}
+
+		if (method === "GET" && pathname === "/api/test-email") {
+			const expectedToken = (env.TEST_EMAIL_TOKEN || "").trim();
+			if (!expectedToken) {
+				return json({ error: "TEST_EMAIL_TOKEN is not configured" }, 500);
+			}
+			const providedToken = (url.searchParams.get("token") || "").trim();
+			if (!providedToken || providedToken !== expectedToken) {
+				return json({ error: "unauthorized" }, 401);
+			}
+			const triggerIp = request.headers.get("CF-Connecting-IP") || "";
+			const result = await sendTestNotification(env, triggerIp);
+			if (!result.ok) {
+				return json({ ok: false, error: result.error || "send failed" }, 502);
+			}
+			return json({ ok: true, to: (env.ADMIN_NOTIFICATION_EMAIL || "fistingguide@proton.me").trim() });
 		}
 
 		if (method === "GET" && pathname === "/api/wiki") {
