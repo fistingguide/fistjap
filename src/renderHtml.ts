@@ -885,6 +885,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
+				flex: 0 0 auto;
 				text-decoration: none;
 				padding: 0 24px;
 				height: 46px;
@@ -1534,13 +1535,15 @@ export function renderAdminPage(): string {
 			}
 			.top-nav {
 				display: flex;
-				flex-wrap: wrap;
+				flex-wrap: nowrap;
 				gap: 12px;
 				justify-content: flex-end;
 			}
 			.nav-btn {
 				display: inline-flex;
 				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
 				text-decoration: none;
 				background: #71767B;
 				color: #FFFFFF;
@@ -1548,6 +1551,7 @@ export function renderAdminPage(): string {
 				border-radius: 18px;
 				font-size: 16px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
@@ -2741,13 +2745,15 @@ export function renderDashboardPage(): string {
 			}
 			.top-nav {
 				display: flex;
-				flex-wrap: wrap;
+				flex-wrap: nowrap;
 				gap: 12px;
 				justify-content: flex-end;
 			}
 			.nav-btn {
 				display: inline-flex;
 				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
 				text-decoration: none;
 				background: #71767B;
 				color: #FFFFFF;
@@ -2755,6 +2761,7 @@ export function renderDashboardPage(): string {
 				border-radius: 18px;
 				font-size: 16px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
@@ -3443,13 +3450,15 @@ export function renderAboutPage(): string {
 			.head h1 { margin: 0; }
 			.top-nav {
 				display: flex;
-				flex-wrap: wrap;
+				flex-wrap: nowrap;
 				gap: 12px;
 				justify-content: flex-end;
 			}
 			.nav-btn {
 				display: inline-flex;
 				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
 				text-decoration: none;
 				background: #71767B;
 				color: #FFFFFF;
@@ -3457,6 +3466,7 @@ export function renderAboutPage(): string {
 				border-radius: 18px;
 				font-size: 16px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
@@ -3813,10 +3823,12 @@ export function renderWikiPage(): string {
 			}
 			.head h1 { margin: 0; font-size: 34px; }
 			.head p { margin: 0; color: var(--muted); }
-			.top-nav { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+			.top-nav { display: flex; flex-wrap: nowrap; gap: 12px; justify-content: flex-end; }
 			.nav-btn {
 				display: inline-flex;
 				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
 				text-decoration: none;
 				background: #71767B;
 				color: #FFFFFF;
@@ -3824,6 +3836,7 @@ export function renderWikiPage(): string {
 				border-radius: 18px;
 				font-size: 16px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
@@ -4399,10 +4412,12 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				box-shadow: 0 8px 20px rgba(15, 20, 25, 0.08);
 			}
 			.head { display: grid; gap: 12px; }
-			.top-nav { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+			.top-nav { display: flex; flex-wrap: nowrap; gap: 12px; justify-content: flex-end; }
 			.nav-btn {
 				display: inline-flex;
 				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
 				text-decoration: none;
 				background: #71767B;
 				color: #FFFFFF;
@@ -4410,6 +4425,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				border-radius: 18px;
 				font-size: 16px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
