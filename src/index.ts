@@ -1010,12 +1010,19 @@ function normalizeWikiPayload(payload: WikiPayload) {
 	};
 }
 
-function formatOperationSummary(action: "CREATE" | "UPDATE" | "DELETE", row: Record<string, unknown>): string {
+function formatOperationSummary(
+	action: "CREATE" | "UPDATE" | "DELETE",
+	row: Record<string, unknown>,
+	operatorIp: string,
+): string {
 	return [
 		`Action: ${action}`,
 		`ID: ${String(row.id ?? "")}`,
 		`Name: ${String(row.name ?? "")}`,
+		`Operator IP: ${operatorIp || "unknown"}`,
 		`Handle: ${String(row.handle ?? "")}`,
+		`Profile URL: ${String(row.profile_url ?? "")}`,
+		`Avatar URL: ${String(row.avatar ?? "")}`,
 		`Country: ${String(row.country ?? "")}`,
 		`Region: ${String(row.region ?? row.province ?? "")}`,
 		`District: ${String(row.district ?? row.city ?? "")}`,
@@ -1028,6 +1035,7 @@ async function sendAdminNotification(
 	env: RuntimeEnv,
 	action: "CREATE" | "UPDATE" | "DELETE",
 	row: Record<string, unknown>,
+	operatorIp: string,
 ): Promise<void> {
 	const apiKey = (env.RESEND_API_KEY || "").trim();
 	if (!apiKey) {
@@ -1042,7 +1050,7 @@ async function sendAdminNotification(
 	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
 
 	const subject = `[Admin Notice] ${action} profile #${String(row.id ?? "")}`;
-	const text = formatOperationSummary(action, row);
+	const text = formatOperationSummary(action, row, operatorIp);
 
 	try {
 		const res = await fetch("https://api.resend.com/emails", {
@@ -1296,6 +1304,7 @@ export default {
 		}
 
 		if (method === "POST" && pathname === "/api/profiles") {
+			const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 			let payload: ProfilePayload;
 			try {
 				payload = await parsePayload(request);
@@ -1335,14 +1344,14 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, country, province AS region, city AS district, followers_count
+					`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, followers_count
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
 				.bind(input.handle)
 				.first<Record<string, unknown>>();
 			if (inserted) {
-				ctx.waitUntil(sendAdminNotification(env, "CREATE", inserted));
+				ctx.waitUntil(sendAdminNotification(env, "CREATE", inserted, operatorIp));
 			}
 
 			return json({ ok: true }, 201);
@@ -1352,6 +1361,7 @@ export default {
 			const id = Number(idMatch[1]);
 
 			if (method === "PUT" || method === "PATCH") {
+				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				let payload: ProfilePayload;
 				try {
 					payload = await parsePayload(request);
@@ -1396,23 +1406,24 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, country, province AS region, city AS district, followers_count
+						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
 					.bind(id)
 					.first<Record<string, unknown>>();
 				if (updated) {
-					ctx.waitUntil(sendAdminNotification(env, "UPDATE", updated));
+					ctx.waitUntil(sendAdminNotification(env, "UPDATE", updated, operatorIp));
 				}
 
 				return json({ ok: true });
 			}
 
 			if (method === "DELETE") {
+				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				const deletedRow = await env.DB
 					.prepare(
-						`SELECT id, name, handle, country, province AS region, city AS district, followers_count
+						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -1424,7 +1435,7 @@ export default {
 					return json({ error: "not found" }, 404);
 				}
 				if (deletedRow) {
-					ctx.waitUntil(sendAdminNotification(env, "DELETE", deletedRow));
+					ctx.waitUntil(sendAdminNotification(env, "DELETE", deletedRow, operatorIp));
 				}
 				return json({ ok: true });
 			}
