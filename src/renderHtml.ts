@@ -425,7 +425,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 };
 function renderLanguageSwitcher(id: string): string {
 	return `
-		<select id="${escapeHtml(id)}" class="lang-switch" aria-label="Language">
+		<select id="${escapeHtml(id)}" class="lang-switch" data-uniform-dropdown="1" aria-label="Language">
 			<option value="en">English</option>
 			<option value="zh-CN">&#31616;&#20307;&#20013;&#25991;</option>
 			<option value="zh-TW">&#32321;&#39636;&#20013;&#25991;</option>
@@ -530,9 +530,42 @@ function renderI18nScript(pageTitleKey: string): string {
 					if (nextValue && nextValue !== raw) el.setAttribute("value", nextValue);
 				});
 
+				function measureTextWidthByFont(text, font) {
+					const probe = document.createElement("span");
+					probe.textContent = text;
+					probe.style.position = "absolute";
+					probe.style.visibility = "hidden";
+					probe.style.whiteSpace = "pre";
+					probe.style.pointerEvents = "none";
+					probe.style.font = font;
+					document.body.appendChild(probe);
+					const width = probe.getBoundingClientRect().width;
+					probe.remove();
+					return width;
+				}
+
+				function applyLangSwitchWidth(selectEl, mountEl) {
+					if (!(selectEl instanceof HTMLSelectElement)) return;
+					if (!selectEl.classList.contains("lang-switch")) return;
+					const selected = selectEl.selectedOptions && selectEl.selectedOptions[0] ? selectEl.selectedOptions[0] : selectEl.options[0];
+					const text = (selected && selected.textContent ? selected.textContent : "").trim();
+					const computed = window.getComputedStyle(selectEl);
+					const measured = Math.ceil(measureTextWidthByFont(text || "Language", computed.font || "13px sans-serif"));
+					const minWidth = 72;
+					const maxWidth = Math.min(220, Math.floor(window.innerWidth * 0.62));
+					const finalWidth = Math.max(minWidth, Math.min(maxWidth, measured + 34));
+					selectEl.style.width = finalWidth + "px";
+					if (mountEl instanceof HTMLElement) {
+						mountEl.style.width = finalWidth + "px";
+					}
+				}
+
 				document.querySelectorAll(".lang-switch").forEach(function (el) {
 					if (!(el instanceof HTMLSelectElement)) return;
 					el.value = lang;
+					const syncLangWidth = function () { applyLangSwitchWidth(el); };
+					syncLangWidth();
+					window.addEventListener("resize", syncLangWidth);
 					el.addEventListener("change", function () {
 						const nextLang = normalizeLang(el.value) || "en";
 						localStorage.setItem(storageKey, nextLang);
@@ -541,6 +574,134 @@ function renderI18nScript(pageTitleKey: string): string {
 						window.location.href = nextUrl.toString();
 					});
 				});
+
+				function escHtml(input) {
+					return String(input || "")
+						.replace(/&/g, "&amp;")
+						.replace(/</g, "&lt;")
+						.replace(/>/g, "&gt;")
+						.replace(/"/g, "&quot;")
+						.replace(/'/g, "&#39;");
+				}
+
+				function injectUniformSelectCss() {
+					if (document.getElementById("uniformSelectCss")) return;
+					const style = document.createElement("style");
+					style.id = "uniformSelectCss";
+					style.textContent =
+						"@media (max-width: 900px) {" +
+							".uniform-select-enhanced{display:none;width:100%;position:relative;}" +
+							".uniform-select-enhanced.is-lang-switch{width:auto;max-width:100%;}" +
+							"html.uniform-select-ready select[data-uniform-dropdown='1']{display:none !important;}" +
+							"html.uniform-select-ready .uniform-select-enhanced{display:block;}" +
+							".uniform-select-trigger{" +
+								"width:100%;height:34px;border:0;border-bottom:1px solid #2F3336;" +
+								"background:#000;color:#8B98A5;font:inherit;font-size:13px;padding:0 24px 0 0;" +
+								"text-align:left;cursor:pointer;background-image:url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\\\");" +
+								"background-repeat:no-repeat;background-position:right 2px center;" +
+							"}" +
+							".uniform-select-enhanced.open .uniform-select-trigger{border-bottom-color:#1D9BF0;}" +
+							".uniform-select-enhanced.is-lang-switch .uniform-select-trigger{width:auto;display:inline-block;}" +
+							".uniform-select-menu{" +
+								"display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:80;" +
+								"background:#000;border:1px solid #2F3336;border-radius:10px;overflow:hidden;" +
+							"}" +
+							".uniform-select-enhanced.is-lang-switch .uniform-select-menu{left:0;right:auto;min-width:100%;}" +
+							".uniform-select-enhanced.open .uniform-select-menu{display:block;}" +
+							".uniform-select-option{" +
+								"width:100%;border:0;border-bottom:1px solid #20252B;background:#000;color:#8B98A5;" +
+								"font:inherit;font-size:13px;text-align:left;padding:9px 12px;cursor:pointer;" +
+							"}" +
+							".uniform-select-option:last-child{border-bottom:0;}" +
+							".uniform-select-option.is-selected{color:#E7E9EA;}" +
+							".uniform-select-option:active{background:#0B0E12;}" +
+						"}";
+					document.head.appendChild(style);
+				}
+
+				function closeUniformSelectMenus() {
+					document.querySelectorAll(".uniform-select-enhanced.open").forEach(function (node) {
+						node.classList.remove("open");
+					});
+				}
+
+				function setupUniformDropdown(selectEl) {
+					if (!(selectEl instanceof HTMLSelectElement)) return;
+					if (selectEl.dataset.uniformDropdownReady === "1") return;
+					selectEl.dataset.uniformDropdownReady = "1";
+					const isLangSwitch = selectEl.classList.contains("lang-switch");
+
+					const mount = document.createElement("div");
+					mount.className = "uniform-select-enhanced";
+					if (isLangSwitch) mount.classList.add("is-lang-switch");
+					selectEl.insertAdjacentElement("afterend", mount);
+
+					function renderUniformSelect() {
+						const options = Array.from(selectEl.options || []);
+						if (!options.length) {
+							mount.innerHTML = "";
+							return;
+						}
+						const selectedValue = String(selectEl.value || "");
+						const selectedOption = options.find(function (opt) {
+							return String(opt.value) === selectedValue;
+						}) || options[0];
+						mount.innerHTML =
+							'<button type="button" class="uniform-select-trigger" aria-haspopup="listbox" aria-expanded="false">' +
+								escHtml(selectedOption ? selectedOption.text : "") +
+							"</button>" +
+							'<div class="uniform-select-menu" role="listbox">' +
+								options.map(function (opt) {
+									const value = String(opt.value || "");
+									const selectedClass = value === selectedValue ? " is-selected" : "";
+									return '<button type="button" class="uniform-select-option' + selectedClass + '" data-value="' + escHtml(value) + '">' + escHtml(opt.text) + "</button>";
+								}).join("") +
+							"</div>";
+						if (isLangSwitch) applyLangSwitchWidth(selectEl, mount);
+
+						const trigger = mount.querySelector(".uniform-select-trigger");
+						const menu = mount.querySelector(".uniform-select-menu");
+						if (!(trigger instanceof HTMLButtonElement) || !(menu instanceof HTMLDivElement)) return;
+						trigger.addEventListener("click", function (event) {
+							event.preventDefault();
+							const isOpen = mount.classList.contains("open");
+							closeUniformSelectMenus();
+							if (!isOpen) mount.classList.add("open");
+						});
+						menu.addEventListener("click", function (event) {
+							const target = event.target;
+							if (!(target instanceof Element)) return;
+							const btn = target.closest(".uniform-select-option");
+							if (!(btn instanceof HTMLButtonElement)) return;
+							const nextValue = btn.getAttribute("data-value") || "";
+							if (String(selectEl.value || "") !== nextValue) {
+								selectEl.value = nextValue;
+								selectEl.dispatchEvent(new Event("change", { bubbles: true }));
+							}
+							closeUniformSelectMenus();
+							renderUniformSelect();
+						});
+					}
+
+					selectEl.addEventListener("change", renderUniformSelect);
+					const observer = new MutationObserver(renderUniformSelect);
+					observer.observe(selectEl, { childList: true, subtree: true, characterData: true, attributes: true });
+					renderUniformSelect();
+				}
+
+				injectUniformSelectCss();
+				document.querySelectorAll("select[data-uniform-dropdown='1']").forEach(function (el) {
+					setupUniformDropdown(el);
+				});
+				document.addEventListener("click", function (event) {
+					const target = event.target;
+					if (!(target instanceof Element)) return;
+					if (!target.closest(".uniform-select-enhanced")) closeUniformSelectMenus();
+				});
+				document.addEventListener("keydown", function (event) {
+					if (event.key === "Escape") closeUniformSelectMenus();
+				});
+				document.documentElement.classList.add("uniform-select-ready");
 			})();
 		</script>
 	`;
@@ -2891,7 +3052,7 @@ export function renderDashboardPage(): string {
 			</section>
 
 			<section class="card toolbar">
-				<select id="countryFilter"><option value="">All Countries (Regions)</option></select>
+				<select id="countryFilter" data-uniform-dropdown="1"><option value="">All Countries (Regions)</option></select>
 				<button id="reloadBtn">Reload Data</button>
 				<div id="status"></div>
 			</section>
