@@ -33,6 +33,519 @@ function escapeHtml(value: string): string {
 		.replaceAll("'", "&#39;");
 }
 
+type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es";
+
+const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es"];
+
+const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
+	en: {
+		page_title_ranking: "Creator Ranking",
+		page_title_admin: "Database Admin Panel",
+		page_title_dashboard: "Data Dashboard",
+		page_title_about: "About",
+		page_title_wiki: "Fisting Wiki",
+		page_title_wiki_article: "Fisting Wiki",
+		heading_ranking: "Ranking Page",
+		heading_add: "Add new",
+		heading_star: "Star Map",
+		heading_about: "About",
+		heading_wiki: "Fisting Wiki",
+		nav_ranking: "Ranking Page",
+		nav_add: "Add new",
+		nav_star: "Star Map",
+		nav_wiki: "Fisting Wiki",
+		nav_about: "About",
+		country_region: "country(region)",
+		all_option: "All",
+		age_title: "Age Confirmation",
+		age_desc: "You must be 18+ to enter this site. Are you 18 years old or above?",
+		age_yes: "Yes, I am 18+",
+		age_no: "No",
+		age_denied: "Access denied. This website is for adults 18+ only.",
+		article_by: "By",
+		article_updated: "Updated",
+		wiki_submit_hint: "submit my account to FistingGuide",
+		about_description:
+			"Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.",
+		admin_search_placeholder: "Search by X handle (supports partial match, e.g. @tak)",
+		admin_search_btn: "Search",
+		admin_reset_btn: "Reset",
+		admin_label_display_name: "Display Name",
+		admin_ph_display_name: "Display name",
+		admin_label_x_handle: "X Handle",
+		admin_ph_x_handle: "Handle (e.g. @demo)",
+		admin_label_orientation: "Orientation",
+		admin_ph_orientation: "Orientation",
+		admin_label_fans_count: "Fans Count",
+		admin_ph_fans_count: "Fans count",
+		admin_label_location: "District / Region / Country (Region)",
+		admin_ph_location_search: "Search country (region) or city (map search)",
+		admin_selected_prefix: "Selected:",
+		admin_label_map_preview: "Location Map Preview",
+		admin_label_profile_url: "Profile URL",
+		admin_ph_profile_url: "Profile URL",
+		admin_label_avatar_url: "Avatar URL",
+		admin_ph_avatar_url: "Avatar URL",
+		admin_label_bio: "Bio",
+		admin_ph_bio: "Bio",
+		admin_btn_create: "Create",
+		admin_btn_save_changes: "Save Changes",
+		admin_btn_delete_current: "Delete Current",
+		admin_btn_cancel_edit: "Cancel Edit",
+		admin_status_ready: "Ready",
+		admin_status_no_exact_match: "No exact handle match. You can create a new record.",
+		admin_status_matched_handles: "Matched {count} handles",
+		admin_status_handle_required: "Handle is required",
+		admin_status_submitting: "Submitting...",
+		admin_status_updated_success: "Updated successfully",
+		admin_status_created_success: "Created successfully",
+		admin_alert_updated_success: "Profile updated successfully.",
+		admin_alert_created_success: "Profile created successfully.",
+	},
+	"zh-CN": {
+		page_title_ranking: "\u521b\u4f5c\u8005\u6392\u884c",
+		page_title_admin: "\u6570\u636e\u5e93\u7ba1\u7406\u9762\u677f",
+		page_title_dashboard: "\u6570\u636e\u770b\u677f",
+		page_title_about: "\u5173\u4e8e",
+		page_title_wiki: "Fisting Wiki",
+		page_title_wiki_article: "Fisting Wiki",
+		heading_ranking: "\u6392\u884c\u699c",
+		heading_add: "\u65b0\u589e",
+		heading_star: "\u661f\u56fe",
+		heading_about: "\u5173\u4e8e",
+		heading_wiki: "Fisting Wiki",
+		nav_ranking: "\u6392\u884c\u699c",
+		nav_add: "\u65b0\u589e",
+		nav_star: "\u661f\u56fe",
+		nav_wiki: "Fisting Wiki",
+		nav_about: "\u5173\u4e8e",
+		country_region: "\u56fd\u5bb6(\u5730\u533a)",
+		all_option: "\u5168\u90e8",
+		age_title: "\u5e74\u9f84\u786e\u8ba4",
+		age_desc: "\u4f60\u5fc5\u987b\u5e74\u6ee118\u5c81\u624d\u80fd\u8fdb\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6ee118\u5c81\uff1f",
+		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6ee118\u5c81",
+		age_no: "\u5426",
+		age_denied: "\u8bbf\u95ee\u88ab\u62d2\u7edd\u3002\u672c\u7ad9\u4ec5\u965018\u5c81\u4ee5\u4e0a\u6210\u4eba\u3002",
+		article_by: "\u4f5c\u8005",
+		article_updated: "\u66f4\u65b0\u4e8e",
+		wiki_submit_hint: "\u5411 FistingGuide \u63d0\u4ea4\u6211\u7684\u8d26\u53f7",
+		about_description:
+			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
+		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22\uff08\u652f\u6301\u6a21\u7cca\u5339\u914d\uff0c\u4f8b\u5982 @tak\uff09",
+		admin_search_btn: "\u641c\u7d22",
+		admin_reset_btn: "\u91cd\u7f6e",
+		admin_label_display_name: "\u663e\u793a\u540d\u79f0",
+		admin_ph_display_name: "\u663e\u793a\u540d\u79f0",
+		admin_label_x_handle: "X \u8d26\u53f7",
+		admin_ph_x_handle: "\u8d26\u53f7\uff08\u4f8b\u5982 @demo\uff09",
+		admin_label_orientation: "\u53d6\u5411",
+		admin_ph_orientation: "\u53d6\u5411",
+		admin_label_fans_count: "\u7c89\u4e1d\u6570",
+		admin_ph_fans_count: "\u7c89\u4e1d\u6570",
+		admin_label_location: "\u533a/\u57df/\u56fd\u5bb6(\u5730\u533a)",
+		admin_ph_location_search: "\u641c\u7d22\u56fd\u5bb6(\u5730\u533a)\u6216\u57ce\u5e02\uff08\u5730\u56fe\u641c\u7d22\uff09",
+		admin_selected_prefix: "\u5df2\u9009\u62e9\uff1a",
+		admin_label_map_preview: "\u5730\u56fe\u9884\u89c8",
+		admin_label_profile_url: "\u4e3b\u9875 URL",
+		admin_ph_profile_url: "\u4e3b\u9875 URL",
+		admin_label_avatar_url: "\u5934\u50cf URL",
+		admin_ph_avatar_url: "\u5934\u50cf URL",
+		admin_label_bio: "\u7b80\u4ecb",
+		admin_ph_bio: "\u7b80\u4ecb",
+		admin_btn_create: "\u521b\u5efa",
+		admin_btn_save_changes: "\u4fdd\u5b58\u4fee\u6539",
+		admin_btn_delete_current: "\u5220\u9664\u5f53\u524d",
+		admin_btn_cancel_edit: "\u53d6\u6d88\u7f16\u8f91",
+		admin_status_ready: "\u5c31\u7eea",
+		admin_status_no_exact_match: "\u6ca1\u6709\u7cbe\u786e\u5339\u914d\u7684\u8d26\u53f7\uff0c\u4f60\u53ef\u4ee5\u521b\u5efa\u65b0\u8bb0\u5f55\u3002",
+		admin_status_matched_handles: "\u5339\u914d\u5230 {count} \u4e2a\u8d26\u53f7",
+		admin_status_handle_required: "\u8d26\u53f7\u4e3a\u5fc5\u586b\u9879",
+		admin_status_submitting: "\u63d0\u4ea4\u4e2d...",
+		admin_status_updated_success: "\u66f4\u65b0\u6210\u529f",
+		admin_status_created_success: "\u521b\u5efa\u6210\u529f",
+		admin_alert_updated_success: "\u8d44\u6599\u66f4\u65b0\u6210\u529f\u3002",
+		admin_alert_created_success: "\u8d44\u6599\u521b\u5efa\u6210\u529f\u3002",
+	},
+	"zh-TW": {
+		page_title_ranking: "\u5275\u4f5c\u8005\u6392\u884c",
+		page_title_admin: "\u8cc7\u6599\u5eab\u7ba1\u7406\u9762\u677f",
+		page_title_dashboard: "\u6578\u64da\u770b\u677f",
+		page_title_about: "\u95dc\u65bc",
+		page_title_wiki: "Fisting Wiki",
+		page_title_wiki_article: "Fisting Wiki",
+		heading_ranking: "\u6392\u884c\u699c",
+		heading_add: "\u65b0\u589e",
+		heading_star: "\u661f\u5716",
+		heading_about: "\u95dc\u65bc",
+		heading_wiki: "Fisting Wiki",
+		nav_ranking: "\u6392\u884c\u699c",
+		nav_add: "\u65b0\u589e",
+		nav_star: "\u661f\u5716",
+		nav_wiki: "Fisting Wiki",
+		nav_about: "\u95dc\u65bc",
+		country_region: "\u570b\u5bb6(\u5730\u5340)",
+		all_option: "\u5168\u90e8",
+		age_title: "\u5e74\u9f61\u78ba\u8a8d",
+		age_desc: "\u4f60\u5fc5\u9808\u5e74\u6eff18\u6b72\u624d\u80fd\u9032\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6eff18\u6b72\uff1f",
+		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6eff18\u6b72",
+		age_no: "\u5426",
+		age_denied: "\u5b58\u53d6\u88ab\u62d2\u7d55\u3002\u672c\u7ad9\u50c5\u965018\u6b72\u4ee5\u4e0a\u6210\u4eba\u3002",
+		article_by: "\u4f5c\u8005",
+		article_updated: "\u66f4\u65b0\u65bc",
+		wiki_submit_hint: "\u5411 FistingGuide \u63d0\u4ea4\u6211\u7684\u5e33\u865f",
+		about_description:
+			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
+		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b\uff08\u652f\u63f4\u6a21\u7cca\u5339\u914d\uff0c\u4f8b\u5982 @tak\uff09",
+		admin_search_btn: "\u641c\u5c0b",
+		admin_reset_btn: "\u91cd\u8a2d",
+		admin_label_display_name: "\u986f\u793a\u540d\u7a31",
+		admin_ph_display_name: "\u986f\u793a\u540d\u7a31",
+		admin_label_x_handle: "X \u5e33\u865f",
+		admin_ph_x_handle: "\u5e33\u865f\uff08\u4f8b\u5982 @demo\uff09",
+		admin_label_orientation: "\u53d6\u5411",
+		admin_ph_orientation: "\u53d6\u5411",
+		admin_label_fans_count: "\u7c89\u7d72\u6578",
+		admin_ph_fans_count: "\u7c89\u7d72\u6578",
+		admin_label_location: "\u5340/\u57df/\u570b\u5bb6(\u5730\u5340)",
+		admin_ph_location_search: "\u641c\u5c0b\u570b\u5bb6(\u5730\u5340)\u6216\u57ce\u5e02\uff08\u5730\u5716\u641c\u5c0b\uff09",
+		admin_selected_prefix: "\u5df2\u9078\u64c7\uff1a",
+		admin_label_map_preview: "\u5730\u5716\u9810\u89bd",
+		admin_label_profile_url: "\u500b\u4eba\u9801 URL",
+		admin_ph_profile_url: "\u500b\u4eba\u9801 URL",
+		admin_label_avatar_url: "\u982d\u50cf URL",
+		admin_ph_avatar_url: "\u982d\u50cf URL",
+		admin_label_bio: "\u7c21\u4ecb",
+		admin_ph_bio: "\u7c21\u4ecb",
+		admin_btn_create: "\u5efa\u7acb",
+		admin_btn_save_changes: "\u5132\u5b58\u8b8a\u66f4",
+		admin_btn_delete_current: "\u522a\u9664\u7576\u524d",
+		admin_btn_cancel_edit: "\u53d6\u6d88\u7de8\u8f2f",
+		admin_status_ready: "\u5c31\u7dd2",
+		admin_status_no_exact_match: "\u6c92\u6709\u7cbe\u78ba\u5339\u914d\u7684\u5e33\u865f\uff0c\u4f60\u53ef\u4ee5\u5efa\u7acb\u65b0\u7d00\u9304\u3002",
+		admin_status_matched_handles: "\u5339\u914d\u5230 {count} \u500b\u5e33\u865f",
+		admin_status_handle_required: "\u5e33\u865f\u70ba\u5fc5\u586b",
+		admin_status_submitting: "\u63d0\u4ea4\u4e2d...",
+		admin_status_updated_success: "\u66f4\u65b0\u6210\u529f",
+		admin_status_created_success: "\u5efa\u7acb\u6210\u529f",
+		admin_alert_updated_success: "\u8cc7\u6599\u66f4\u65b0\u6210\u529f\u3002",
+		admin_alert_created_success: "\u8cc7\u6599\u5efa\u7acb\u6210\u529f\u3002",
+	},
+	ja: {
+		page_title_ranking: "\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u30e9\u30f3\u30ad\u30f3\u30b0",
+		page_title_admin: "\u30c7\u30fc\u30bf\u30d9\u30fc\u30b9\u7ba1\u7406\u30d1\u30cd\u30eb",
+		page_title_dashboard: "\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+		page_title_about: "\u6982\u8981",
+		page_title_wiki: "Fisting Wiki",
+		page_title_wiki_article: "Fisting Wiki",
+		heading_ranking: "\u30e9\u30f3\u30ad\u30f3\u30b0",
+		heading_add: "\u65b0\u898f\u8ffd\u52a0",
+		heading_star: "\u30b9\u30bf\u30fc\u30de\u30c3\u30d7",
+		heading_about: "\u6982\u8981",
+		heading_wiki: "Fisting Wiki",
+		nav_ranking: "\u30e9\u30f3\u30ad\u30f3\u30b0",
+		nav_add: "\u65b0\u898f\u8ffd\u52a0",
+		nav_star: "\u30b9\u30bf\u30fc\u30de\u30c3\u30d7",
+		nav_wiki: "Fisting Wiki",
+		nav_about: "\u6982\u8981",
+		country_region: "\u56fd(\u5730\u57df)",
+		all_option: "\u3059\u3079\u3066",
+		age_title: "\u5e74\u9f62\u78ba\u8a8d",
+		age_desc: "\u3053\u306e\u30b5\u30a4\u30c8\u306f18\u6b73\u4ee5\u4e0a\u304c\u5bfe\u8c61\u3067\u3059\u300218\u6b73\u4ee5\u4e0a\u3067\u3059\u304b\uff1f",
+		age_yes: "\u306f\u3044\u300118\u6b73\u4ee5\u4e0a\u3067\u3059",
+		age_no: "\u3044\u3044\u3048",
+		age_denied: "\u30a2\u30af\u30bb\u30b9\u62d2\u5426\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306f18\u6b73\u4ee5\u4e0a\u9650\u5b9a\u3067\u3059\u3002",
+		article_by: "\u8457\u8005",
+		article_updated: "\u66f4\u65b0",
+		wiki_submit_hint: "FistingGuide \u306b\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u9001\u4fe1",
+		about_description:
+			"\u3053\u3093\u306b\u3061\u306f\u3002\u79c1\u306f fisting \u611b\u597d\u5bb6\u3067\u3001\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3084\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u3059\u3070\u3084\u304f\u898b\u3064\u3051\u3089\u308c\u308b\u3088\u3046\u306b\u3001\u30b7\u30f3\u30d7\u30eb\u306a\u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3\u30b5\u30a4\u30c8\u3092\u4f5c\u308a\u307e\u3057\u305f\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u3001\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3092\u63a2\u3057\u3084\u3059\u304f\u3057\u3001\u65b0\u3057\u3044\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u898b\u3064\u3051\u3001\u540c\u3058\u8208\u5473\u3092\u6301\u3064\u4eba\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3059\u3002\u3054\u610f\u898b\u30fb\u3054\u611f\u60f3\u30fb\u6539\u5584\u306e\u305f\u3081\u306e\u30b3\u30e9\u30dc\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u304a\u6c17\u8efd\u306b\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002X: @fistingguide \u307e\u305f\u306f\u30e1\u30fc\u30eb: fistingguide@proton.me \u3067\u9023\u7d61\u53ef\u80fd\u3067\u3059\u3002\u30b5\u30a4\u30c8\u306b\u63b2\u8f09\u3055\u308c\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044\u3002\u4e00\u89a7\u304b\u3089\u524a\u9664\u3057\u307e\u3059\u3002\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002\u3053\u306e\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u304c\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u6210\u9577\u306b\u5f79\u7acb\u3064\u3053\u3068\u3092\u9858\u3063\u3066\u3044\u307e\u3059\u3002",
+		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22\uff08\u90e8\u5206\u4e00\u81f4\u53ef\uff1a\u4f8b @tak\uff09",
+		admin_search_btn: "\u691c\u7d22",
+		admin_reset_btn: "\u30ea\u30bb\u30c3\u30c8",
+		admin_label_display_name: "\u8868\u793a\u540d",
+		admin_ph_display_name: "\u8868\u793a\u540d",
+		admin_label_x_handle: "X \u30cf\u30f3\u30c9\u30eb",
+		admin_ph_x_handle: "\u30cf\u30f3\u30c9\u30eb\uff08\u4f8b @demo\uff09",
+		admin_label_orientation: "\u6307\u5411",
+		admin_ph_orientation: "\u6307\u5411",
+		admin_label_fans_count: "\u30d5\u30a1\u30f3\u6570",
+		admin_ph_fans_count: "\u30d5\u30a1\u30f3\u6570",
+		admin_label_location: "\u5730\u57df / \u90fd\u9053\u5e9c\u770c / \u56fd(\u5730\u57df)",
+		admin_ph_location_search: "\u56fd(\u5730\u57df)\u307e\u305f\u306f\u90fd\u5e02\u3092\u691c\u7d22\uff08\u5730\u56f3\u691c\u7d22\uff09",
+		admin_selected_prefix: "\u9078\u629e\u4e2d:",
+		admin_label_map_preview: "\u5730\u56f3\u30d7\u30ec\u30d3\u30e5\u30fc",
+		admin_label_profile_url: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb URL",
+		admin_ph_profile_url: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb URL",
+		admin_label_avatar_url: "\u30a2\u30d0\u30bf\u30fc URL",
+		admin_ph_avatar_url: "\u30a2\u30d0\u30bf\u30fc URL",
+		admin_label_bio: "\u7d39\u4ecb\u6587",
+		admin_ph_bio: "\u7d39\u4ecb\u6587",
+		admin_btn_create: "\u4f5c\u6210",
+		admin_btn_save_changes: "\u5909\u66f4\u3092\u4fdd\u5b58",
+		admin_btn_delete_current: "\u73fe\u5728\u306e\u9805\u76ee\u3092\u524a\u9664",
+		admin_btn_cancel_edit: "\u7de8\u96c6\u3092\u30ad\u30e3\u30f3\u30bb\u30eb",
+		admin_status_ready: "\u6e96\u5099\u5b8c\u4e86",
+		admin_status_no_exact_match: "\u5b8c\u5168\u4e00\u81f4\u3059\u308b\u30cf\u30f3\u30c9\u30eb\u304c\u3042\u308a\u307e\u305b\u3093\u3002\u65b0\u898f\u4f5c\u6210\u3067\u304d\u307e\u3059\u3002",
+		admin_status_matched_handles: "{count} \u4ef6\u306e\u30cf\u30f3\u30c9\u30eb\u304c\u4e00\u81f4",
+		admin_status_handle_required: "\u30cf\u30f3\u30c9\u30eb\u306f\u5fc5\u9808\u3067\u3059",
+		admin_status_submitting: "\u9001\u4fe1\u4e2d...",
+		admin_status_updated_success: "\u66f4\u65b0\u306b\u6210\u529f\u3057\u307e\u3057\u305f",
+		admin_status_created_success: "\u4f5c\u6210\u306b\u6210\u529f\u3057\u307e\u3057\u305f",
+		admin_alert_updated_success: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u3092\u66f4\u65b0\u3057\u307e\u3057\u305f\u3002",
+		admin_alert_created_success: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u3092\u4f5c\u6210\u3057\u307e\u3057\u305f\u3002",
+	},
+	ko: {
+		page_title_ranking: "\ud06c\ub9ac\uc5d0\uc774\ud130 \uc21c\uc704",
+		page_title_admin: "\ub370\uc774\ud130\ubca0\uc774\uc2a4 \uad00\ub9ac\uc790 \ud328\ub110",
+		page_title_dashboard: "\ub300\uc2dc\ubcf4\ub4dc",
+		page_title_about: "\uc18c\uac1c",
+		page_title_wiki: "Fisting Wiki",
+		page_title_wiki_article: "Fisting Wiki",
+		heading_ranking: "\ub7ad\ud0b9",
+		heading_add: "\ucd94\uac00",
+		heading_star: "\uc2a4\ud0c0 \ub9f5",
+		heading_about: "\uc18c\uac1c",
+		heading_wiki: "Fisting Wiki",
+		nav_ranking: "\ub7ad\ud0b9",
+		nav_add: "\ucd94\uac00",
+		nav_star: "\uc2a4\ud0c0 \ub9f5",
+		nav_wiki: "Fisting Wiki",
+		nav_about: "\uc18c\uac1c",
+		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
+		all_option: "\uc804\uccb4",
+		age_title: "\uc5f0\ub839 \ud655\uc778",
+		age_desc: "\uc774 \uc0ac\uc774\ud2b8\ub294 18\uc138 \uc774\uc0c1\ub9cc \uc774\uc6a9\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ub9cc 18\uc138 \uc774\uc0c1\uc778\uac00\uc694?",
+		age_yes: "\ub124, \ub9cc 18\uc138 \uc774\uc0c1\uc785\ub2c8\ub2e4",
+		age_no: "\uc544\ub2c8\uc694",
+		age_denied: "\uc811\uadfc\uc774 \uac70\ubd80\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\ub294 18\uc138 \uc774\uc0c1\ub9cc \uc774\uc6a9 \uac00\ub2a5\ud569\ub2c8\ub2e4.",
+		article_by: "\uc791\uc131\uc790",
+		article_updated: "\uc5c5\ub370\uc774\ud2b8",
+		wiki_submit_hint: "FistingGuide\uc5d0 \ub0b4 \uacc4\uc815 \uc81c\ucd9c",
+		about_description:
+			"\uc548\ub155\ud558\uc138\uc694. \uc800\ub294 fisting \uc560\ud638\uac00\uc774\uba70, \ucee4\ubba4\ub2c8\ud2f0\uc5d0\uc11c \ud06c\ub9ac\uc5d0\uc774\ud130\uc640 \uacc4\uc815\uc744 \ube60\ub974\uac8c \ucc3e\uc744 \uc218 \uc788\ub3c4\ub85d \ub2e8\uc21c\ud55c \ub124\ube44\uac8c\uc774\uc158 \uc6f9\uc0ac\uc774\ud2b8\ub97c \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\uc758 \ubaa9\ud45c\ub294 \ud06c\ub9ac\uc5d0\uc774\ud130\ub97c \ub354 \uc27d\uac8c \ucc3e\uace0, \uc0c8\ub85c\uc6b4 \ucf58\ud150\uce20\ub97c \ud0d0\uc0c9\ud558\uba70, \uac19\uc740 \uad00\uc2ec\uc0ac\ub97c \uac00\uc9c4 \uc0ac\ub78c\ub4e4\uacfc \uc5f0\uacb0\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc81c\uc548, \ud53c\ub4dc\ubc31, \ud639\uc740 \ud504\ub85c\uc81d\ud2b8 \uac1c\uc120\uc744 \ud568\uaed8\ud558\uace0 \uc2f6\uc73c\uc2dc\uba74 \ud3b8\ud558\uac8c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. X \uacc4\uc815 @fistingguide \ub610\ub294 \uc774\uba54\uc77c fistingguide@proton.me \ub85c \uc5f0\ub77d\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc6f9\uc0ac\uc774\ud2b8\uc5d0 \ub178\ucd9c\ub418\uace0 \uc2f6\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc54c\ub824 \uc8fc\uc138\uc694. \ub9ac\uc2a4\ud305\uc744 \uc81c\uac70\ud574 \ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4. \uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774 \ud504\ub85c\uc81d\ud2b8\uac00 \ucee4\ubba4\ub2c8\ud2f0 \uc131\uc7a5\uc5d0 \ub3c4\uc6c0\uc774 \ub418\uae30\ub97c \ubc14\ub78d\ub2c8\ub2e4.",
+		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9(\ubd80\ubd84 \uc77c\uce58 \uc9c0\uc6d0, \uc608: @tak)",
+		admin_search_btn: "\uac80\uc0c9",
+		admin_reset_btn: "\ucd08\uae30\ud654",
+		admin_label_display_name: "\ud45c\uc2dc \uc774\ub984",
+		admin_ph_display_name: "\ud45c\uc2dc \uc774\ub984",
+		admin_label_x_handle: "X \ud578\ub4e4",
+		admin_ph_x_handle: "\ud578\ub4e4(\uc608: @demo)",
+		admin_label_orientation: "\uc131\ud5a5",
+		admin_ph_orientation: "\uc131\ud5a5",
+		admin_label_fans_count: "\ud32c \uc218",
+		admin_ph_fans_count: "\ud32c \uc218",
+		admin_label_location: "\uad6c/\uc9c0\uc5ed/\uad6d\uac00(\uc9c0\uc5ed)",
+		admin_ph_location_search: "\uad6d\uac00(\uc9c0\uc5ed) \ub610\ub294 \ub3c4\uc2dc \uac80\uc0c9(\uc9c0\ub3c4 \uac80\uc0c9)",
+		admin_selected_prefix: "\uc120\ud0dd:",
+		admin_label_map_preview: "\uc9c0\ub3c4 \ubbf8\ub9ac\ubcf4\uae30",
+		admin_label_profile_url: "\ud504\ub85c\ud544 URL",
+		admin_ph_profile_url: "\ud504\ub85c\ud544 URL",
+		admin_label_avatar_url: "\uc544\ubc14\ud0c0 URL",
+		admin_ph_avatar_url: "\uc544\ubc14\ud0c0 URL",
+		admin_label_bio: "\uc18c\uac1c",
+		admin_ph_bio: "\uc18c\uac1c",
+		admin_btn_create: "\uc0dd\uc131",
+		admin_btn_save_changes: "\ubcc0\uacbd \uc800\uc7a5",
+		admin_btn_delete_current: "\ud604\uc7ac \ud56d\ubaa9 \uc0ad\uc81c",
+		admin_btn_cancel_edit: "\ud3b8\uc9d1 \ucde8\uc18c",
+		admin_status_ready: "\uc900\ube44\ub428",
+		admin_status_no_exact_match: "\uc815\ud655\ud788 \uc77c\uce58\ud558\ub294 \ud578\ub4e4\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \uc0c8 \uae30\ub85d\uc744 \ub9cc\ub4e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+		admin_status_matched_handles: "{count}\uac1c \ud578\ub4e4 \uc77c\uce58",
+		admin_status_handle_required: "\ud578\ub4e4\uc740 \ud544\uc218\uc785\ub2c8\ub2e4",
+		admin_status_submitting: "\uc81c\ucd9c \uc911...",
+		admin_status_updated_success: "\uc5c5\ub370\uc774\ud2b8 \uc131\uacf5",
+		admin_status_created_success: "\uc0dd\uc131 \uc131\uacf5",
+		admin_alert_updated_success: "\ud504\ub85c\ud544\uc774 \uc131\uacf5\uc801\uc73c\ub85c \uc5c5\ub370\uc774\ud2b8\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
+		admin_alert_created_success: "\ud504\ub85c\ud544\uc774 \uc131\uacf5\uc801\uc73c\ub85c \uc0dd\uc131\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
+	},
+	es: {
+		page_title_ranking: "Clasificacion de creadores",
+		page_title_admin: "Panel de administracion de base de datos",
+		page_title_dashboard: "Panel de datos",
+		page_title_about: "Acerca de",
+		page_title_wiki: "Fisting Wiki",
+		page_title_wiki_article: "Fisting Wiki",
+		heading_ranking: "Clasificacion",
+		heading_add: "Agregar",
+		heading_star: "Mapa estelar",
+		heading_about: "Acerca de",
+		heading_wiki: "Fisting Wiki",
+		nav_ranking: "Clasificacion",
+		nav_add: "Agregar",
+		nav_star: "Mapa estelar",
+		nav_wiki: "Fisting Wiki",
+		nav_about: "Acerca de",
+		country_region: "pais(region)",
+		all_option: "Todos",
+		age_title: "Confirmacion de edad",
+		age_desc: "Debes tener 18+ para entrar a este sitio. Tienes 18 anos o mas?",
+		age_yes: "Si, tengo 18+",
+		age_no: "No",
+		age_denied: "Acceso denegado. Este sitio es solo para adultos de 18+.",
+		article_by: "Por",
+		article_updated: "Actualizado",
+		wiki_submit_hint: "enviar mi cuenta a FistingGuide",
+		about_description:
+			"Hola, soy un entusiasta del fisting y hace poco cree un sitio de navegacion simple para ayudar a descubrir rapidamente creadores y cuentas de la comunidad. El objetivo de este sitio es facilitar encontrar creadores, explorar contenido nuevo y conectar con otras personas que comparten los mismos intereses. Si tienes sugerencias, comentarios o quieres colaborar para mejorar el proyecto, no dudes en escribirme. Puedes contactarme en X: @fistingguide o por correo: fistingguide@proton.me. Si prefieres no aparecer en el sitio web, avisame y eliminare tu listado. Gracias, y espero que este proyecto ayude a que la comunidad siga creciendo.",
+		admin_search_placeholder: "Buscar por handle de X (coincidencia parcial, ej. @tak)",
+		admin_search_btn: "Buscar",
+		admin_reset_btn: "Restablecer",
+		admin_label_display_name: "Nombre visible",
+		admin_ph_display_name: "Nombre visible",
+		admin_label_x_handle: "Handle de X",
+		admin_ph_x_handle: "Handle (ej. @demo)",
+		admin_label_orientation: "Orientacion",
+		admin_ph_orientation: "Orientacion",
+		admin_label_fans_count: "Cantidad de fans",
+		admin_ph_fans_count: "Cantidad de fans",
+		admin_label_location: "Distrito / Region / Pais (Region)",
+		admin_ph_location_search: "Buscar pais (region) o ciudad (busqueda en mapa)",
+		admin_selected_prefix: "Seleccionado:",
+		admin_label_map_preview: "Vista previa del mapa",
+		admin_label_profile_url: "URL del perfil",
+		admin_ph_profile_url: "URL del perfil",
+		admin_label_avatar_url: "URL del avatar",
+		admin_ph_avatar_url: "URL del avatar",
+		admin_label_bio: "Bio",
+		admin_ph_bio: "Bio",
+		admin_btn_create: "Crear",
+		admin_btn_save_changes: "Guardar cambios",
+		admin_btn_delete_current: "Eliminar actual",
+		admin_btn_cancel_edit: "Cancelar edicion",
+		admin_status_ready: "Listo",
+		admin_status_no_exact_match: "No hay coincidencia exacta del handle. Puedes crear un nuevo registro.",
+		admin_status_matched_handles: "{count} handles coinciden",
+		admin_status_handle_required: "El handle es obligatorio",
+		admin_status_submitting: "Enviando...",
+		admin_status_updated_success: "Actualizado correctamente",
+		admin_status_created_success: "Creado correctamente",
+		admin_alert_updated_success: "Perfil actualizado correctamente.",
+		admin_alert_created_success: "Perfil creado correctamente.",
+	},
+};
+function renderLanguageSwitcher(id: string): string {
+	return `
+		<select id="${escapeHtml(id)}" class="lang-switch" aria-label="Language">
+			<option value="en">English</option>
+			<option value="zh-CN">&#31616;&#20307;&#20013;&#25991;</option>
+			<option value="zh-TW">&#32321;&#39636;&#20013;&#25991;</option>
+			<option value="ja">&#26085;&#26412;&#35486;</option>
+			<option value="ko">&#54620;&#44397;&#50612;</option>
+			<option value="es">Espa&#241;ol</option>
+		</select>
+	`;
+}
+function renderI18nScript(pageTitleKey: string): string {
+	const localesJson = JSON.stringify(LOCALE_CODES).replaceAll("<", "\\u003c").replaceAll("</", "<\\/");
+	const messagesJson = JSON.stringify(I18N_MESSAGES).replaceAll("<", "\\u003c").replaceAll("</", "<\\/");
+	return `
+		<script>
+			(function () {
+				const storageKey = "ui_lang";
+				const locales = ${localesJson};
+				const messages = ${messagesJson};
+				const pageTitleKey = ${JSON.stringify(pageTitleKey)};
+
+				function normalizeLang(input) {
+					const text = String(input || "").trim();
+					if (!text) return "";
+					const lower = text.toLowerCase();
+					if (lower === "zh-cn" || lower === "zh-hans" || lower === "zh") return "zh-CN";
+					if (lower === "zh-tw" || lower === "zh-hant" || lower === "zh-hk") return "zh-TW";
+					if (lower.startsWith("ja")) return "ja";
+					if (lower.startsWith("ko")) return "ko";
+					if (lower.startsWith("es")) return "es";
+					if (lower.startsWith("en")) return "en";
+					const direct = locales.find(function (item) { return item.toLowerCase() === lower; });
+					return direct || "";
+				}
+
+				function pickLang() {
+					const url = new URL(window.location.href);
+					const fromUrl = normalizeLang(url.searchParams.get("lang"));
+					if (fromUrl) return fromUrl;
+					const fromStorage = normalizeLang(localStorage.getItem(storageKey));
+					if (fromStorage) return fromStorage;
+					const fromBrowser = normalizeLang(navigator.language || "");
+					return fromBrowser || "en";
+				}
+
+				function tr(lang, key, fallback) {
+					const pack = messages[lang] || messages.en || {};
+					return pack[key] || fallback || "";
+				}
+
+				function withLang(raw, lang) {
+					if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return raw;
+					try {
+						const next = new URL(raw, window.location.origin);
+						next.searchParams.set("lang", lang);
+						const query = next.searchParams.toString();
+						return next.pathname + (query ? "?" + query : "") + (next.hash || "");
+					} catch {
+						return raw;
+					}
+				}
+
+				const lang = pickLang();
+				localStorage.setItem(storageKey, lang);
+				document.documentElement.lang = lang;
+				window.__uiLang = lang;
+				window.__I18N_MESSAGES = messages;
+				window.__t = function (key, fallback) {
+					return tr(lang, key, fallback);
+				};
+
+				const url = new URL(window.location.href);
+				if (url.searchParams.get("lang") !== lang) {
+					url.searchParams.set("lang", lang);
+					history.replaceState(null, "", url.pathname + "?" + url.searchParams.toString() + url.hash);
+				}
+
+				document.querySelectorAll("[data-i18n]").forEach(function (el) {
+					const key = el.getAttribute("data-i18n");
+					if (!key) return;
+					el.textContent = tr(lang, key, el.textContent || "");
+				});
+				document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+					const key = el.getAttribute("data-i18n-placeholder");
+					if (!key) return;
+					if (!(el instanceof HTMLInputElement) && !(el instanceof HTMLTextAreaElement)) return;
+					el.placeholder = tr(lang, key, el.placeholder || "");
+				});
+
+				if (pageTitleKey) {
+					document.title = tr(lang, pageTitleKey, document.title);
+				}
+
+				document.querySelectorAll("a[href]").forEach(function (el) {
+					const raw = el.getAttribute("href") || "";
+					const nextHref = withLang(raw, lang);
+					if (nextHref && nextHref !== raw) el.setAttribute("href", nextHref);
+				});
+
+				document.querySelectorAll("select option").forEach(function (el) {
+					const raw = el.getAttribute("value") || "";
+					const nextValue = withLang(raw, lang);
+					if (nextValue && nextValue !== raw) el.setAttribute("value", nextValue);
+				});
+
+				document.querySelectorAll(".lang-switch").forEach(function (el) {
+					if (!(el instanceof HTMLSelectElement)) return;
+					el.value = lang;
+					el.addEventListener("change", function () {
+						const nextLang = normalizeLang(el.value) || "en";
+						localStorage.setItem(storageKey, nextLang);
+						const nextUrl = new URL(window.location.href);
+						nextUrl.searchParams.set("lang", nextLang);
+						window.location.href = nextUrl.toString();
+					});
+				});
+			})();
+		</script>
+	`;
+}
+
 function renderLeaderboardRows(rows: ProfileRecord[]): string {
 	if (rows.length === 0) {
 		return '<li class="empty">No data yet. Add records in the admin panel.</li>';
@@ -145,6 +658,15 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				gap: 12px;
 				flex-wrap: nowrap;
 			}
+			.lang-switch {
+				height: 36px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 10px;
+				font: inherit;
+			}
 			.header-right {
 				display: flex;
 				align-items: center;
@@ -249,6 +771,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					box-shadow: none;
 				}
 				.header h1 { font-size: 20px; }
+				.lang-switch {
+					height: 32px;
+					font-size: 12px;
+					padding: 0 8px;
+				}
 				.header-filter {
 					display: grid;
 					grid-template-columns: 116px 1fr;
@@ -532,27 +1059,29 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
 			<div class="age-gate-box">
-				<h2>Age Confirmation</h2>
-				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
 				<div class="age-gate-actions">
-					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
-					<button class="age-btn no" id="ageNo">No</button>
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
 				</div>
 			</div>
 		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<section class="panel">
 			<header class="header">
 				<div class="header-main">
 					<div class="header-left">
 						<div class="header-title-row">
-							<h1>Ranking Page</h1>
+							<h1 data-i18n="heading_ranking">Ranking Page</h1>
+							${renderLanguageSwitcher("rankingLangSwitch")}
 							<div class="mobile-nav-row">
 								<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-									<option value="/" selected>Ranking Page</option>
-									<option value="/admin">Add new</option>
-									<option value="/dashboard">Star Map</option>
-									<option value="/wiki">Fisting Wiki</option>
-									<option value="/about">About</option>
+									<option value="/" selected data-i18n="nav_ranking">Ranking Page</option>
+									<option value="/admin" data-i18n="nav_add">Add new</option>
+									<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+									<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
+									<option value="/about" data-i18n="nav_about">About</option>
 								</select>
 								<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
 							</div>
@@ -560,18 +1089,18 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 						<div class="header-right">
 							<div class="header-filter">
-								<label class="mobile-field-label" for="rankCountryFilter">country(region)<span class="label-globe" aria-hidden="true"></span></label>
+								<label class="mobile-field-label" for="rankCountryFilter" data-i18n="country_region">country(region)<span class="label-globe" aria-hidden="true"></span></label>
 								<select id="rankCountryFilter" aria-label="Country (Region)">
-									<option value="">All</option>
+									<option value="" data-i18n="all_option">All</option>
 								</select>
 								<div id="rankCountryFilterCustom" class="mobile-select-enhanced"></div>
 							</div>
 						<nav class="top-nav">
-							<a class="nav-btn primary active" href="/">Ranking Page</a>
-							<a class="nav-btn secondary" href="/admin">Add new</a>
-							<a class="nav-btn secondary" href="/dashboard">Star Map</a>
-							<a class="nav-btn secondary" href="/wiki">Fisting Wiki</a>
-							<a class="nav-btn secondary" href="/about">About</a>
+							<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Ranking Page</a>
+							<a class="nav-btn secondary" href="/admin" data-i18n="nav_add">Add new</a>
+							<a class="nav-btn secondary" href="/dashboard" data-i18n="nav_star">Star Map</a>
+							<a class="nav-btn secondary" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+							<a class="nav-btn secondary" href="/about" data-i18n="nav_about">About</a>
 						</nav>
 					</div>
 				</div>
@@ -580,6 +1109,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				${renderLeaderboardRows(rows)}
 			</ol>
 		</section>
+		${renderI18nScript("page_title_ranking")}
 		<script>
 			(function () {
 				const initialRows = ${serializedRows};
@@ -766,7 +1296,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				});
 
 				noBtn.addEventListener('click', function () {
-					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
 			})();
 		</script>
@@ -845,6 +1376,15 @@ export function renderAdminPage(): string {
 			}
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.lang-switch {
+				height: 36px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 10px;
+				font: inherit;
+			}
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
 				width: 100%;
@@ -1043,6 +1583,11 @@ export function renderAdminPage(): string {
 				}
 				html.mobile-select-ready .mobile-nav { display: none; }
 				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.lang-switch {
+					height: 32px;
+					font-size: 12px;
+					padding: 0 8px;
+				}
 				.mobile-nav-row .mobile-select-trigger {
 					width: 34px;
 					height: 34px;
@@ -1132,46 +1677,48 @@ export function renderAdminPage(): string {
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
 			<div class="age-gate-box">
-				<h2>Age Confirmation</h2>
-				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
 				<div class="age-gate-actions">
-					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
-					<button class="age-btn no" id="ageNo">No</button>
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
 				</div>
 			</div>
 		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<div class="wrap">
 			<section class="card head-card">
 				<div class="head">
 					<div class="head-title">
-						<h1>Add new</h1>
+						<h1 data-i18n="heading_add">Add new</h1>
+						${renderLanguageSwitcher("adminLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="adminPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/">Ranking Page</option>
-								<option value="/admin" selected>Add new</option>
-								<option value="/dashboard">Star Map</option>
-								<option value="/wiki">Fisting Wiki</option>
-								<option value="/about">About</option>
+								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+								<option value="/admin" selected data-i18n="nav_add">Add new</option>
+								<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
+								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
 							<div id="adminPageNavCustom" class="mobile-select-enhanced"></div>
 						</div>
 					</div>
 					<nav class="top-nav">
-						<a class="nav-btn" href="/">Ranking Page</a>
-						<a class="nav-btn primary active" href="/admin">Add new</a>
-						<a class="nav-btn" href="/dashboard">Star Map</a>
-						<a class="nav-btn" href="/wiki">Fisting Wiki</a>
-						<a class="nav-btn" href="/about">About</a>
+						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+						<a class="nav-btn primary active" href="/admin" data-i18n="nav_add">Add new</a>
+						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
 				</div>
 			</section>
 
 			<section class="card">
 				<div class="toolbar">
-					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (supports partial match, e.g. @tak)" />
+					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (supports partial match, e.g. @tak)" data-i18n-placeholder="admin_search_placeholder" />
 					<datalist id="handleSuggestions"></datalist>
-					<button id="searchBtn">Search</button>
-					<button id="resetBtn" class="secondary">Reset</button>
+					<button id="searchBtn" data-i18n="admin_search_btn">Search</button>
+					<button id="resetBtn" class="secondary" data-i18n="admin_reset_btn">Reset</button>
 				</div>
 			</section>
 
@@ -1179,62 +1726,63 @@ export function renderAdminPage(): string {
 				<form id="profileForm" class="form">
 					<input type="hidden" id="id" />
 					<div class="field identity-field">
-						<label for="name">Display Name</label>
-						<input id="name" placeholder="Display name" />
+						<label for="name" data-i18n="admin_label_display_name">Display Name</label>
+						<input id="name" placeholder="Display name" data-i18n-placeholder="admin_ph_display_name" />
 					</div>
 					<div class="field identity-field">
-						<label for="handle">X Handle</label>
-						<input id="handle" placeholder="Handle (e.g. @demo)" required />
+						<label for="handle" data-i18n="admin_label_x_handle">X Handle</label>
+						<input id="handle" placeholder="Handle (e.g. @demo)" data-i18n-placeholder="admin_ph_x_handle" required />
 					</div>
 					<div class="field identity-field">
-						<label for="orientation">Orientation</label>
-						<input id="orientation" value="Gay" placeholder="Orientation" />
+						<label for="orientation" data-i18n="admin_label_orientation">Orientation</label>
+						<input id="orientation" value="Gay" placeholder="Orientation" data-i18n-placeholder="admin_ph_orientation" />
 					</div>
 					<div class="field identity-field">
-						<label for="followers">Fans Count</label>
-						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" />
+						<label for="followers" data-i18n="admin_label_fans_count">Fans Count</label>
+						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" data-i18n-placeholder="admin_ph_fans_count" />
 					</div>
 					<div class="field full">
-						<label for="locationSearch">District / Region / Country (Region)</label>
+						<label for="locationSearch" data-i18n="admin_label_location">District / Region / Country (Region)</label>
 						<div class="location-search-wrap">
-						<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" value="Itabashi, Tokyo, Japan" autocomplete="off" />
+						<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" data-i18n-placeholder="admin_ph_location_search" value="Itabashi, Tokyo, Japan" autocomplete="off" />
 							<div id="locationDropdown" class="location-dropdown"></div>
 						</div>
 						<datalist id="locationSuggestions"></datalist>
 						<input id="country" type="hidden" value="Japan" />
 						<input id="region" type="hidden" value="Tokyo" />
 						<input id="district" type="hidden" value="Itabashi" />
-						<div class="location-selected" id="locationSelected">Selected: Itabashi / Tokyo / Japan</div>
+						<div class="location-selected" id="locationSelected"><span data-i18n="admin_selected_prefix">Selected:</span> Itabashi / Tokyo / Japan</div>
 					</div>
 					<div class="field full">
-						<label>Location Map Preview</label>
+						<label data-i18n="admin_label_map_preview">Location Map Preview</label>
 						<div id="locationPreview" class="location-preview"></div>
 					</div>
 					<div class="field full">
-						<label for="profileUrl">Profile URL</label>
-						<input id="profileUrl" placeholder="Profile URL" />
+						<label for="profileUrl" data-i18n="admin_label_profile_url">Profile URL</label>
+						<input id="profileUrl" placeholder="Profile URL" data-i18n-placeholder="admin_ph_profile_url" />
 					</div>
 					<div class="field full">
-						<label for="avatar">Avatar URL</label>
+						<label for="avatar" data-i18n="admin_label_avatar_url">Avatar URL</label>
 						<div class="avatar-inline">
 							<img id="avatarPreview" class="avatar-preview" src="" alt="Avatar preview" />
-							<input id="avatar" placeholder="Avatar URL" />
+							<input id="avatar" placeholder="Avatar URL" data-i18n-placeholder="admin_ph_avatar_url" />
 						</div>
 					</div>
 					<div class="field full">
-						<label for="bio">Bio</label>
-						<textarea id="bio" placeholder="Bio"></textarea>
+						<label for="bio" data-i18n="admin_label_bio">Bio</label>
+						<textarea id="bio" placeholder="Bio" data-i18n-placeholder="admin_ph_bio"></textarea>
 					</div>
 					<div class="full actions">
-						<button type="submit" id="submitBtn">Create</button>
-						<button type="button" id="deleteBtn" class="danger" disabled>Delete Current</button>
-						<button type="button" id="cancelEditBtn" class="secondary">Cancel Edit</button>
+						<button type="submit" id="submitBtn" data-i18n="admin_btn_create">Create</button>
+						<button type="button" id="deleteBtn" class="danger" data-i18n="admin_btn_delete_current" disabled>Delete Current</button>
+						<button type="button" id="cancelEditBtn" class="secondary" data-i18n="admin_btn_cancel_edit">Cancel Edit</button>
 					</div>
 				</form>
-				<p class="status" id="status">Ready</p>
+				<p class="status" id="status" data-i18n="admin_status_ready">Ready</p>
 			</section>
 		</div>
 
+		${renderI18nScript("page_title_admin")}
 		<script src="/assets/leaflet.js"></script>
 <script>
 			let currentRows = [];
@@ -1273,6 +1821,23 @@ export function renderAdminPage(): string {
 				deleteBtn: document.getElementById('deleteBtn'),
 				cancelEditBtn: document.getElementById('cancelEditBtn')
 			};
+
+			function t(key, fallback) {
+				if (typeof window.__t === 'function') {
+					return window.__t(key, fallback || '');
+				}
+				return fallback || '';
+			}
+
+			function fmt(template, vars) {
+				return String(template || '').replace(/\{(\w+)\}/g, function (_, name) {
+					return String(vars && vars[name] != null ? vars[name] : '');
+				});
+			}
+
+			function selectedText(district, region, country) {
+				return t('admin_selected_prefix', 'Selected:') + ' ' + district + ' / ' + region + ' / ' + country;
+			}
 
 			function esc(v) {
 				return String(v || '')
@@ -1523,7 +2088,7 @@ export function renderAdminPage(): string {
 				els.region.value = nextRegion;
 				els.district.value = nextDistrict;
 				els.locationSearch.value = buildLocationLabel({ country: nextCountry, region: nextRegion, district: nextDistrict, label: '' });
-				els.locationSelected.textContent = 'Selected: ' + nextDistrict + ' / ' + nextRegion + ' / ' + nextCountry;
+				els.locationSelected.textContent = selectedText(nextDistrict, nextRegion, nextCountry);
 				renderLocationPreview(Number(item.lat), Number(item.lng));
 				els.locationDropdown.classList.remove('show');
 				els.locationDropdown.style.display = 'none';
@@ -1601,7 +2166,7 @@ export function renderAdminPage(): string {
 			}
 
 			function setEditingState(isEditing) {
-				els.submitBtn.textContent = isEditing ? 'Save Changes' : 'Create';
+				els.submitBtn.textContent = isEditing ? t('admin_btn_save_changes', 'Save Changes') : t('admin_btn_create', 'Create');
 				els.deleteBtn.disabled = !isEditing;
 			}
 
@@ -1646,7 +2211,7 @@ export function renderAdminPage(): string {
 				els.region.value = 'Tokyo';
 				els.district.value = 'Itabashi';
 				els.locationSearch.value = 'Itabashi, Tokyo, Japan';
-				els.locationSelected.textContent = 'Selected: Itabashi / Tokyo / Japan';
+				els.locationSelected.textContent = selectedText('Itabashi', 'Tokyo', 'Japan');
 				renderLocationPreview(35.7512, 139.7093);
 				updateAvatarPreview();
 				setEditingState(false);
@@ -1666,7 +2231,7 @@ export function renderAdminPage(): string {
 				els.region.value = (row.region || row.province) || 'Tokyo';
 				els.district.value = (row.district || row.city) || 'Itabashi';
 				els.locationSearch.value = [els.district.value, els.region.value, els.country.value].filter(Boolean).join(', ');
-				els.locationSelected.textContent = 'Selected: ' + els.district.value + ' / ' + els.region.value + ' / ' + els.country.value;
+				els.locationSelected.textContent = selectedText(els.district.value, els.region.value, els.country.value);
 				refreshLocationPreviewByValue();
 				updateAvatarPreview();
 				setEditingState(true);
@@ -1684,7 +2249,7 @@ export function renderAdminPage(): string {
 					return String(row.handle || '').toLowerCase() === String(handle || '').toLowerCase();
 				});
 				if (!target) {
-					setStatus('No exact handle match. You can create a new record.');
+					setStatus(t('admin_status_no_exact_match', 'No exact handle match. You can create a new record.'));
 					resetForm();
 					els.handle.value = handle || '';
 					return;
@@ -1711,7 +2276,7 @@ export function renderAdminPage(): string {
 					return String(row.handle || '').toLowerCase().includes(keyword.toLowerCase());
 				}).slice(0, 20);
 				renderSuggestions(currentRows);
-				setStatus('Matched ' + currentRows.length + ' handles');
+				setStatus(fmt(t('admin_status_matched_handles', 'Matched {count} handles'), { count: currentRows.length }));
 				selectByHandle(keyword);
 			}
 
@@ -1734,7 +2299,7 @@ export function renderAdminPage(): string {
 			async function submitForm(event) {
 				event.preventDefault();
 				if (!els.handle.value.trim()) {
-					setStatus('Handle is required');
+					setStatus(t('admin_status_handle_required', 'Handle is required'));
 					return;
 				}
 
@@ -1743,7 +2308,7 @@ export function renderAdminPage(): string {
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
 
-				setStatus('Submitting...');
+				setStatus(t('admin_status_submitting', 'Submitting...'));
 				const res = await fetch(url, {
 					method,
 					headers: { 'content-type': 'application/json' },
@@ -1756,8 +2321,8 @@ export function renderAdminPage(): string {
 					return;
 				}
 
-				setStatus(isUpdate ? 'Updated successfully' : 'Created successfully');
-				showSuccessDialog(isUpdate ? 'Profile updated successfully.' : 'Profile created successfully.');
+				setStatus(isUpdate ? t('admin_status_updated_success', 'Updated successfully') : t('admin_status_created_success', 'Created successfully'));
+				showSuccessDialog(isUpdate ? t('admin_alert_updated_success', 'Profile updated successfully.') : t('admin_alert_created_success', 'Profile created successfully.'));
 				resetForm();
 				els.handleSearch.value = payload.handle;
 				await loadSuggestions();
@@ -1837,7 +2402,7 @@ export function renderAdminPage(): string {
 				els.locationDropdown.classList.remove('show');
 				els.locationDropdown.style.display = 'none';
 				resetForm();
-				setStatus('Ready');
+				setStatus(t('admin_status_ready', 'Ready'));
 			});
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
@@ -1916,7 +2481,8 @@ export function renderAdminPage(): string {
 				});
 
 				noBtn.addEventListener('click', function () {
-					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
 			})();
 		</script>
@@ -1975,6 +2541,15 @@ export function renderDashboardPage(): string {
 				gap: 10px;
 			}
 			.head-meta { display: grid; gap: 6px; }
+			.lang-switch {
+				height: 36px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 10px;
+				font: inherit;
+			}
 			.top-nav {
 				display: flex;
 				flex-wrap: wrap;
@@ -2101,6 +2676,11 @@ export function renderDashboardPage(): string {
 					box-shadow: none;
 				}
 				.head { align-items: center; }
+				.lang-switch {
+					height: 32px;
+					font-size: 12px;
+					padding: 0 8px;
+				}
 				.top-nav { display: none; }
 				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
 				html.mobile-select-ready .mobile-nav { display: none; }
@@ -2204,38 +2784,40 @@ export function renderDashboardPage(): string {
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
 			<div class="age-gate-box">
-				<h2>Age Confirmation</h2>
-				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
 				<div class="age-gate-actions">
-					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
-					<button class="age-btn no" id="ageNo">No</button>
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
 				</div>
 			</div>
 		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<div class="wrap">
 			<section class="card head-card">
 				<div class="head">
 					<div class="head-title">
 						<div class="head-meta">
-							<h1>Star Map</h1>
+							<h1 data-i18n="heading_star">Star Map</h1>
 						</div>
+						${renderLanguageSwitcher("dashboardLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="dashboardPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/">Ranking Page</option>
-								<option value="/admin">Add new</option>
-								<option value="/dashboard" selected>Star Map</option>
-								<option value="/wiki">Fisting Wiki</option>
-								<option value="/about">About</option>
+								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+								<option value="/admin" data-i18n="nav_add">Add new</option>
+								<option value="/dashboard" selected data-i18n="nav_star">Star Map</option>
+								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
+								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
 							<div id="dashboardPageNavCustom" class="mobile-select-enhanced"></div>
 						</div>
 					</div>
 					<nav class="top-nav">
-						<a class="nav-btn" href="/">Ranking Page</a>
-						<a class="nav-btn" href="/admin">Add new</a>
-						<a class="nav-btn primary active" href="/dashboard">Star Map</a>
-						<a class="nav-btn" href="/wiki">Fisting Wiki</a>
-						<a class="nav-btn" href="/about">About</a>
+						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
+						<a class="nav-btn primary active" href="/dashboard" data-i18n="nav_star">Star Map</a>
+						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
 				</div>
 			</section>
@@ -2256,6 +2838,7 @@ export function renderDashboardPage(): string {
 			</section>
 		</div>
 
+		${renderI18nScript("page_title_dashboard")}
 		<script src="/assets/leaflet.js"></script>
 		<script>
 			const statusEl = document.getElementById('status');
@@ -2558,7 +3141,8 @@ export function renderDashboardPage(): string {
 				});
 
 				noBtn.addEventListener('click', function () {
-					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
 			})();
 		</script>
@@ -2612,6 +3196,15 @@ export function renderAboutPage(): string {
 				justify-content: space-between;
 				width: 100%;
 				gap: 10px;
+			}
+			.lang-switch {
+				height: 36px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 10px;
+				font: inherit;
 			}
 			.head h1 { margin: 0; }
 			.top-nav {
@@ -2722,6 +3315,11 @@ export function renderAboutPage(): string {
 				.head { align-items: center; }
 				.top-nav { display: none; }
 				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
+				.lang-switch {
+					height: 32px;
+					font-size: 12px;
+					padding: 0 8px;
+				}
 				html.mobile-select-ready .mobile-nav { display: none; }
 				html.mobile-select-ready .mobile-select-enhanced { display: block; }
 				.mobile-nav-row .mobile-select-trigger {
@@ -2784,43 +3382,43 @@ export function renderAboutPage(): string {
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
 			<div class="age-gate-box">
-				<h2>Age Confirmation</h2>
-				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
 				<div class="age-gate-actions">
-					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
-					<button class="age-btn no" id="ageNo">No</button>
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
 				</div>
 			</div>
 		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 
 		<div class="wrap">
 			<section class="card head head-card">
 				<div class="head-title">
-					<h1>About</h1>
+					<h1 data-i18n="heading_about">About</h1>
+					${renderLanguageSwitcher("aboutLangSwitch")}
 					<div class="mobile-nav-row">
 						<select id="aboutPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-							<option value="/">Ranking Page</option>
-							<option value="/admin">Add new</option>
-							<option value="/dashboard">Star Map</option>
-							<option value="/wiki">Fisting Wiki</option>
-							<option value="/about" selected>About</option>
+							<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+							<option value="/admin" data-i18n="nav_add">Add new</option>
+							<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
+							<option value="/about" selected data-i18n="nav_about">About</option>
 						</select>
 						<div id="aboutPageNavCustom" class="mobile-select-enhanced"></div>
 					</div>
 				</div>
 				<nav class="top-nav">
-					<a class="nav-btn" href="/">Ranking Page</a>
-					<a class="nav-btn" href="/admin">Add new</a>
-					<a class="nav-btn" href="/dashboard">Star Map</a>
-					<a class="nav-btn" href="/wiki">Fisting Wiki</a>
-					<a class="nav-btn primary active" href="/about">About</a>
+					<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
+					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+					<a class="nav-btn primary active" href="/about" data-i18n="nav_about">About</a>
 				</nav>
 			</section>
 
 			<section class="card">
-				<div class="content">Hello,I'm a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community.The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests.If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out.You can contact me on X: @fistingguide Or by email: fistingguide@proton.meIf you prefer not to appear on the website, just let me know and I will remove your listing.Thank you and I hope this project can help the community grow.
-
-</div>
+				<div class="content" data-i18n="about_description">Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.</div>
 				<div class="contact-actions">
 					<a class="contact-btn" href="mailto:fistingguide@proton.me">Email</a>
 					<a class="contact-btn" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer">X</a>
@@ -2828,6 +3426,7 @@ export function renderAboutPage(): string {
 			</section>
 		</div>
 
+		${renderI18nScript("page_title_about")}
 		<script>
 			(function () {
 				const select = document.getElementById('aboutPageNav');
@@ -2899,7 +3498,8 @@ export function renderAboutPage(): string {
 				});
 
 				noBtn.addEventListener('click', function () {
-					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
 			})();
 		</script>
@@ -2955,6 +3555,15 @@ export function renderWikiPage(): string {
 				width: 100%;
 				gap: 10px;
 			}
+			.lang-switch {
+				height: 36px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 10px;
+				font: inherit;
+			}
 			.head h1 { margin: 0; font-size: 34px; }
 			.head p { margin: 0; color: var(--muted); }
 			.top-nav { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
@@ -2971,6 +3580,15 @@ export function renderWikiPage(): string {
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.lang-switch {
+				height: 36px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 10px;
+				font: inherit;
+			}
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
 				width: 100%;
@@ -3118,6 +3736,11 @@ export function renderWikiPage(): string {
 				.top-nav { display: none; }
 				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
 				.head { align-items: center; }
+				.lang-switch {
+					height: 32px;
+					font-size: 12px;
+					padding: 0 8px;
+				}
 				html.mobile-select-ready .mobile-nav { display: none; }
 				html.mobile-select-ready .mobile-select-enhanced { display: block; }
 				.mobile-nav-row .mobile-select-trigger {
@@ -3184,46 +3807,48 @@ export function renderWikiPage(): string {
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
 			<div class="age-gate-box">
-				<h2>Age Confirmation</h2>
-				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
 				<div class="age-gate-actions">
-					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
-					<button class="age-btn no" id="ageNo">No</button>
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
 				</div>
 			</div>
 		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 
 		<div class="wrap">
 			<section class="card head-card">
 				<div class="head">
 					<div class="head-title">
 						<div>
-							<h1>Fisting Wiki</h1>
+							<h1 data-i18n="heading_wiki">Fisting Wiki</h1>
 						</div>
+						${renderLanguageSwitcher("wikiLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="wikiPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/">Ranking Page</option>
-								<option value="/admin">Add new</option>
-								<option value="/dashboard">Star Map</option>
-								<option value="/wiki" selected>Fisting Wiki</option>
-								<option value="/about">About</option>
+								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+								<option value="/admin" data-i18n="nav_add">Add new</option>
+								<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+								<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
+								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
 							<div id="wikiPageNavCustom" class="mobile-select-enhanced"></div>
 						</div>
 					</div>
 					<nav class="top-nav">
-						<a class="nav-btn" href="/">Ranking Page</a>
-						<a class="nav-btn" href="/admin">Add new</a>
-						<a class="nav-btn" href="/dashboard">Star Map</a>
-						<a class="nav-btn primary active" href="/wiki">Fisting Wiki</a>
-						<a class="nav-btn" href="/about">About</a>
+						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
+						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+						<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
 				</div>
 			</section>
 
 			<section class="card">
 				<div class="submit-bar">
-					<div class="submit-hint">submit my account to FistingGuide</div>
+					<div class="submit-hint" data-i18n="wiki_submit_hint">submit my account to FistingGuide</div>
 					<a class="submit-btn" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Submit account to FistingGuide"></a>
 				</div>
 				<p class="status" id="status"></p>
@@ -3234,6 +3859,7 @@ export function renderWikiPage(): string {
 			</section>
 		</div>
 
+		${renderI18nScript("page_title_wiki")}
 		<script>
 			let currentRows = [];
 			let editingId = null;
@@ -3294,7 +3920,7 @@ export function renderWikiPage(): string {
 					return '<article class="post-card">' +
 						'<a class="post-link" href="/wiki/article/' + row.id + '">' +
 							'<h3 class="post-title">' + esc(row.title) + '</h3>' +
-							'<div class="post-meta">By ' + esc(row.author || 'fistingguide') + ' �� ID #' + row.id + ' �� Updated ' + esc(row.updated_at || row.created_at || '') + '</div>' +
+							'<div class="post-meta">By ' + esc(row.author || 'fistingguide') + ' 闂備浇娉曢崰鎰板几婵犳艾绠?ID #' + row.id + ' 闂備浇娉曢崰鎰板几婵犳艾绠?Updated ' + esc(row.updated_at || row.created_at || '') + '</div>' +
 							'<div class="post-body">' + esc(row.content || '') + '</div>' +
 						'</a>' +
 						'<div class="post-actions">' +
@@ -3465,7 +4091,8 @@ export function renderWikiPage(): string {
 				});
 
 				noBtn.addEventListener('click', function () {
-					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
 			})();
 		</script>
@@ -3543,6 +4170,12 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				display: grid;
 				gap: 14px;
 			}
+			.article-title-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+			}
 			.article h1 { margin: 0; font-size: 44px; line-height: 1.15; }
 			.meta { color: var(--muted); font-size: 14px; }
 			.article-body {
@@ -3594,6 +4227,11 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				}
 				.top-nav { display: none; }
 				.mobile-nav-row { display: block; }
+				.lang-switch {
+					height: 32px;
+					font-size: 12px;
+					padding: 0 8px;
+				}
 				.article h1 { font-size: 30px; }
 				.article-body { font-size: 16px; }
 			}
@@ -3602,41 +4240,46 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
 			<div class="age-gate-box">
-				<h2>Age Confirmation</h2>
-				<p>You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
 				<div class="age-gate-actions">
-					<button class="age-btn yes" id="ageYes">Yes, I am 18+</button>
-					<button class="age-btn no" id="ageNo">No</button>
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
 				</div>
 			</div>
 		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 
 		<div class="wrap">
 			<section class="card head">
 				<nav class="top-nav">
-					<a class="nav-btn" href="/">Ranking Page</a>
-					<a class="nav-btn" href="/admin">Add new</a>
-					<a class="nav-btn" href="/dashboard">Star Map</a>
-					<a class="nav-btn primary active" href="/wiki">Fisting Wiki</a>
-					<a class="nav-btn" href="/about">About</a>
+					<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
+					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+					<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 				</nav>
 				<div class="mobile-nav-row">
 					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-						<option value="/">Ranking Page</option>
-						<option value="/admin">Add new</option>
-						<option value="/dashboard">Star Map</option>
-						<option value="/wiki" selected>Fisting Wiki</option>
-						<option value="/about">About</option>
+						<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+						<option value="/admin" data-i18n="nav_add">Add new</option>
+						<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+						<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
+						<option value="/about" data-i18n="nav_about">About</option>
 					</select>
 				</div>
 			</section>
 			<section class="card article">
-				<h1>${title}</h1>
-				<div class="meta">By ${author} �� Updated ${updated}</div>
+				<div class="article-title-row">
+					<h1>${title}</h1>
+					${renderLanguageSwitcher("wikiArticleLangSwitch")}
+				</div>
+				<div class="meta"><span data-i18n="article_by">By</span> ${author} | <span data-i18n="article_updated">Updated</span> ${updated}</div>
 				<div class="article-body">${content}</div>
 			</section>
 		</div>
 
+		${renderI18nScript("")}
 		<script>
 			(function () {
 				const key = 'age_verified_18_v1';
@@ -3651,7 +4294,8 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 					overlay.style.display = 'none';
 				});
 				noBtn.addEventListener('click', function () {
-					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">Access denied. This website is for adults 18+ only.</div>';
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
 			})();
 		</script>
@@ -3659,6 +4303,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 </html>
 `;
 }
+
 
 
 
