@@ -33,10 +33,76 @@ function escapeHtml(value: string): string {
 		.replaceAll("'", "&#39;");
 }
 
-type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es";
+type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "th";
 
-const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es"];
+const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "th"];
 const RANKING_NOTICE_ZH_CN = "本网站地图上显示的所有位置均为示意标注，并非任何人的真实地址或实际居住位置。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。为保护个人隐私，地图上的位置均为近似或随机生成，不具备任何现实定位意义。如果你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的地点（例如冰岛或非洲的某个位置）。本网站不会收集、存储或公开任何个人的具体地址信息。";
+const TH_MESSAGES: Record<string, string> = {
+	page_title_ranking: "อันดับครีเอเตอร์",
+	page_title_admin: "แผงผู้ดูแลฐานข้อมูล",
+	page_title_dashboard: "แผนที่",
+	page_title_about: "เกี่ยวกับ",
+	page_title_wiki: "Fisting Wiki",
+	page_title_wiki_article: "Fisting Wiki",
+	heading_ranking: "หน้าจัดอันดับ",
+	heading_add: "เพิ่มใหม่",
+	heading_star: "แผนที่",
+	heading_about: "เกี่ยวกับ",
+	heading_wiki: "Fisting Wiki",
+	nav_ranking: "หน้าจัดอันดับ",
+	nav_add: "เพิ่มใหม่",
+	nav_star: "แผนที่",
+	nav_wiki: "Fisting Wiki",
+	nav_about: "เกี่ยวกับ",
+	country_region: "ประเทศ(ภูมิภาค)",
+	all_option: "ทั้งหมด",
+	ranking_location_notice:
+		"ตำแหน่งทั้งหมดที่แสดงบนแผนที่ของเว็บไซต์นี้เป็นเพียงตำแหน่งตัวอย่าง ไม่ใช่ที่อยู่จริงหรือที่อยู่อาศัยจริงของบุคคลใด ตำแหน่งเหล่านี้อาจอ้างอิงข้อมูลสาธารณะเพื่อระบุโดยประมาณ แต่ถูกทำให้คลุมเครือหรือสุ่มไว้โดยเจตนา จึงไม่สอดคล้องกับตำแหน่งที่แม่นยำของใคร และใช้เพื่อแสดงการกระจายตัวโดยรวมของชุมชนเท่านั้น เพื่อปกป้องความเป็นส่วนตัว ตำแหน่งบนแผนที่เป็นตำแหน่งโดยประมาณหรือสุ่มสร้าง และไม่มีความหมายในการระบุตำแหน่งจริง หากคุณไม่ต้องการให้ชื่อหรือหมุดของคุณปรากฏบนแผนที่ สามารถติดต่อฉันได้ตลอดเวลา ฉันจะลบออกหรือแทนที่ด้วยตำแหน่งแบบสุ่มทั้งหมด (เช่น ไอซ์แลนด์ หรือจุดใดจุดหนึ่งในแอฟริกา) เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ข้อมูลที่อยู่แบบเฉพาะเจาะจงของบุคคลใด",
+	age_title: "ยืนยันอายุ",
+	age_desc: "คุณต้องมีอายุ 18 ปีขึ้นไปเพื่อเข้าสู่เว็บไซต์นี้ คุณอายุ 18 ปีขึ้นไปหรือไม่?",
+	age_yes: "ใช่ ฉันอายุ 18+",
+	age_no: "ไม่",
+	age_denied: "ปฏิเสธการเข้าถึง เว็บไซต์นี้สำหรับผู้ใหญ่ 18+ เท่านั้น",
+	article_by: "โดย",
+	article_updated: "อัปเดต",
+	wiki_submit_hint: "ส่งบัญชีของฉันไปยัง FistingGuide",
+	about_description:
+		"สวัสดี ฉันเป็นผู้ที่สนใจ fisting และเพิ่งสร้างเว็บไซต์นำทางแบบเรียบง่ายเพื่อช่วยให้ค้นหาครีเอเตอร์และบัญชีในชุมชนได้รวดเร็วขึ้น เป้าหมายของเว็บไซต์นี้คือช่วยให้ค้นพบครีเอเตอร์ สำรวจเนื้อหาใหม่ และเชื่อมต่อกับผู้ที่มีความสนใจเดียวกันได้ง่ายขึ้น หากคุณมีข้อเสนอแนะ คำติชม หรืออยากร่วมพัฒนาโครงการนี้ สามารถติดต่อฉันได้ที่ X: @fistingguide หรืออีเมล: fistingguide@proton.me หากคุณไม่ต้องการให้แสดงบนเว็บไซต์ แจ้งฉันได้และฉันจะลบรายการของคุณ ขอบคุณ และหวังว่าโครงการนี้จะช่วยให้ชุมชนเติบโต",
+	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X (รองรับบางส่วน เช่น @tak)",
+	admin_search_btn: "ค้นหา",
+	admin_reset_btn: "รีเซ็ต",
+	admin_label_display_name: "ชื่อที่แสดง",
+	admin_ph_display_name: "ชื่อที่แสดง",
+	admin_label_x_handle: "แฮนเดิล X",
+	admin_ph_x_handle: "แฮนเดิล (เช่น @demo)",
+	admin_label_orientation: "รสนิยมทางเพศ",
+	admin_ph_orientation: "รสนิยมทางเพศ",
+	admin_label_fans_count: "จำนวนแฟน",
+	admin_ph_fans_count: "จำนวนแฟน",
+	admin_label_location: "เขต / ภูมิภาค / ประเทศ (ภูมิภาค)",
+	admin_ph_location_search: "ค้นหาประเทศ(ภูมิภาค)หรือเมือง (ค้นหาบนแผนที่)",
+	admin_selected_prefix: "ที่เลือก:",
+	admin_label_map_preview: "ตัวอย่างแผนที่ตำแหน่ง",
+	admin_label_profile_url: "URL โปรไฟล์",
+	admin_ph_profile_url: "URL โปรไฟล์",
+	admin_label_avatar_url: "URL รูปโปรไฟล์",
+	admin_ph_avatar_url: "URL รูปโปรไฟล์",
+	admin_label_bio: "ชีวประวัติ",
+	admin_ph_bio: "ชีวประวัติ",
+	admin_btn_create: "สร้าง",
+	admin_btn_save_changes: "บันทึกการเปลี่ยนแปลง",
+	admin_btn_delete_current: "ลบรายการปัจจุบัน",
+	admin_btn_cancel_edit: "ยกเลิกการแก้ไข",
+	admin_status_ready: "พร้อม",
+	admin_status_no_exact_match: "ไม่พบแฮนเดิลที่ตรงทั้งหมด คุณสามารถสร้างรายการใหม่ได้",
+	admin_status_matched_handles: "พบแฮนเดิลที่ตรงกัน {count} รายการ",
+	admin_status_handle_required: "จำเป็นต้องกรอกแฮนเดิล",
+	admin_status_submitting: "กำลังส่ง...",
+	admin_status_updated_success: "อัปเดตสำเร็จ",
+	admin_status_created_success: "สร้างสำเร็จ",
+	admin_alert_updated_success: "อัปเดตโปรไฟล์สำเร็จ",
+	admin_alert_created_success: "สร้างโปรไฟล์สำเร็จ",
+};
 
 const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	en: {
@@ -434,6 +500,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_updated_success: "Perfil actualizado correctamente.",
 		admin_alert_created_success: "Perfil creado correctamente.",
 	},
+	th: TH_MESSAGES,
 };
 function renderLanguageSwitcher(id: string): string {
 	return `
@@ -444,6 +511,7 @@ function renderLanguageSwitcher(id: string): string {
 			<option value="ja">&#26085;&#26412;&#35486;</option>
 			<option value="ko">&#54620;&#44397;&#50612;</option>
 			<option value="es">Espa&#241;ol</option>
+			<option value="th">ไทย</option>
 		</select>
 	`;
 }
@@ -467,6 +535,7 @@ function renderI18nScript(pageTitleKey: string): string {
 					if (lower.startsWith("ja")) return "ja";
 					if (lower.startsWith("ko")) return "ko";
 					if (lower.startsWith("es")) return "es";
+					if (lower.startsWith("th")) return "th";
 					if (lower.startsWith("en")) return "en";
 					const direct = locales.find(function (item) { return item.toLowerCase() === lower; });
 					return direct || "";
