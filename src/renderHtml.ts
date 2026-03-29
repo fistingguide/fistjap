@@ -71,7 +71,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 							<div class="handle">${safeHandle}</div>
 						</div>
 					</div>
-					<div class="badge">${safeDistrict} / ${safeRegion} / ${safeCountry}</div>
+					<div class="badge location-badge">${safeDistrict} / ${safeRegion} / ${safeCountry}</div>
 					<div class="bio">${safeBio}</div>
 				</li>
 			`;
@@ -318,6 +318,31 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.header h1 { font-size: 22px; }
 				.list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 				.panel { width: 100%; max-width: 100%; }
+				.leaderboard-item {
+					padding: 12px;
+					gap: 8px;
+					min-height: auto;
+				}
+				.rank { display: none; }
+				.card-top .badges { display: none; }
+				.location-badge { display: none; }
+				.identity {
+					grid-template-columns: 56px 1fr;
+					gap: 10px;
+				}
+				.avatar {
+					width: 56px;
+					height: 56px;
+				}
+				.name-link { font-size: 18px; }
+				.handle {
+					margin-top: 2px;
+					font-size: 13px;
+				}
+				.bio {
+					-webkit-line-clamp: 2;
+					line-height: 1.4;
+				}
 			}
 			@media (max-width: 460px) { .list { grid-template-columns: 1fr; } }
 		</style>
@@ -422,7 +447,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 										'<div class="handle">' + safeHandle + '</div>' +
 									'</div>' +
 								'</div>' +
-								'<div class="badge">' + safeDistrict + ' / ' + safeRegion + ' / ' + safeCountry + '</div>' +
+								'<div class="badge location-badge">' + safeDistrict + ' / ' + safeRegion + ' / ' + safeCountry + '</div>' +
 								'<div class="bio">' + safeBio + '</div>' +
 							'</li>';
 					}).join('');
