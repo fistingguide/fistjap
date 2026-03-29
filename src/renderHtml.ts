@@ -169,6 +169,16 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				color: #8B98A5;
 				white-space: nowrap;
 			}
+			.label-globe {
+				display: inline-block;
+				width: 12px;
+				height: 12px;
+				margin-left: 4px;
+				vertical-align: -1px;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18'/%3E%3Cpath d='M12 3c3 3 3 15 0 18'/%3E%3Cpath d='M12 3c-3 3-3 15 0 18'/%3E%3C/svg%3E");
+				background-size: 12px 12px;
+				background-repeat: no-repeat;
+			}
 			.header-filter select {
 				font: inherit;
 				border: 1px solid var(--line);
@@ -217,10 +227,15 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			@media (max-width: 720px) {
 				body { font-size: 13px; }
 				.top-nav { display: none; }
-				.mobile-nav-row { display: block; }
+				.mobile-nav-row { display: block; width: auto; }
 				.header-main { flex-direction: column; align-items: flex-start; }
 				.header-left { width: 100%; }
-				.header-title-row { width: 100%; }
+				.header-title-row {
+					width: 100%;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+				}
 				.header-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
 				.header-filter { width: 100%; min-width: 0; }
 				.mobile-field-label { display: block; }
@@ -234,12 +249,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					box-shadow: none;
 				}
 				.header h1 { font-size: 20px; }
-				.header-filter,
-				.mobile-nav-row {
+				.header-filter {
 					display: grid;
 					grid-template-columns: 116px 1fr;
 					align-items: center;
 					gap: 10px;
+				}
+				.mobile-nav-row {
+					display: flex;
+					align-items: center;
+					justify-content: flex-end;
+					margin-left: auto;
 				}
 				html.mobile-select-ready .header-filter select,
 				html.mobile-select-ready .mobile-nav {
@@ -309,6 +329,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					z-index: 40;
 				}
 				.mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-menu {
+					left: auto;
+					right: 0;
+					min-width: 168px;
+				}
 				.mobile-select-option {
 					width: 100%;
 					border: 0;
@@ -324,6 +349,31 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.mobile-select-option:last-child { border-bottom: 0; }
 				.mobile-select-option.is-selected { color: #E7E9EA; }
 				.mobile-select-option:active { background: #0B0E12; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					background-image: none;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars {
+					display: inline-grid;
+					gap: 4px;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-trigger .nav-bars span {
+					background: #E7E9EA;
+				}
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -496,11 +546,21 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<div class="header-left">
 						<div class="header-title-row">
 							<h1>Ranking Page</h1>
+							<div class="mobile-nav-row">
+								<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+									<option value="/" selected>Ranking Page</option>
+									<option value="/admin">Add new</option>
+									<option value="/dashboard">Star Map</option>
+									<option value="/wiki">Fisting Wiki</option>
+									<option value="/about">About</option>
+								</select>
+								<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
+							</div>
 						</div>
 					</div>
 						<div class="header-right">
 							<div class="header-filter">
-								<label class="mobile-field-label" for="rankCountryFilter">country(region)</label>
+								<label class="mobile-field-label" for="rankCountryFilter">country(region)<span class="label-globe" aria-hidden="true"></span></label>
 								<select id="rankCountryFilter" aria-label="Country (Region)">
 									<option value="">All</option>
 								</select>
@@ -513,17 +573,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							<a class="nav-btn secondary" href="/wiki">Fisting Wiki</a>
 							<a class="nav-btn secondary" href="/about">About</a>
 						</nav>
-						<div class="mobile-nav-row">
-							<label class="mobile-field-label" for="mobilePageNav">navigation</label>
-							<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/" selected>Ranking Page</option>
-								<option value="/admin">Add new</option>
-								<option value="/dashboard">Star Map</option>
-								<option value="/wiki">Fisting Wiki</option>
-								<option value="/about">About</option>
-							</select>
-							<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
-						</div>
 					</div>
 				</div>
 			</header>
@@ -608,8 +657,12 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						const selectedOption = options.find(function (opt) {
 							return String(opt.value) === selectedValue;
 						}) || options[0];
+						const isNavMenu = mountEl.id === 'mobilePageNavCustom';
+						const triggerHtml = isNavMenu
+							? '<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu" aria-haspopup="listbox" aria-expanded="false"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>'
+							: '<button type="button" class="mobile-select-trigger" aria-haspopup="listbox" aria-expanded="false">' + esc(selectedOption ? selectedOption.text : '') + '</button>';
 						mountEl.innerHTML =
-							'<button type="button" class="mobile-select-trigger" aria-haspopup="listbox" aria-expanded="false">' + esc(selectedOption ? selectedOption.text : '') + '</button>' +
+							triggerHtml +
 							'<div class="mobile-select-menu" role="listbox">' +
 								options.map(function (opt) {
 									const value = String(opt.value || '');
