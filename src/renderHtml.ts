@@ -589,6 +589,8 @@ function renderI18nScript(pageTitleKey: string): string {
 					const style = document.createElement("style");
 					style.id = "uniformSelectCss";
 					style.textContent =
+						".uniform-select-enhanced{display:none;}" +
+						".uniform-select-menu{display:none;}" +
 						"@media (max-width: 900px) {" +
 							".uniform-select-enhanced{display:none;width:100%;position:relative;}" +
 							".uniform-select-enhanced.is-lang-switch{width:auto;max-width:100%;}" +
