@@ -1727,6 +1727,7 @@ export function renderAdminPage(): string {
 			datalist { display: none; }
 			@media (max-width: 900px) {
 				body { font-size: 14px; }
+				h1 { font-size: 20px; }
 				.wrap { width: 100%; max-width: 100%; gap: 0; }
 				.card {
 					padding: 12px 0;
@@ -2854,6 +2855,7 @@ export function renderDashboardPage(): string {
 			#map { width: 100%; height: 480px; border-radius: 12px; overflow: hidden; }
 			@media (max-width: 900px) {
 				body { font-size: 14px; }
+				h1 { font-size: 20px; }
 				.wrap { width: 100%; max-width: 100%; gap: 0; }
 				.card {
 					padding: 12px 0;
@@ -3525,6 +3527,7 @@ export function renderAboutPage(): string {
 			.age-btn.no { background: #71767B; }
 			@media (max-width: 700px) {
 				body { font-size: 14px; }
+				.head h1 { font-size: 20px; }
 				.wrap { width: 100%; max-width: 100%; gap: 0; }
 				.card {
 					padding: 12px 0;
@@ -3959,6 +3962,7 @@ export function renderWikiPage(): string {
 			@media (max-width: 1000px) { .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 			@media (max-width: 840px) {
 				body { font-size: 14px; }
+				.head h1 { font-size: 20px; }
 				.wrap { width: 100%; max-width: 100%; gap: 0; }
 				.card {
 					padding: 12px 0;
