@@ -36,6 +36,7 @@ function escapeHtml(value: string): string {
 type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es";
 
 const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es"];
+const RANKING_NOTICE_ZH_CN = "本网站地图上显示的所有位置均为示意标注，并非任何人的真实地址或实际居住位置。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。为保护个人隐私，地图上的位置均为近似或随机生成，不具备任何现实定位意义。如果你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的地点（例如冰岛或非洲的某个位置）。本网站不会收集、存储或公开任何个人的具体地址信息。";
 
 const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	en: {
@@ -123,8 +124,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "\u5173\u4e8e",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
-		ranking_location_notice:
-			"\u672c\u7f51\u7ad9\u5730\u56fe\u4e0a\u663e\u793a\u7684\u4f4d\u7f6e\u4ec5\u6839\u636e\u516c\u5f00\u4fe1\u606f\u8fdb\u884c\u5927\u81f4\u6807\u6ce8\uff0c\u5e76\u4e0d\u4ee3\u8868\u4efb\u4f55\u4eba\u7684\u7cbe\u786e\u5730\u5740\u6216\u771f\u5b9e\u5c45\u4f4f\u4f4d\u7f6e\uff0c\u4ec5\u7528\u4e8e\u5c55\u793a\u793e\u533a\u7684\u5927\u81f4\u5206\u5e03\u60c5\u51b5\u3002\n\n\u4e3a\u4e86\u4fdd\u62a4\u4e2a\u4eba\u9690\u79c1\uff0c\u5730\u56fe\u4e0a\u7684\u4f4d\u7f6e\u53ef\u80fd\u662f\u8fd1\u4f3c\u4f4d\u7f6e\u6216\u968f\u673a\u8bbe\u7f6e\u7684\uff0c\u5e76\u4e0d\u5177\u6709\u5b9e\u9645\u5b9a\u4f4d\u610f\u4e49\u3002\n\n\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u81ea\u5df1\u7684\u4f4d\u7f6e\u51fa\u73b0\u5728\u5730\u56fe\u4e0a\uff0c\u53ef\u4ee5\u968f\u65f6\u8054\u7cfb\u6211\uff0c\u6211\u4f1a\u5c06\u5176\u5220\u9664\uff0c\u6216\u66ff\u6362\u4e3a\u4e00\u4e2a\u5b8c\u5168\u968f\u673a\u7684\u5730\u70b9\uff08\u4f8b\u5982\u51b0\u5c9b\u6216\u975e\u6d32\u7684\u67d0\u4e2a\u4f4d\u7f6e\uff09\u3002\n\n\u672c\u7f51\u7ad9\u7684\u76ee\u7684\u4ec5\u662f\u5c55\u793a\u793e\u533a\u7684\u6574\u4f53\u5206\u5e03\uff0c\u5e76\u4e0d\u4f1a\u6536\u96c6\u6216\u516c\u5f00\u4efb\u4f55\u4e2a\u4eba\u7684\u5177\u4f53\u5730\u5740\u4fe1\u606f\u3002",
+		ranking_location_notice: RANKING_NOTICE_ZH_CN,
 		age_title: "\u5e74\u9f84\u786e\u8ba4",
 		age_desc: "\u4f60\u5fc5\u987b\u5e74\u6ee118\u5c81\u624d\u80fd\u8fdb\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6ee118\u5c81\uff1f",
 		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6ee118\u5c81",
@@ -1308,7 +1308,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</header>
-			<p class="ranking-notice" data-i18n="ranking_location_notice">Locations are based on public information and may be inaccurate. If you do not want your location shown, I can set it to a random point in an unrelated country/region (for example, Iceland or somewhere in Africa).</p>
+			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<ol class="list">
 				${renderLeaderboardRows(rows)}
 			</ol>
