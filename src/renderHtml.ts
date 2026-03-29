@@ -41,18 +41,18 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	en: {
 		page_title_ranking: "Creator Ranking",
 		page_title_admin: "Database Admin Panel",
-		page_title_dashboard: "Data Dashboard",
+		page_title_dashboard: "Map",
 		page_title_about: "About",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "Ranking Page",
 		heading_add: "Add new",
-		heading_star: "Star Map",
+		heading_star: "Map",
 		heading_about: "About",
 		heading_wiki: "Fisting Wiki",
 		nav_ranking: "Ranking Page",
 		nav_add: "Add new",
-		nav_star: "Star Map",
+		nav_star: "Map",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "About",
 		country_region: "country(region)",
@@ -105,18 +105,18 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	"zh-CN": {
 		page_title_ranking: "\u521b\u4f5c\u8005\u6392\u884c",
 		page_title_admin: "\u6570\u636e\u5e93\u7ba1\u7406\u9762\u677f",
-		page_title_dashboard: "\u6570\u636e\u770b\u677f",
+		page_title_dashboard: "\u5730\u56fe",
 		page_title_about: "\u5173\u4e8e",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\u6392\u884c\u699c",
 		heading_add: "\u65b0\u589e",
-		heading_star: "\u661f\u56fe",
+		heading_star: "\u5730\u56fe",
 		heading_about: "\u5173\u4e8e",
 		heading_wiki: "Fisting Wiki",
 		nav_ranking: "\u6392\u884c\u699c",
 		nav_add: "\u65b0\u589e",
-		nav_star: "\u661f\u56fe",
+		nav_star: "\u5730\u56fe",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u5173\u4e8e",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
@@ -169,18 +169,18 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	"zh-TW": {
 		page_title_ranking: "\u5275\u4f5c\u8005\u6392\u884c",
 		page_title_admin: "\u8cc7\u6599\u5eab\u7ba1\u7406\u9762\u677f",
-		page_title_dashboard: "\u6578\u64da\u770b\u677f",
+		page_title_dashboard: "\u5730\u5716",
 		page_title_about: "\u95dc\u65bc",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\u6392\u884c\u699c",
 		heading_add: "\u65b0\u589e",
-		heading_star: "\u661f\u5716",
+		heading_star: "\u5730\u5716",
 		heading_about: "\u95dc\u65bc",
 		heading_wiki: "Fisting Wiki",
 		nav_ranking: "\u6392\u884c\u699c",
 		nav_add: "\u65b0\u589e",
-		nav_star: "\u661f\u5716",
+		nav_star: "\u5730\u5716",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u95dc\u65bc",
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
@@ -233,18 +233,18 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	ja: {
 		page_title_ranking: "\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u30e9\u30f3\u30ad\u30f3\u30b0",
 		page_title_admin: "\u30c7\u30fc\u30bf\u30d9\u30fc\u30b9\u7ba1\u7406\u30d1\u30cd\u30eb",
-		page_title_dashboard: "\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+		page_title_dashboard: "\u30de\u30c3\u30d7",
 		page_title_about: "\u6982\u8981",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\u30e9\u30f3\u30ad\u30f3\u30b0",
 		heading_add: "\u65b0\u898f\u8ffd\u52a0",
-		heading_star: "\u30b9\u30bf\u30fc\u30de\u30c3\u30d7",
+		heading_star: "\u30de\u30c3\u30d7",
 		heading_about: "\u6982\u8981",
 		heading_wiki: "Fisting Wiki",
 		nav_ranking: "\u30e9\u30f3\u30ad\u30f3\u30b0",
 		nav_add: "\u65b0\u898f\u8ffd\u52a0",
-		nav_star: "\u30b9\u30bf\u30fc\u30de\u30c3\u30d7",
+		nav_star: "\u30de\u30c3\u30d7",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u6982\u8981",
 		country_region: "\u56fd(\u5730\u57df)",
@@ -297,18 +297,18 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	ko: {
 		page_title_ranking: "\ud06c\ub9ac\uc5d0\uc774\ud130 \uc21c\uc704",
 		page_title_admin: "\ub370\uc774\ud130\ubca0\uc774\uc2a4 \uad00\ub9ac\uc790 \ud328\ub110",
-		page_title_dashboard: "\ub300\uc2dc\ubcf4\ub4dc",
+		page_title_dashboard: "\uc9c0\ub3c4",
 		page_title_about: "\uc18c\uac1c",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\ub7ad\ud0b9",
 		heading_add: "\ucd94\uac00",
-		heading_star: "\uc2a4\ud0c0 \ub9f5",
+		heading_star: "\uc9c0\ub3c4",
 		heading_about: "\uc18c\uac1c",
 		heading_wiki: "Fisting Wiki",
 		nav_ranking: "\ub7ad\ud0b9",
 		nav_add: "\ucd94\uac00",
-		nav_star: "\uc2a4\ud0c0 \ub9f5",
+		nav_star: "\uc9c0\ub3c4",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\uc18c\uac1c",
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
@@ -361,18 +361,18 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	es: {
 		page_title_ranking: "Clasificacion de creadores",
 		page_title_admin: "Panel de administracion de base de datos",
-		page_title_dashboard: "Panel de datos",
+		page_title_dashboard: "Mapa",
 		page_title_about: "Acerca de",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "Clasificacion",
 		heading_add: "Agregar",
-		heading_star: "Mapa estelar",
+		heading_star: "Mapa",
 		heading_about: "Acerca de",
 		heading_wiki: "Fisting Wiki",
 		nav_ranking: "Clasificacion",
 		nav_add: "Agregar",
-		nav_star: "Mapa estelar",
+		nav_star: "Mapa",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "Acerca de",
 		country_region: "pais(region)",
@@ -659,13 +659,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				flex-wrap: nowrap;
 			}
 			.lang-switch {
-				height: 36px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 10px;
 				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			.header-right {
 				display: flex;
@@ -772,9 +773,20 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				}
 				.header h1 { font-size: 20px; }
 				.lang-switch {
-					height: 32px;
-					font-size: 12px;
-					padding: 0 8px;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
 				}
 				.header-filter {
 					display: grid;
@@ -1079,7 +1091,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 									<option value="/" selected data-i18n="nav_ranking">Ranking Page</option>
 									<option value="/admin" data-i18n="nav_add">Add new</option>
-									<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+									<option value="/dashboard" data-i18n="nav_star">Map</option>
 									<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 									<option value="/about" data-i18n="nav_about">About</option>
 								</select>
@@ -1098,7 +1110,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						<nav class="top-nav">
 							<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Ranking Page</a>
 							<a class="nav-btn secondary" href="/admin" data-i18n="nav_add">Add new</a>
-							<a class="nav-btn secondary" href="/dashboard" data-i18n="nav_star">Star Map</a>
+							<a class="nav-btn secondary" href="/dashboard" data-i18n="nav_star">Map</a>
 							<a class="nav-btn secondary" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 							<a class="nav-btn secondary" href="/about" data-i18n="nav_about">About</a>
 						</nav>
@@ -1377,13 +1389,14 @@ export function renderAdminPage(): string {
 			.nav-btn.primary { background: #1D9BF0; }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
 			.lang-switch {
-				height: 36px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 10px;
 				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
@@ -1584,9 +1597,20 @@ export function renderAdminPage(): string {
 				html.mobile-select-ready .mobile-nav { display: none; }
 				html.mobile-select-ready .mobile-select-enhanced { display: block; }
 				.lang-switch {
-					height: 32px;
-					font-size: 12px;
-					padding: 0 8px;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
 				}
 				.mobile-nav-row .mobile-select-trigger {
 					width: 34px;
@@ -1696,7 +1720,7 @@ export function renderAdminPage(): string {
 							<select id="adminPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
 								<option value="/admin" selected data-i18n="nav_add">Add new</option>
-								<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+								<option value="/dashboard" data-i18n="nav_star">Map</option>
 								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
@@ -1706,7 +1730,7 @@ export function renderAdminPage(): string {
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
 						<a class="nav-btn primary active" href="/admin" data-i18n="nav_add">Add new</a>
-						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
@@ -2542,13 +2566,14 @@ export function renderDashboardPage(): string {
 			}
 			.head-meta { display: grid; gap: 6px; }
 			.lang-switch {
-				height: 36px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 10px;
 				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			.top-nav {
 				display: flex;
@@ -2594,6 +2619,16 @@ export function renderDashboardPage(): string {
 				border-radius: 10px;
 				background: #0F1419;
 				color: var(--text);
+			}
+			#countryFilter {
+				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			select:focus {
 				outline: none;
@@ -2677,9 +2712,20 @@ export function renderDashboardPage(): string {
 				}
 				.head { align-items: center; }
 				.lang-switch {
-					height: 32px;
-					font-size: 12px;
-					padding: 0 8px;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
 				}
 				.top-nav { display: none; }
 				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
@@ -2740,8 +2786,30 @@ export function renderDashboardPage(): string {
 					align-items: center;
 				}
 				#countryFilter {
-					height: 40px;
-					padding: 0 12px;
+					width: 100%;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
+				}
+				#countryFilter:focus {
+					outline: none;
+					border-bottom-color: #1D9BF0;
+					box-shadow: none;
+				}
+				#countryFilter option {
+					background-color: #000000;
+					color: #8B98A5;
 				}
 				#reloadBtn {
 					width: 40px;
@@ -2798,14 +2866,14 @@ export function renderDashboardPage(): string {
 				<div class="head">
 					<div class="head-title">
 						<div class="head-meta">
-							<h1 data-i18n="heading_star">Star Map</h1>
+							<h1 data-i18n="heading_star">Map</h1>
 						</div>
 						${renderLanguageSwitcher("dashboardLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="dashboardPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
 								<option value="/admin" data-i18n="nav_add">Add new</option>
-								<option value="/dashboard" selected data-i18n="nav_star">Star Map</option>
+								<option value="/dashboard" selected data-i18n="nav_star">Map</option>
 								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
@@ -2815,7 +2883,7 @@ export function renderDashboardPage(): string {
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
 						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-						<a class="nav-btn primary active" href="/dashboard" data-i18n="nav_star">Star Map</a>
+						<a class="nav-btn primary active" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
@@ -3198,13 +3266,14 @@ export function renderAboutPage(): string {
 				gap: 10px;
 			}
 			.lang-switch {
-				height: 36px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 10px;
 				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			.head h1 { margin: 0; }
 			.top-nav {
@@ -3316,9 +3385,20 @@ export function renderAboutPage(): string {
 				.top-nav { display: none; }
 				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
 				.lang-switch {
-					height: 32px;
-					font-size: 12px;
-					padding: 0 8px;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
 				}
 				html.mobile-select-ready .mobile-nav { display: none; }
 				html.mobile-select-ready .mobile-select-enhanced { display: block; }
@@ -3401,7 +3481,7 @@ export function renderAboutPage(): string {
 						<select id="aboutPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 							<option value="/" data-i18n="nav_ranking">Ranking Page</option>
 							<option value="/admin" data-i18n="nav_add">Add new</option>
-							<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+							<option value="/dashboard" data-i18n="nav_star">Map</option>
 							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 							<option value="/about" selected data-i18n="nav_about">About</option>
 						</select>
@@ -3411,7 +3491,7 @@ export function renderAboutPage(): string {
 				<nav class="top-nav">
 					<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 					<a class="nav-btn primary active" href="/about" data-i18n="nav_about">About</a>
 				</nav>
@@ -3556,13 +3636,14 @@ export function renderWikiPage(): string {
 				gap: 10px;
 			}
 			.lang-switch {
-				height: 36px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 10px;
 				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			.head h1 { margin: 0; font-size: 34px; }
 			.head p { margin: 0; color: var(--muted); }
@@ -3581,13 +3662,14 @@ export function renderWikiPage(): string {
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
 			.lang-switch {
-				height: 36px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 10px;
 				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
 			}
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
@@ -3737,9 +3819,20 @@ export function renderWikiPage(): string {
 				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
 				.head { align-items: center; }
 				.lang-switch {
-					height: 32px;
-					font-size: 12px;
-					padding: 0 8px;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
 				}
 				html.mobile-select-ready .mobile-nav { display: none; }
 				html.mobile-select-ready .mobile-select-enhanced { display: block; }
@@ -3829,7 +3922,7 @@ export function renderWikiPage(): string {
 							<select id="wikiPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
 								<option value="/admin" data-i18n="nav_add">Add new</option>
-								<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+								<option value="/dashboard" data-i18n="nav_star">Map</option>
 								<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
 								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
@@ -3839,7 +3932,7 @@ export function renderWikiPage(): string {
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
 						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
@@ -3920,7 +4013,7 @@ export function renderWikiPage(): string {
 					return '<article class="post-card">' +
 						'<a class="post-link" href="/wiki/article/' + row.id + '">' +
 							'<h3 class="post-title">' + esc(row.title) + '</h3>' +
-							'<div class="post-meta">By ' + esc(row.author || 'fistingguide') + ' 闂備浇娉曢崰鎰板几婵犳艾绠?ID #' + row.id + ' 闂備浇娉曢崰鎰板几婵犳艾绠?Updated ' + esc(row.updated_at || row.created_at || '') + '</div>' +
+							'<div class="post-meta">By ' + esc(row.author || 'fistingguide') + ' 闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱?ID #' + row.id + ' 闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱?Updated ' + esc(row.updated_at || row.created_at || '') + '</div>' +
 							'<div class="post-body">' + esc(row.content || '') + '</div>' +
 						'</a>' +
 						'<div class="post-actions">' +
@@ -4228,9 +4321,20 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				.top-nav { display: none; }
 				.mobile-nav-row { display: block; }
 				.lang-switch {
-					height: 32px;
-					font-size: 12px;
-					padding: 0 8px;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
 				}
 				.article h1 { font-size: 30px; }
 				.article-body { font-size: 16px; }
@@ -4255,7 +4359,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				<nav class="top-nav">
 					<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Star Map</a>
+					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 				</nav>
@@ -4263,7 +4367,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 						<option value="/" data-i18n="nav_ranking">Ranking Page</option>
 						<option value="/admin" data-i18n="nav_add">Add new</option>
-						<option value="/dashboard" data-i18n="nav_star">Star Map</option>
+						<option value="/dashboard" data-i18n="nav_star">Map</option>
 						<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
 						<option value="/about" data-i18n="nav_about">About</option>
 					</select>
