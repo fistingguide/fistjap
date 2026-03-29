@@ -819,6 +819,13 @@ export function renderAdminPage(): string {
 				align-items: center;
 				gap: 10px;
 			}
+			.head-title {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				gap: 10px;
+			}
 			.top-nav {
 				display: flex;
 				flex-wrap: wrap;
@@ -849,6 +856,7 @@ export function renderAdminPage(): string {
 				padding: 0 12px;
 				font: inherit;
 			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			.age-gate-overlay {
 				position: fixed;
 				inset: 0;
@@ -902,22 +910,43 @@ export function renderAdminPage(): string {
 			.field { display: grid; gap: 6px; }
 			.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
 			.form .full { grid-column: 1 / -1; }
-			.avatar-preview-wrap {
-				display: flex;
+			.avatar-inline {
+				display: grid;
+				grid-template-columns: 44px 1fr;
 				align-items: center;
 				gap: 10px;
-				padding: 8px 0;
 			}
 			.avatar-preview {
-				width: 64px;
-				height: 64px;
+				width: 44px;
+				height: 44px;
 				border-radius: 50%;
 				object-fit: cover;
 				border: 1px solid var(--line);
 				background: #0F1419;
 			}
-			.avatar-preview-note { color: var(--muted); font-size: 12px; }
+			.avatar-inline input { height: 44px; }
 			.actions { display: flex; gap: 8px; }
+			.actions #submitBtn,
+			.actions #deleteBtn,
+			.actions #cancelEditBtn {
+				width: auto;
+				height: 40px;
+				padding: 0 14px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background-color: #000000;
+				font-size: 14px;
+				background-image: none;
+			}
+			.actions #submitBtn {
+				color: #28C76F;
+			}
+			.actions #deleteBtn {
+				color: #FF2D55;
+			}
+			.actions #cancelEditBtn {
+				color: #FFFFFF;
+			}
 			.status { color: var(--muted); font-size: 13px; }
 			.location-selected { color: var(--muted); font-size: 12px; }
 			.location-meta {
@@ -983,13 +1012,119 @@ export function renderAdminPage(): string {
 			datalist { display: none; }
 			@media (max-width: 900px) {
 				body { font-size: 14px; }
-				.head { flex-direction: column; align-items: flex-start; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head-card {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+					position: relative;
+					z-index: 2000;
+				}
+				.head { align-items: center; position: relative; z-index: 2001; }
 				.top-nav { display: none; }
-				.mobile-nav-row { display: block; }
-				.toolbar { grid-template-columns: 1fr; }
-				.form { grid-template-columns: 1fr; }
+				.mobile-nav-row { display: flex; width: auto; margin-left: auto; position: relative; z-index: 2002; }
+				.mobile-nav-row,
+				.mobile-nav-row .mobile-select-enhanced,
+				.head-card,
+				.head {
+					overflow: visible;
+				}
+				html.mobile-select-ready .mobile-nav { display: none; }
+				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars {
+					display: inline-grid;
+					gap: 4px;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					right: 0;
+					min-width: 168px;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 3000;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
+				.toolbar {
+					grid-template-columns: minmax(0, 1fr) 40px 40px;
+					gap: 8px;
+					align-items: center;
+				}
+				.toolbar #handleSearch {
+					height: 40px;
+					padding: 0 12px;
+				}
+				.toolbar #searchBtn,
+				.toolbar #resetBtn {
+					height: 40px;
+					width: 40px;
+					padding: 0;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					background-color: #000000;
+					color: transparent;
+					font-size: 0;
+					background-repeat: no-repeat;
+					background-position: center;
+					background-size: 18px 18px;
+				}
+				.toolbar #searchBtn {
+					background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231D9BF0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E\");
+				}
+				.toolbar #resetBtn {
+					background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E7E9EA' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 3-6.7'/%3E%3Cpolyline points='3 3 3 9 9 9'/%3E%3C/svg%3E\");
+				}
+				.form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+				.form .field:not(.identity-field),
+				.form .full { grid-column: 1 / -1; }
+				.form .identity-field { grid-column: auto; }
 				.location-meta { grid-template-columns: 1fr; }
-				.wrap { width: 100%; max-width: 100%; }
 			}
 		</style>
 	</head>
@@ -1005,10 +1140,20 @@ export function renderAdminPage(): string {
 			</div>
 		</div>
 		<div class="wrap">
-			<section class="card">
+			<section class="card head-card">
 				<div class="head">
-					<div>
+					<div class="head-title">
 						<h1>Add new</h1>
+						<div class="mobile-nav-row">
+							<select id="adminPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+								<option value="/">Ranking Page</option>
+								<option value="/admin" selected>Add new</option>
+								<option value="/dashboard">Star Map</option>
+								<option value="/wiki">Fisting Wiki</option>
+								<option value="/about">About</option>
+							</select>
+							<div id="adminPageNavCustom" class="mobile-select-enhanced"></div>
+						</div>
 					</div>
 					<nav class="top-nav">
 						<a class="nav-btn" href="/">Ranking Page</a>
@@ -1017,15 +1162,6 @@ export function renderAdminPage(): string {
 						<a class="nav-btn" href="/wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about">About</a>
 					</nav>
-					<div class="mobile-nav-row">
-						<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-							<option value="/">Ranking Page</option>
-							<option value="/admin" selected>Add new</option>
-							<option value="/dashboard">Star Map</option>
-							<option value="/wiki">Fisting Wiki</option>
-							<option value="/about">About</option>
-						</select>
-					</div>
 				</div>
 			</section>
 
@@ -1041,19 +1177,19 @@ export function renderAdminPage(): string {
 			<section class="card">
 				<form id="profileForm" class="form">
 					<input type="hidden" id="id" />
-					<div class="field">
+					<div class="field identity-field">
 						<label for="name">Display Name</label>
 						<input id="name" placeholder="Display name" />
 					</div>
-					<div class="field">
+					<div class="field identity-field">
 						<label for="handle">X Handle</label>
 						<input id="handle" placeholder="Handle (e.g. @demo)" required />
 					</div>
-					<div class="field">
+					<div class="field identity-field">
 						<label for="orientation">Orientation</label>
 						<input id="orientation" value="Gay" placeholder="Orientation" />
 					</div>
-					<div class="field">
+					<div class="field identity-field">
 						<label for="followers">Fans Count</label>
 						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" />
 					</div>
@@ -1079,13 +1215,9 @@ export function renderAdminPage(): string {
 					</div>
 					<div class="field full">
 						<label for="avatar">Avatar URL</label>
-						<input id="avatar" placeholder="Avatar URL" />
-					</div>
-					<div class="field full">
-						<label>Avatar Preview</label>
-						<div class="avatar-preview-wrap">
+						<div class="avatar-inline">
 							<img id="avatarPreview" class="avatar-preview" src="" alt="Avatar preview" />
-							<div class="avatar-preview-note" id="avatarPreviewNote">No avatar URL</div>
+							<input id="avatar" placeholder="Avatar URL" />
 						</div>
 					</div>
 					<div class="field full">
@@ -1103,7 +1235,7 @@ export function renderAdminPage(): string {
 		</div>
 
 		<script src="/assets/leaflet.js"></script>
-		<script>
+<script>
 			let currentRows = [];
 			let editingId = null;
 			let locationCandidates = [];
@@ -1131,7 +1263,6 @@ export function renderAdminPage(): string {
 				profileUrl: document.getElementById('profileUrl'),
 				avatar: document.getElementById('avatar'),
 				avatarPreview: document.getElementById('avatarPreview'),
-				avatarPreviewNote: document.getElementById('avatarPreviewNote'),
 				orientation: document.getElementById('orientation'),
 				followers: document.getElementById('followers'),
 				country: document.getElementById('country'),
@@ -1162,13 +1293,9 @@ export function renderAdminPage(): string {
 			function updateAvatarPreview() {
 				const url = String(els.avatar.value || '').trim();
 				if (!url) {
-					els.avatarPreview.removeAttribute('src');
-					els.avatarPreviewNote.textContent = 'No avatar URL';
-					return;
+					els.avatarPreview.removeAttribute('src');					return;
 				}
-				els.avatarPreview.src = url;
-				els.avatarPreviewNote.textContent = 'Previewing avatar from URL';
-			}
+				els.avatarPreview.src = url;			}
 
 			function buildLocationLabel(item) {
 				const district = String(item.district || '').trim();
@@ -1568,7 +1695,7 @@ export function renderAdminPage(): string {
 					currentRows = [];
 					renderSuggestions([]);
 					resetForm();
-					setStatus('Enter a handle to search.');
+					setStatus('');
 					return;
 				}
 
@@ -1694,8 +1821,7 @@ export function renderAdminPage(): string {
 				if (picked) applyLocationChoice(picked);
 			});
 			els.avatar.addEventListener('input', updateAvatarPreview);
-			els.avatarPreview.addEventListener('error', function () {
-				els.avatarPreviewNote.textContent = 'Image failed to load';
+			els.avatarPreview.addEventListener('error', function () {\t\t\t\tels.avatarPreview.removeAttribute('src');
 			});
 			els.deleteBtn.addEventListener('click', handleDelete);
 			els.resetBtn.addEventListener('click', function () {
@@ -1712,7 +1838,59 @@ export function renderAdminPage(): string {
 
 			updateAvatarPreview();
 			renderLocationPreview(35.7512, 139.7093);
-			setStatus('Enter a handle to search.');
+			setStatus('');
+		</script>
+<script>
+			(function () {
+				const select = document.getElementById('adminPageNav');
+				const mount = document.getElementById('adminPageNavCustom');
+				if (!select || !mount) return;
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+				function closeMenu() { mount.classList.remove('open'); }
+				function render() {
+					const options = Array.from(select.options || []);
+					const selectedValue = String(select.value || '');
+					mount.innerHTML =
+						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
+						'<div class="mobile-select-menu" role="listbox">' +
+							options.map(function (opt) {
+								const value = String(opt.value || '');
+								const selectedClass = value === selectedValue ? ' is-selected' : '';
+								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+							}).join('') +
+						'</div>';
+					const trigger = mount.querySelector('.mobile-select-trigger');
+					const menu = mount.querySelector('.mobile-select-menu');
+					if (!trigger || !menu) return;
+					trigger.addEventListener('click', function (event) {
+						event.preventDefault();
+						mount.classList.toggle('open');
+					});
+					menu.addEventListener('click', function (event) {
+						const btn = event.target.closest('.mobile-select-option');
+						if (!btn) return;
+						const nextValue = btn.getAttribute('data-value') || '';
+						if (nextValue) window.location.href = nextValue;
+						closeMenu();
+					});
+				}
+				select.addEventListener('change', render);
+				render();
+				document.documentElement.classList.add('mobile-select-ready');
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('#adminPageNavCustom')) closeMenu();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeMenu();
+				});
+			})();
 		</script>
 		<script>
 			(function () {
@@ -1784,6 +1962,13 @@ export function renderDashboardPage(): string {
 				align-items: center;
 				gap: 10px;
 			}
+			.head-title {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				gap: 10px;
+			}
 			.head-meta { display: grid; gap: 6px; }
 			.top-nav {
 				display: flex;
@@ -1815,6 +2000,7 @@ export function renderDashboardPage(): string {
 				padding: 0 12px;
 				font: inherit;
 			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			.toolbar {
 				display: grid;
 				grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) minmax(220px, 1fr);
@@ -1892,12 +2078,120 @@ export function renderDashboardPage(): string {
 			#map { width: 100%; height: 480px; border-radius: 12px; overflow: hidden; }
 			@media (max-width: 900px) {
 				body { font-size: 14px; }
-				.head { flex-direction: column; align-items: flex-start; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head-card {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head { align-items: center; }
 				.top-nav { display: none; }
-				.mobile-nav-row { display: block; }
-				.toolbar { grid-template-columns: 1fr; }
-				#map { height: 360px; }
-				.wrap { width: 100%; max-width: 100%; }
+				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
+				html.mobile-select-ready .mobile-nav { display: none; }
+				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars {
+					display: inline-grid;
+					gap: 4px;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					right: 0;
+					min-width: 168px;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 40;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
+				.toolbar {
+					grid-template-columns: minmax(0, 1fr) 40px;
+					gap: 8px;
+					align-items: center;
+				}
+				#countryFilter {
+					height: 40px;
+					padding: 0 12px;
+				}
+				#reloadBtn {
+					width: 40px;
+					height: 40px;
+					padding: 0;
+					border: 0;
+					border-radius: 10px;
+					background-color: #000000;
+					color: transparent;
+					font-size: 0;
+					background-repeat: no-repeat;
+					background-position: center;
+					background-size: 18px 18px;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='23 4 23 10 17 10'/%3E%3Cpolyline points='1 20 1 14 7 14'/%3E%3Cpath d='M3.51 9a9 9 0 0 1 14.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0 0 20.49 15'/%3E%3C/svg%3E");
+				}
+				#status { display: none; }
+				.map-section {
+					padding: 0;
+					border-bottom: 0;
+					position: relative;
+					z-index: 1;
+				}
+				#map {
+					height: calc(100vh - 150px);
+					min-height: 520px;
+					border-radius: 0;
+					position: relative;
+					z-index: 1;
+				}
+				#map .leaflet-pane,
+				#map .leaflet-top,
+				#map .leaflet-bottom {
+					z-index: 1 !important;
+				}
+				.table-section { display: none; }
 				th, td { font-size: 12px; padding: 7px 6px; }
 			}
 		</style>
@@ -1914,10 +2208,22 @@ export function renderDashboardPage(): string {
 			</div>
 		</div>
 		<div class="wrap">
-			<section class="card">
+			<section class="card head-card">
 				<div class="head">
-					<div class="head-meta">
-						<h1>Star Map</h1>
+					<div class="head-title">
+						<div class="head-meta">
+							<h1>Star Map</h1>
+						</div>
+						<div class="mobile-nav-row">
+							<select id="dashboardPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+								<option value="/">Ranking Page</option>
+								<option value="/admin">Add new</option>
+								<option value="/dashboard" selected>Star Map</option>
+								<option value="/wiki">Fisting Wiki</option>
+								<option value="/about">About</option>
+							</select>
+							<div id="dashboardPageNavCustom" class="mobile-select-enhanced"></div>
+						</div>
 					</div>
 					<nav class="top-nav">
 						<a class="nav-btn" href="/">Ranking Page</a>
@@ -1926,27 +2232,18 @@ export function renderDashboardPage(): string {
 						<a class="nav-btn" href="/wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about">About</a>
 					</nav>
-					<div class="mobile-nav-row">
-						<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-							<option value="/">Ranking Page</option>
-							<option value="/admin">Add new</option>
-							<option value="/dashboard" selected>Star Map</option>
-							<option value="/wiki">Fisting Wiki</option>
-							<option value="/about">About</option>
-						</select>
-					</div>
 				</div>
 			</section>
 
 			<section class="card toolbar">
 				<select id="countryFilter"><option value="">All Countries (Regions)</option></select>
 				<button id="reloadBtn">Reload Data</button>
-				<div id="status">Ready</div>
+				<div id="status"></div>
 			</section>
 
-			<section class="card"><div id="map"></div></section>
+			<section class="card map-section"><div id="map"></div></section>
 
-			<section class="card">
+			<section class="card table-section">
 				<table>
 					<thead><tr><th>Rank</th><th>Name</th><th>Handle</th><th>District / Region / Country</th><th>Fans</th></tr></thead>
 					<tbody id="rows"></tbody>
@@ -2080,7 +2377,7 @@ export function renderDashboardPage(): string {
 				const rows = Array.isArray(data.results) ? data.results : [];
 				renderTable(rows);
 				await drawMap(rows);
-				setStatus('Loaded ' + rows.length + ' profiles');
+				setStatus('');
 			}
 
 			document.getElementById('reloadBtn').addEventListener('click', loadData);
@@ -2089,6 +2386,58 @@ export function renderDashboardPage(): string {
 			(async function init() {
 				await loadCountries();
 				await loadData();
+			})();
+		</script>
+		<script>
+			(function () {
+				const select = document.getElementById('dashboardPageNav');
+				const mount = document.getElementById('dashboardPageNavCustom');
+				if (!select || !mount) return;
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+				function closeMenu() { mount.classList.remove('open'); }
+				function render() {
+					const options = Array.from(select.options || []);
+					const selectedValue = String(select.value || '');
+					mount.innerHTML =
+						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
+						'<div class="mobile-select-menu" role="listbox">' +
+							options.map(function (opt) {
+								const value = String(opt.value || '');
+								const selectedClass = value === selectedValue ? ' is-selected' : '';
+								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+							}).join('') +
+						'</div>';
+					const trigger = mount.querySelector('.mobile-select-trigger');
+					const menu = mount.querySelector('.mobile-select-menu');
+					if (!trigger || !menu) return;
+					trigger.addEventListener('click', function (event) {
+						event.preventDefault();
+						mount.classList.toggle('open');
+					});
+					menu.addEventListener('click', function (event) {
+						const btn = event.target.closest('.mobile-select-option');
+						if (!btn) return;
+						const nextValue = btn.getAttribute('data-value') || '';
+						if (nextValue) window.location.href = nextValue;
+						closeMenu();
+					});
+				}
+				select.addEventListener('change', render);
+				render();
+				document.documentElement.classList.add('mobile-select-ready');
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('#dashboardPageNavCustom')) closeMenu();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeMenu();
+				});
 			})();
 		</script>
 		<script>
@@ -2158,6 +2507,13 @@ export function renderAboutPage(): string {
 				align-items: center;
 				gap: 10px;
 			}
+			.head-title {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				gap: 10px;
+			}
 			.head h1 { margin: 0; }
 			.top-nav {
 				display: flex;
@@ -2189,11 +2545,32 @@ export function renderAboutPage(): string {
 				padding: 0 12px;
 				font: inherit;
 			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			.content {
 				white-space: pre-wrap;
 				line-height: 1.65;
 				font-size: 15px;
 			}
+			.contact-actions {
+				margin-top: 14px;
+				display: flex;
+				gap: 10px;
+				flex-wrap: wrap;
+			}
+			.contact-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				text-decoration: none;
+				padding: 10px 14px;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+				background: #0F1419;
+				color: #E7E9EA;
+				font-size: 14px;
+				font-weight: 600;
+			}
+			.contact-btn:hover { border-color: #1D9BF0; color: #1D9BF0; }
 			.age-gate-overlay {
 				position: fixed;
 				inset: 0;
@@ -2226,10 +2603,82 @@ export function renderAboutPage(): string {
 			.age-btn.no { background: #71767B; }
 			@media (max-width: 700px) {
 				body { font-size: 14px; }
-				.head { flex-direction: column; align-items: flex-start; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head-card {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head { align-items: center; }
 				.top-nav { display: none; }
-				.mobile-nav-row { display: block; }
-				.wrap { width: 100%; max-width: 100%; }
+				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
+				html.mobile-select-ready .mobile-nav { display: none; }
+				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars {
+					display: inline-grid;
+					gap: 4px;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					right: 0;
+					min-width: 168px;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 40;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
+				.contact-actions { margin-top: 10px; }
+				.contact-btn {
+					padding: 9px 12px;
+					font-size: 13px;
+				}
 			}
 		</style>
 	</head>
@@ -2246,8 +2695,20 @@ export function renderAboutPage(): string {
 		</div>
 
 		<div class="wrap">
-			<section class="card head">
-				<h1>About</h1>
+			<section class="card head head-card">
+				<div class="head-title">
+					<h1>About</h1>
+					<div class="mobile-nav-row">
+						<select id="aboutPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<option value="/">Ranking Page</option>
+							<option value="/admin">Add new</option>
+							<option value="/dashboard">Star Map</option>
+							<option value="/wiki">Fisting Wiki</option>
+							<option value="/about" selected>About</option>
+						</select>
+						<div id="aboutPageNavCustom" class="mobile-select-enhanced"></div>
+					</div>
+				</div>
 				<nav class="top-nav">
 					<a class="nav-btn" href="/">Ranking Page</a>
 					<a class="nav-btn" href="/admin">Add new</a>
@@ -2255,24 +2716,71 @@ export function renderAboutPage(): string {
 					<a class="nav-btn" href="/wiki">Fisting Wiki</a>
 					<a class="nav-btn primary active" href="/about">About</a>
 				</nav>
-				<div class="mobile-nav-row">
-					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-						<option value="/">Ranking Page</option>
-						<option value="/admin">Add new</option>
-						<option value="/dashboard">Star Map</option>
-						<option value="/wiki">Fisting Wiki</option>
-						<option value="/about" selected>About</option>
-					</select>
-				</div>
 			</section>
 
 			<section class="card">
 				<div class="content">Hello,I'm a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community.The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests.If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out.You can contact me on X: @fistingguide Or by email: fistingguide@proton.meIf you prefer not to appear on the website, just let me know and I will remove your listing.Thank you and I hope this project can help the community grow.
 
 </div>
+				<div class="contact-actions">
+					<a class="contact-btn" href="mailto:fistingguide@proton.me">Email</a>
+					<a class="contact-btn" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer">X</a>
+				</div>
 			</section>
 		</div>
 
+		<script>
+			(function () {
+				const select = document.getElementById('aboutPageNav');
+				const mount = document.getElementById('aboutPageNavCustom');
+				if (!select || !mount) return;
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+				function closeMenu() { mount.classList.remove('open'); }
+				function render() {
+					const options = Array.from(select.options || []);
+					const selectedValue = String(select.value || '');
+					mount.innerHTML =
+						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
+						'<div class="mobile-select-menu" role="listbox">' +
+							options.map(function (opt) {
+								const value = String(opt.value || '');
+								const selectedClass = value === selectedValue ? ' is-selected' : '';
+								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+							}).join('') +
+						'</div>';
+					const trigger = mount.querySelector('.mobile-select-trigger');
+					const menu = mount.querySelector('.mobile-select-menu');
+					if (!trigger || !menu) return;
+					trigger.addEventListener('click', function (event) {
+						event.preventDefault();
+						mount.classList.toggle('open');
+					});
+					menu.addEventListener('click', function (event) {
+						const btn = event.target.closest('.mobile-select-option');
+						if (!btn) return;
+						const nextValue = btn.getAttribute('data-value') || '';
+						if (nextValue) window.location.href = nextValue;
+						closeMenu();
+					});
+				}
+				select.addEventListener('change', render);
+				render();
+				document.documentElement.classList.add('mobile-select-ready');
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('#aboutPageNavCustom')) closeMenu();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeMenu();
+				});
+			})();
+		</script>
 		<script>
 			(function () {
 				const key = 'age_verified_18_v1';
@@ -2341,6 +2849,13 @@ export function renderWikiPage(): string {
 				align-items: center;
 				gap: 12px;
 			}
+			.head-title {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				gap: 10px;
+			}
 			.head h1 { margin: 0; font-size: 34px; }
 			.head p { margin: 0; color: var(--muted); }
 			.top-nav { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
@@ -2368,44 +2883,39 @@ export function renderWikiPage(): string {
 				padding: 0 12px;
 				font: inherit;
 			}
-			.compose {
-				display: grid;
-				grid-template-columns: 1.1fr 1fr;
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
+			.submit-bar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
 				gap: 12px;
-				align-items: start;
+				flex-wrap: wrap;
 			}
-			.form { display: grid; gap: 10px; }
-			.field { display: grid; gap: 6px; }
-			.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
-			input, textarea, button {
-				font: inherit;
-				padding: 10px 12px;
+			.submit-hint {
+				background: transparent;
+				color: #E7E9EA;
+				border: 0;
+				border-radius: 0;
+				padding: 0;
+				font-size: 13px;
+				line-height: 1.2;
+			}
+			.submit-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 42px;
+				height: 42px;
 				border-radius: 10px;
+				text-decoration: none;
+				background: #000000;
 				border: 1px solid var(--line);
-				background: #0F1419;
-				color: var(--text);
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: 20px 20px;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231D9BF0' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 2 11 13'/%3E%3Cpath d='M22 2 15 22 11 13 2 9 22 2z'/%3E%3C/svg%3E");
 			}
-			input::placeholder, textarea::placeholder { color: var(--muted); }
-			input:focus, textarea:focus {
-				outline: none;
-				border-color: var(--primary);
-				box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.22);
-			}
-			textarea { min-height: 100px; resize: vertical; }
-			button { cursor: pointer; border: none; color: #FFFFFF; background: var(--primary); }
-			button.secondary { background: #71767B; }
-			button.danger { background: var(--danger); }
-			.actions { display: flex; gap: 8px; flex-wrap: wrap; }
 			.status { font-size: 13px; color: var(--muted); }
-			.tips {
-				background: #0F1419;
-				border: 1px solid var(--line);
-				border-radius: 12px;
-				padding: 12px;
-				color: var(--muted);
-				font-size: 14px;
-				line-height: 1.6;
-			}
 			.blog-grid {
 				display: grid;
 				grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2441,13 +2951,6 @@ export function renderWikiPage(): string {
 				-webkit-line-clamp: 5;
 				-webkit-box-orient: vertical;
 			}
-			.post-actions { display: flex; gap: 8px; margin-top: auto; }
-			.post-actions button {
-				padding: 8px 10px;
-				font-size: 13px;
-				border-radius: 9px;
-			}
-			.post-actions .danger { background: var(--danger); }
 			.post-link {
 				text-decoration: none;
 				color: inherit;
@@ -2496,12 +2999,86 @@ export function renderWikiPage(): string {
 			@media (max-width: 1000px) { .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 			@media (max-width: 840px) {
 				body { font-size: 14px; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head-card {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
 				.top-nav { display: none; }
-				.mobile-nav-row { display: block; }
-				.head { flex-direction: column; align-items: flex-start; }
-				.compose { grid-template-columns: 1fr; }
+				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
+				.head { align-items: center; }
+				html.mobile-select-ready .mobile-nav { display: none; }
+				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars {
+					display: inline-grid;
+					gap: 4px;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					right: 0;
+					min-width: 168px;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 40;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
 				.blog-grid { grid-template-columns: 1fr; }
-				.wrap { width: 100%; max-width: 100%; }
+				.post-card {
+					padding: 10px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					min-height: auto;
+				}
 			}
 		</style>
 	</head>
@@ -2518,10 +3095,22 @@ export function renderWikiPage(): string {
 		</div>
 
 		<div class="wrap">
-			<section class="card">
+			<section class="card head-card">
 				<div class="head">
-					<div>
-						<h1>Fisting Wiki</h1>
+					<div class="head-title">
+						<div>
+							<h1>Fisting Wiki</h1>
+						</div>
+						<div class="mobile-nav-row">
+							<select id="wikiPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+								<option value="/">Ranking Page</option>
+								<option value="/admin">Add new</option>
+								<option value="/dashboard">Star Map</option>
+								<option value="/wiki" selected>Fisting Wiki</option>
+								<option value="/about">About</option>
+							</select>
+							<div id="wikiPageNavCustom" class="mobile-select-enhanced"></div>
+						</div>
 					</div>
 					<nav class="top-nav">
 						<a class="nav-btn" href="/">Ranking Page</a>
@@ -2530,49 +3119,15 @@ export function renderWikiPage(): string {
 						<a class="nav-btn primary active" href="/wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about">About</a>
 					</nav>
-					<div class="mobile-nav-row">
-						<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-							<option value="/">Ranking Page</option>
-							<option value="/admin">Add new</option>
-							<option value="/dashboard">Star Map</option>
-							<option value="/wiki" selected>Fisting Wiki</option>
-							<option value="/about">About</option>
-						</select>
-					</div>
 				</div>
 			</section>
 
 			<section class="card">
-				<div class="compose">
-					<form id="wikiForm" class="form">
-						<input type="hidden" id="articleId" />
-						<div class="field">
-							<label for="author">Author</label>
-							<input id="author" placeholder="Author name" value="fistingguide" />
-						</div>
-						<div class="field">
-							<label for="title">Title</label>
-							<input id="title" placeholder="Article title" />
-						</div>
-						<div class="field">
-							<label for="content">Content</label>
-							<textarea id="content" placeholder="for test"></textarea>
-						</div>
-						<div class="actions">
-							<button type="submit" id="submitBtn">Create</button>
-							<button type="button" id="deleteBtn" class="danger" disabled>Delete</button>
-							<button type="button" id="resetBtn" class="secondary">Reset</button>
-						</div>
-					</form>
-					<div class="tips">
-						<strong>Blog Mode</strong><br />
-						1. Create a post with title + content.<br />
-						2. Click <code>Read</code> for full article view.<br />
-						3. Click <code>Edit</code> to load post into editor.<br />
-						4. Click <code>Delete</code> to remove a post.
-					</div>
+				<div class="submit-bar">
+					<div class="submit-hint">submit my account to FistingGuide</div>
+					<a class="submit-btn" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Submit account to FistingGuide"></a>
 				</div>
-				<p class="status" id="status">Ready</p>
+				<p class="status" id="status"></p>
 			</section>
 
 			<section class="card">
@@ -2739,6 +3294,58 @@ export function renderWikiPage(): string {
 			resetForm();
 			loadRows();
 		</script>
+		<script>
+			(function () {
+				const select = document.getElementById('wikiPageNav');
+				const mount = document.getElementById('wikiPageNavCustom');
+				if (!select || !mount) return;
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+				function closeMenu() { mount.classList.remove('open'); }
+				function render() {
+					const options = Array.from(select.options || []);
+					const selectedValue = String(select.value || '');
+					mount.innerHTML =
+						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
+						'<div class="mobile-select-menu" role="listbox">' +
+							options.map(function (opt) {
+								const value = String(opt.value || '');
+								const selectedClass = value === selectedValue ? ' is-selected' : '';
+								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+							}).join('') +
+						'</div>';
+					const trigger = mount.querySelector('.mobile-select-trigger');
+					const menu = mount.querySelector('.mobile-select-menu');
+					if (!trigger || !menu) return;
+					trigger.addEventListener('click', function (event) {
+						event.preventDefault();
+						mount.classList.toggle('open');
+					});
+					menu.addEventListener('click', function (event) {
+						const btn = event.target.closest('.mobile-select-option');
+						if (!btn) return;
+						const nextValue = btn.getAttribute('data-value') || '';
+						if (nextValue) window.location.href = nextValue;
+						closeMenu();
+					});
+				}
+				select.addEventListener('change', render);
+				render();
+				document.documentElement.classList.add('mobile-select-ready');
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('#wikiPageNavCustom')) closeMenu();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeMenu();
+				});
+			})();
+		</script>
 
 		<script>
 			(function () {
@@ -2877,7 +3484,15 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 			.age-btn.no { background: #71767B; }
 			@media (max-width: 840px) {
 				body { font-size: 14px; }
-				.wrap { width: 100%; max-width: 100%; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
 				.top-nav { display: none; }
 				.mobile-nav-row { display: block; }
 				.article h1 { font-size: 30px; }
