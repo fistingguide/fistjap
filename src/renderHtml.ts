@@ -158,6 +158,16 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				display: flex;
 				align-items: center;
 				min-width: 200px;
+				gap: 10px;
+			}
+			.mobile-field-label {
+				display: none;
+				width: auto;
+				font-size: 12px;
+				letter-spacing: 0;
+				text-transform: none;
+				color: #8B98A5;
+				white-space: nowrap;
 			}
 			.header-filter select {
 				font: inherit;
@@ -204,15 +214,61 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				font: inherit;
 			}
 			@media (max-width: 720px) {
-				body { font-size: 14px; }
+				body { font-size: 13px; }
 				.top-nav { display: none; }
 				.mobile-nav-row { display: block; }
 				.header-main { flex-direction: column; align-items: flex-start; }
 				.header-left { width: 100%; }
 				.header-title-row { width: 100%; }
-				.header-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+				.header-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
 				.header-filter { width: 100%; min-width: 0; }
-				.header-filter select { width: 100%; height: 42px; }
+				.mobile-field-label { display: block; }
+				.panel { width: 100%; max-width: 100%; gap: 0; }
+				.header {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.header h1 { font-size: 20px; }
+				.header-filter,
+				.mobile-nav-row {
+					display: grid;
+					grid-template-columns: 116px 1fr;
+					align-items: center;
+					gap: 10px;
+				}
+				.header-filter select,
+				.mobile-nav {
+					width: 100%;
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
+				}
+				.header-filter select:focus,
+				.mobile-nav:focus {
+					outline: none;
+					border-bottom-color: #1D9BF0;
+					box-shadow: none;
+				}
+				.header-filter select option,
+				.mobile-nav option {
+					background-color: #000000;
+					color: #8B98A5;
+				}
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -322,12 +378,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			@media (max-width: 1280px) { .list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 			@media (max-width: 980px) { .list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 			@media (max-width: 720px) {
-				.header h1 { font-size: 22px; }
 				.list {
 					grid-template-columns: 1fr;
 					gap: 0;
 				}
-				.panel { width: 100%; max-width: 100%; }
 				.leaderboard-item {
 					padding: 10px 0;
 					gap: 6px;
@@ -389,12 +443,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							<h1>Ranking Page</h1>
 						</div>
 					</div>
-					<div class="header-right">
-						<div class="header-filter">
-							<select id="rankCountryFilter" aria-label="Country (Region)">
-								<option value="">All</option>
-							</select>
-						</div>
+						<div class="header-right">
+							<div class="header-filter">
+								<label class="mobile-field-label" for="rankCountryFilter">country(region)</label>
+								<select id="rankCountryFilter" aria-label="Country (Region)">
+									<option value="">All</option>
+								</select>
+							</div>
 						<nav class="top-nav">
 							<a class="nav-btn primary active" href="/">Ranking Page</a>
 							<a class="nav-btn secondary" href="/admin">Add new</a>
@@ -403,7 +458,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							<a class="nav-btn secondary" href="/about">About</a>
 						</nav>
 						<div class="mobile-nav-row">
-							<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<label class="mobile-field-label" for="mobilePageNav">navigation</label>
+							<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 								<option value="/" selected>Ranking Page</option>
 								<option value="/admin">Add new</option>
 								<option value="/dashboard">Star Map</option>
