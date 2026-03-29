@@ -2261,6 +2261,10 @@ export function renderDashboardPage(): string {
 			const statusEl = document.getElementById('status');
 			const countryFilterEl = document.getElementById('countryFilter');
 			const rowsEl = document.getElementById('rows');
+			const GEO_CACHE_STORAGE_KEY = 'dashboard_geo_cache_v1';
+			const GEO_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+			const GEO_MAX_CACHE_ENTRIES = 3000;
+			const GEO_CONCURRENCY = 8;
 			const geoCache = new Map();
 			const map = L.map('map').setView([35.6812, 139.7671], 5);
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -2271,6 +2275,53 @@ export function renderDashboardPage(): string {
 
 			function setStatus(text) { statusEl.textContent = text; }
 			function formatNum(value) { return Number(value || 0).toLocaleString(); }
+			function makeGeoKey(district, region, country) {
+				return (String(district || '') + '|' + String(region || '') + '|' + String(country || '')).toLowerCase();
+			}
+
+			function loadGeoCacheFromStorage() {
+				try {
+					const raw = localStorage.getItem(GEO_CACHE_STORAGE_KEY);
+					if (!raw) return;
+					const parsed = JSON.parse(raw);
+					if (!Array.isArray(parsed)) return;
+					const now = Date.now();
+					for (const entry of parsed) {
+						if (!entry || typeof entry !== 'object') continue;
+						const key = String(entry.key || '').trim();
+						const lat = Number(entry.lat);
+						const lon = Number(entry.lon);
+						const ts = Number(entry.ts);
+						if (!key) continue;
+						if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+						if (!Number.isFinite(ts)) continue;
+						if (now - ts > GEO_CACHE_TTL_MS) continue;
+						geoCache.set(key, { lat: lat, lon: lon, ts: ts });
+					}
+				} catch {
+					// ignore invalid local cache
+				}
+			}
+
+			function persistGeoCacheToStorage() {
+				try {
+					const now = Date.now();
+					const items = [];
+					for (const [key, value] of geoCache.entries()) {
+						const lat = Number(value && value.lat);
+						const lon = Number(value && value.lon);
+						const ts = Number(value && value.ts);
+						if (!Number.isFinite(lat) || !Number.isFinite(lon) || !Number.isFinite(ts)) continue;
+						if (now - ts > GEO_CACHE_TTL_MS) continue;
+						items.push({ key: key, lat: lat, lon: lon, ts: ts });
+					}
+					items.sort(function (a, b) { return b.ts - a.ts; });
+					const trimmed = items.slice(0, GEO_MAX_CACHE_ENTRIES);
+					localStorage.setItem(GEO_CACHE_STORAGE_KEY, JSON.stringify(trimmed));
+				} catch {
+					// storage can fail in private mode/quota limits
+				}
+			}
 
 			async function loadCountries() {
 				const res = await fetch('/api/countries');
@@ -2302,8 +2353,14 @@ export function renderDashboardPage(): string {
 			}
 
 			async function geocode(district, region, country) {
-				const key = (district + '|' + region + '|' + country).toLowerCase();
-				if (geoCache.has(key)) return geoCache.get(key);
+				const key = makeGeoKey(district, region, country);
+				const now = Date.now();
+				const cached = geoCache.get(key);
+				if (cached && Number.isFinite(Number(cached.lat)) && Number.isFinite(Number(cached.lon)) && Number.isFinite(Number(cached.ts))) {
+					if (now - Number(cached.ts) <= GEO_CACHE_TTL_MS) {
+						return { lat: Number(cached.lat), lon: Number(cached.lon) };
+					}
+				}
 				const q = encodeURIComponent([district, region, country].filter(Boolean).join(', '));
 				try {
 					const res = await fetch('/api/geo/point?q=' + q);
@@ -2313,7 +2370,7 @@ export function renderDashboardPage(): string {
 						? { lat: Number(point.lat), lon: Number(point.lon) }
 						: null;
 					if (normalized) {
-						geoCache.set(key, normalized);
+						geoCache.set(key, { lat: normalized.lat, lon: normalized.lon, ts: now });
 					}
 					return normalized;
 				} catch {
@@ -2323,39 +2380,75 @@ export function renderDashboardPage(): string {
 
 			async function drawMap(rows) {
 				markerLayer.clearLayers();
+				if (!rows.length) {
+					return;
+				}
+
+				const uniqueLocations = new Map();
+				for (const row of rows) {
+					const district = (row.district || row.city) || 'Itabashi';
+					const region = (row.region || row.province) || 'Tokyo';
+					const country = row.country || 'Japan';
+					const key = makeGeoKey(district, region, country);
+					if (!uniqueLocations.has(key)) {
+						uniqueLocations.set(key, { district: district, region: region, country: country });
+					}
+				}
+
+				const tasks = Array.from(uniqueLocations.entries());
+				let cursor = 0;
+				const workerCount = Math.min(GEO_CONCURRENCY, tasks.length);
+				if (tasks.length) {
+					setStatus('Resolving map locations... (' + tasks.length + ')');
+				}
+				await Promise.all(Array.from({ length: workerCount }, async function () {
+					while (cursor < tasks.length) {
+						const current = cursor;
+						cursor += 1;
+						const pair = tasks[current];
+						if (!pair) continue;
+						const key = pair[0];
+						const location = pair[1];
+						const point = await geocode(location.district, location.region, location.country);
+						if (point) {
+							geoCache.set(key, { lat: Number(point.lat), lon: Number(point.lon), ts: Date.now() });
+						}
+					}
+				}));
+				persistGeoCacheToStorage();
+
 				const bounds = [];
 				const pointUsage = new Map();
 				for (const row of rows) {
 					const district = (row.district || row.city) || 'Itabashi';
 					const region = (row.region || row.province) || 'Tokyo';
 					const country = row.country || 'Japan';
-					try {
-						const point = await geocode(district, region, country);
-						if (!point) continue;
-						const key = point.lat.toFixed(5) + '|' + point.lon.toFixed(5);
-						const used = pointUsage.get(key) || 0;
-						pointUsage.set(key, used + 1);
-						let lat = point.lat;
-						let lon = point.lon;
-						if (used > 0) {
-							const angle = (used * 55) * Math.PI / 180;
-							const r = 0.008 + used * 0.0015;
-							lat = point.lat + Math.sin(angle) * r;
-							lon = point.lon + Math.cos(angle) * r;
-						}
-						bounds.push([lat, lon]);
-						L.circleMarker([lat, lon], {
-							radius: 6,
-							color: '#ffffff',
-							weight: 2,
-							fillColor: '#1D9BF0',
-							fillOpacity: 0.9
-						})
-							.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + district + ' / ' + region + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
-							.addTo(markerLayer);
-					} catch {
-						// ignore single geocoding failure
+					const point = geoCache.get(makeGeoKey(district, region, country));
+					if (!point) continue;
+					const pLat = Number(point.lat);
+					const pLon = Number(point.lon);
+					if (!Number.isFinite(pLat) || !Number.isFinite(pLon)) continue;
+					const key = pLat.toFixed(5) + '|' + pLon.toFixed(5);
+					const used = pointUsage.get(key) || 0;
+					pointUsage.set(key, used + 1);
+					let lat = pLat;
+					let lon = pLon;
+					if (used > 0) {
+						const angle = (used * 55) * Math.PI / 180;
+						const r = 0.008 + used * 0.0015;
+						lat = pLat + Math.sin(angle) * r;
+						lon = pLon + Math.cos(angle) * r;
 					}
+					bounds.push([lat, lon]);
+					L.circleMarker([lat, lon], {
+						radius: 6,
+						color: '#ffffff',
+						weight: 2,
+						fillColor: '#1D9BF0',
+						fillOpacity: 0.9
+					})
+						.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + district + ' / ' + region + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
+						.addTo(markerLayer);
 				}
 				if (bounds.length) {
 					map.fitBounds(bounds, { padding: [30, 30] });
@@ -2389,6 +2482,7 @@ export function renderDashboardPage(): string {
 			countryFilterEl.addEventListener('change', loadData);
 
 			(async function init() {
+				loadGeoCacheFromStorage();
 				await loadCountries();
 				await loadData();
 			})();
