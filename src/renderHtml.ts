@@ -213,6 +213,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				padding: 0 12px;
 				font: inherit;
 			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			@media (max-width: 720px) {
 				body { font-size: 13px; }
 				.top-nav { display: none; }
@@ -239,6 +240,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					grid-template-columns: 116px 1fr;
 					align-items: center;
 					gap: 10px;
+				}
+				html.mobile-select-ready .header-filter select,
+				html.mobile-select-ready .mobile-nav {
+					display: none;
+				}
+				html.mobile-select-ready .mobile-select-enhanced {
+					display: block;
 				}
 				.header-filter select,
 				.mobile-nav {
@@ -269,6 +277,53 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					background-color: #000000;
 					color: #8B98A5;
 				}
+				.mobile-select-trigger {
+					width: 100%;
+					height: 34px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					padding: 0 24px 0 0;
+					text-align: left;
+					cursor: pointer;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
+				}
+				.mobile-select-enhanced.open .mobile-select-trigger {
+					border-bottom-color: #1D9BF0;
+				}
+				.mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					left: 0;
+					right: 0;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 40;
+				}
+				.mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-select-option.is-selected { color: #E7E9EA; }
+				.mobile-select-option:active { background: #0B0E12; }
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -449,6 +504,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								<select id="rankCountryFilter" aria-label="Country (Region)">
 									<option value="">All</option>
 								</select>
+								<div id="rankCountryFilterCustom" class="mobile-select-enhanced"></div>
 							</div>
 						<nav class="top-nav">
 							<a class="nav-btn primary active" href="/">Ranking Page</a>
@@ -466,6 +522,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								<option value="/wiki">Fisting Wiki</option>
 								<option value="/about">About</option>
 							</select>
+							<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
 						</div>
 					</div>
 				</div>
@@ -479,6 +536,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				const initialRows = ${serializedRows};
 				const listEl = document.querySelector('.list');
 				const countrySelect = document.getElementById('rankCountryFilter');
+				const navSelect = document.getElementById('mobilePageNav');
+				const countryCustom = document.getElementById('rankCountryFilterCustom');
+				const navCustom = document.getElementById('mobilePageNavCustom');
 
 				function esc(v) {
 					return String(v || '')
@@ -534,6 +594,72 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					}).join('');
 				}
 
+				function closeAllCustomSelects() {
+					document.querySelectorAll('.mobile-select-enhanced.open').forEach(function (node) {
+						node.classList.remove('open');
+					});
+				}
+
+				function setupCustomMobileSelect(nativeSelect, mountEl) {
+					if (!nativeSelect || !mountEl) return function () {};
+					function refresh() {
+						const options = Array.from(nativeSelect.options || []);
+						const selectedValue = String(nativeSelect.value || '');
+						const selectedOption = options.find(function (opt) {
+							return String(opt.value) === selectedValue;
+						}) || options[0];
+						mountEl.innerHTML =
+							'<button type="button" class="mobile-select-trigger" aria-haspopup="listbox" aria-expanded="false">' + esc(selectedOption ? selectedOption.text : '') + '</button>' +
+							'<div class="mobile-select-menu" role="listbox">' +
+								options.map(function (opt) {
+									const value = String(opt.value || '');
+									const selectedClass = value === selectedValue ? ' is-selected' : '';
+									return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+								}).join('') +
+							'</div>';
+						const trigger = mountEl.querySelector('.mobile-select-trigger');
+						const menu = mountEl.querySelector('.mobile-select-menu');
+						if (!trigger || !menu) return;
+						trigger.addEventListener('click', function (event) {
+							event.preventDefault();
+							const isOpen = mountEl.classList.contains('open');
+							closeAllCustomSelects();
+							if (!isOpen) mountEl.classList.add('open');
+						});
+						menu.addEventListener('click', function (event) {
+							const btn = event.target.closest('.mobile-select-option');
+							if (!btn) return;
+							const nextValue = btn.getAttribute('data-value') || '';
+							if (String(nativeSelect.value || '') !== nextValue) {
+								nativeSelect.value = nextValue;
+								nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+							}
+							closeAllCustomSelects();
+							refresh();
+						});
+					}
+					nativeSelect.addEventListener('change', refresh);
+					refresh();
+					return refresh;
+				}
+
+				let refreshCountryCustom = function () {};
+				if (countrySelect && countryCustom) {
+					refreshCountryCustom = setupCustomMobileSelect(countrySelect, countryCustom);
+				}
+				if (navSelect && navCustom) {
+					setupCustomMobileSelect(navSelect, navCustom);
+				}
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('.mobile-select-enhanced')) {
+						closeAllCustomSelects();
+					}
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeAllCustomSelects();
+				});
+				document.documentElement.classList.add('mobile-select-ready');
+
 				async function loadCountries() {
 					if (!countrySelect) return;
 					const set = new Set();
@@ -551,6 +677,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						Array.from(set).sort().map(function (item) {
 							return '<option value="' + esc(item) + '">' + esc(item) + '</option>';
 						}).join('');
+					refreshCountryCustom();
 				}
 
 				async function filterByCountry() {
