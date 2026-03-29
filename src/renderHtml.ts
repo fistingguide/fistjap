@@ -57,6 +57,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "About",
 		country_region: "country(region)",
 		all_option: "All",
+		ranking_location_notice:
+			"The locations shown on this website map are only rough markers based on public information. They do not represent anyone's exact address or actual place of residence, and are only used to show the community's overall distribution.\n\nTo protect personal privacy, map locations may be approximate or randomly set, and have no real-world positioning meaning.\n\nIf you do not want your location to appear on the map, you can contact me at any time. I will remove it, or replace it with a completely random location (for example, somewhere in Iceland or Africa).\n\nThe purpose of this website is only to show the community's overall distribution. It does not collect or disclose anyone's specific address information.",
 		age_title: "Age Confirmation",
 		age_desc: "You must be 18+ to enter this site. Are you 18 years old or above?",
 		age_yes: "Yes, I am 18+",
@@ -121,6 +123,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "\u5173\u4e8e",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
+		ranking_location_notice:
+			"\u672c\u7f51\u7ad9\u5730\u56fe\u4e0a\u663e\u793a\u7684\u4f4d\u7f6e\u4ec5\u6839\u636e\u516c\u5f00\u4fe1\u606f\u8fdb\u884c\u5927\u81f4\u6807\u6ce8\uff0c\u5e76\u4e0d\u4ee3\u8868\u4efb\u4f55\u4eba\u7684\u7cbe\u786e\u5730\u5740\u6216\u771f\u5b9e\u5c45\u4f4f\u4f4d\u7f6e\uff0c\u4ec5\u7528\u4e8e\u5c55\u793a\u793e\u533a\u7684\u5927\u81f4\u5206\u5e03\u60c5\u51b5\u3002\n\n\u4e3a\u4e86\u4fdd\u62a4\u4e2a\u4eba\u9690\u79c1\uff0c\u5730\u56fe\u4e0a\u7684\u4f4d\u7f6e\u53ef\u80fd\u662f\u8fd1\u4f3c\u4f4d\u7f6e\u6216\u968f\u673a\u8bbe\u7f6e\u7684\uff0c\u5e76\u4e0d\u5177\u6709\u5b9e\u9645\u5b9a\u4f4d\u610f\u4e49\u3002\n\n\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u81ea\u5df1\u7684\u4f4d\u7f6e\u51fa\u73b0\u5728\u5730\u56fe\u4e0a\uff0c\u53ef\u4ee5\u968f\u65f6\u8054\u7cfb\u6211\uff0c\u6211\u4f1a\u5c06\u5176\u5220\u9664\uff0c\u6216\u66ff\u6362\u4e3a\u4e00\u4e2a\u5b8c\u5168\u968f\u673a\u7684\u5730\u70b9\uff08\u4f8b\u5982\u51b0\u5c9b\u6216\u975e\u6d32\u7684\u67d0\u4e2a\u4f4d\u7f6e\uff09\u3002\n\n\u672c\u7f51\u7ad9\u7684\u76ee\u7684\u4ec5\u662f\u5c55\u793a\u793e\u533a\u7684\u6574\u4f53\u5206\u5e03\uff0c\u5e76\u4e0d\u4f1a\u6536\u96c6\u6216\u516c\u5f00\u4efb\u4f55\u4e2a\u4eba\u7684\u5177\u4f53\u5730\u5740\u4fe1\u606f\u3002",
 		age_title: "\u5e74\u9f84\u786e\u8ba4",
 		age_desc: "\u4f60\u5fc5\u987b\u5e74\u6ee118\u5c81\u624d\u80fd\u8fdb\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6ee118\u5c81\uff1f",
 		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6ee118\u5c81",
@@ -185,6 +189,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "\u95dc\u65bc",
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
 		all_option: "\u5168\u90e8",
+		ranking_location_notice:
+			"\u672c\u7db2\u7ad9\u5730\u5716\u4e0a\u986f\u793a\u7684\u4f4d\u7f6e\u50c5\u6839\u64da\u516c\u958b\u8cc7\u8a0a\u9032\u884c\u5927\u81f4\u6a19\u8a3b\uff0c\u4e26\u4e0d\u4ee3\u8868\u4efb\u4f55\u4eba\u7684\u7cbe\u78ba\u5730\u5740\u6216\u771f\u5be6\u5c45\u4f4f\u4f4d\u7f6e\uff0c\u50c5\u7528\u65bc\u5c55\u793a\u793e\u7fa4\u7684\u5927\u81f4\u5206\u5e03\u60c5\u6cc1\u3002\n\n\u70ba\u4e86\u4fdd\u8b77\u500b\u4eba\u96b1\u79c1\uff0c\u5730\u5716\u4e0a\u7684\u4f4d\u7f6e\u53ef\u80fd\u662f\u8fd1\u4f3c\u4f4d\u7f6e\u6216\u96a8\u6a5f\u8a2d\u5b9a\u7684\uff0c\u4e26\u4e0d\u5177\u6709\u5be6\u969b\u5b9a\u4f4d\u610f\u7fa9\u3002\n\n\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u81ea\u5df1\u7684\u4f4d\u7f6e\u51fa\u73fe\u5728\u5730\u5716\u4e0a\uff0c\u53ef\u4ee5\u96a8\u6642\u806f\u7d61\u6211\uff0c\u6211\u6703\u5c07\u5176\u522a\u9664\uff0c\u6216\u66ff\u63db\u70ba\u4e00\u500b\u5b8c\u5168\u96a8\u6a5f\u7684\u5730\u9ede\uff08\u4f8b\u5982\u51b0\u5cf6\u6216\u975e\u6d32\u7684\u67d0\u500b\u4f4d\u7f6e\uff09\u3002\n\n\u672c\u7db2\u7ad9\u7684\u76ee\u7684\u50c5\u662f\u5c55\u793a\u793e\u7fa4\u7684\u6574\u9ad4\u5206\u5e03\uff0c\u4e26\u4e0d\u6703\u6536\u96c6\u6216\u516c\u958b\u4efb\u4f55\u500b\u4eba\u7684\u5177\u9ad4\u5730\u5740\u8cc7\u8a0a\u3002",
 		age_title: "\u5e74\u9f61\u78ba\u8a8d",
 		age_desc: "\u4f60\u5fc5\u9808\u5e74\u6eff18\u6b72\u624d\u80fd\u9032\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6eff18\u6b72\uff1f",
 		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6eff18\u6b72",
@@ -249,6 +255,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "\u6982\u8981",
 		country_region: "\u56fd(\u5730\u57df)",
 		all_option: "\u3059\u3079\u3066",
+		ranking_location_notice:
+			"\u3053\u306e\u30b5\u30a4\u30c8\u306e\u5730\u56f3\u306b\u8868\u793a\u3055\u308c\u308b\u4f4d\u7f6e\u306f\u3001\u516c\u958b\u60c5\u5831\u3092\u3082\u3068\u306b\u3057\u305f\u6982\u7565\u7684\u306a\u76ee\u5b89\u3067\u3042\u308a\u3001\u500b\u4eba\u306e\u6b63\u78ba\u306a\u4f4f\u6240\u3084\u5b9f\u969b\u306e\u5c45\u4f4f\u5730\u3092\u793a\u3059\u3082\u306e\u3067\u306f\u3042\u308a\u307e\u305b\u3093\u3002\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u304a\u304a\u3088\u305d\u306e\u5206\u5e03\u3092\u793a\u3059\u305f\u3081\u306e\u307f\u4f7f\u7528\u3057\u3066\u3044\u307e\u3059\u3002\n\n\u500b\u4eba\u306e\u30d7\u30e9\u30a4\u30d0\u30b7\u30fc\u4fdd\u8b77\u306e\u305f\u3081\u3001\u5730\u56f3\u4e0a\u306e\u4f4d\u7f6e\u306f\u8fd1\u4f3c\u5024\u307e\u305f\u306f\u30e9\u30f3\u30c0\u30e0\u306b\u8a2d\u5b9a\u3055\u308c\u308b\u3053\u3068\u304c\u3042\u308a\u3001\u5b9f\u969b\u306e\u4f4d\u7f6e\u3092\u793a\u3059\u610f\u5473\u306f\u3042\u308a\u307e\u305b\u3093\u3002\n\n\u81ea\u5206\u306e\u4f4d\u7f6e\u3092\u5730\u56f3\u306b\u8868\u793a\u3057\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u3044\u3064\u3067\u3082\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002\u524a\u9664\u3059\u308b\u304b\u3001\u5b8c\u5168\u306b\u30e9\u30f3\u30c0\u30e0\u306a\u5834\u6240\uff08\u4f8b\uff1a\u30a2\u30a4\u30b9\u30e9\u30f3\u30c9\u3084\u30a2\u30d5\u30ea\u30ab\u306e\u3069\u3053\u304b\uff09\u306b\u7f6e\u304d\u63db\u3048\u307e\u3059\u3002\n\n\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u5168\u4f53\u5206\u5e03\u3092\u793a\u3059\u3053\u3068\u3060\u3051\u3067\u3001\u500b\u4eba\u306e\u5177\u4f53\u7684\u306a\u4f4f\u6240\u60c5\u5831\u3092\u53ce\u96c6\u3057\u305f\u308a\u516c\u958b\u3057\u305f\u308a\u3059\u308b\u3053\u3068\u306f\u3042\u308a\u307e\u305b\u3093\u3002",
 		age_title: "\u5e74\u9f62\u78ba\u8a8d",
 		age_desc: "\u3053\u306e\u30b5\u30a4\u30c8\u306f18\u6b73\u4ee5\u4e0a\u304c\u5bfe\u8c61\u3067\u3059\u300218\u6b73\u4ee5\u4e0a\u3067\u3059\u304b\uff1f",
 		age_yes: "\u306f\u3044\u300118\u6b73\u4ee5\u4e0a\u3067\u3059",
@@ -313,6 +321,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "\uc18c\uac1c",
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
 		all_option: "\uc804\uccb4",
+		ranking_location_notice:
+			"\uc774 \uc6f9\uc0ac\uc774\ud2b8 \uc9c0\ub3c4\uc5d0 \ud45c\uc2dc\ub418\ub294 \uc704\uce58\ub294 \uacf5\uac1c \uc815\ubcf4\ub97c \uae30\ubc18\uc73c\ub85c \ud55c \ub300\ub7b5\uc801\uc778 \ud45c\uc2dc\uc77c \ubfd0\uc774\uba70, \uc5b4\ub5a4 \uc0ac\ub78c\uc758 \uc815\ud655\ud55c \uc8fc\uc18c\ub098 \uc2e4\uc81c \uac70\uc8fc \uc704\uce58\ub97c \ub73b\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4. \ucee4\ubba4\ub2c8\ud2f0\uc758 \uc804\ubc18\uc801\uc778 \ubd84\ud3ec\ub97c \ubcf4\uc5ec\uc8fc\uae30 \uc704\ud55c \ubaa9\uc801\uc73c\ub85c\ub9cc \uc0ac\uc6a9\ub429\ub2c8\ub2e4.\n\n\uac1c\uc778 \ud504\ub77c\uc774\ubc84\uc2dc \ubcf4\ud638\ub97c \uc704\ud574 \uc9c0\ub3c4 \uc704\uce58\ub294 \uadfc\uc0ac\uac12\uc774\uac70\ub098 \ubb34\uc791\uc704\ub85c \uc124\uc815\ub420 \uc218 \uc788\uc73c\uba70, \uc2e4\uc81c \uc704\uce58 \ucd94\uc801 \uc758\ubbf8\ub97c \uac00\uc9c0\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\n\uc790\uc2e0\uc758 \uc704\uce58\uac00 \uc9c0\ub3c4\uc5d0 \ub098\uc624\ub294 \uac83\uc744 \uc6d0\ud558\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc5b8\uc81c\ub4e0\uc9c0 \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. \ud574\ub2f9 \uc704\uce58\ub97c \uc0ad\uc81c\ud558\uac70\ub098, \uc644\uc804\ud788 \ubb34\uc791\uc704 \uc7a5\uc18c(\uc608: \uc544\uc774\uc2ac\ub780\ub4dc \ub610\ub294 \uc544\ud504\ub9ac\uce74 \uc5b4\ub290 \uc9c0\uc810)\ub85c \ub300\uccb4\ud558\uaca0\uc2b5\ub2c8\ub2e4.\n\n\uc774 \uc6f9\uc0ac\uc774\ud2b8\uc758 \ubaa9\uc801\uc740 \ucee4\ubba4\ub2c8\ud2f0\uc758 \uc804\uccb4 \ubd84\ud3ec\ub97c \ubcf4\uc5ec\uc8fc\ub294 \uac83\uc5d0 \ud55c\uc815\ub418\uba70, \uac1c\uc778\uc758 \uad6c\uccb4\uc801\uc778 \uc8fc\uc18c \uc815\ubcf4\ub97c \uc218\uc9d1\ud558\uac70\ub098 \uacf5\uac1c\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.",
 		age_title: "\uc5f0\ub839 \ud655\uc778",
 		age_desc: "\uc774 \uc0ac\uc774\ud2b8\ub294 18\uc138 \uc774\uc0c1\ub9cc \uc774\uc6a9\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ub9cc 18\uc138 \uc774\uc0c1\uc778\uac00\uc694?",
 		age_yes: "\ub124, \ub9cc 18\uc138 \uc774\uc0c1\uc785\ub2c8\ub2e4",
@@ -377,6 +387,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_about: "Acerca de",
 		country_region: "pais(region)",
 		all_option: "Todos",
+		ranking_location_notice:
+			"La ubicacion mostrada en el mapa de este sitio web es solo una referencia aproximada basada en informacion publica. No representa la direccion exacta ni la residencia real de ninguna persona; solo se usa para mostrar la distribucion general de la comunidad.\n\nPara proteger la privacidad personal, las ubicaciones del mapa pueden ser aproximadas o configuradas aleatoriamente, y no tienen valor de geolocalizacion real.\n\nSi no quieres que tu ubicacion aparezca en el mapa, puedes contactarme en cualquier momento. La eliminare o la reemplazare por un lugar completamente aleatorio (por ejemplo, en Islandia o en algun punto de Africa).\n\nEl objetivo de este sitio es solo mostrar la distribucion general de la comunidad. No recopila ni publica informacion de direcciones especificas de ninguna persona.",
 		age_title: "Confirmacion de edad",
 		age_desc: "Debes tener 18+ para entrar a este sitio. Tienes 18 anos o mas?",
 		age_yes: "Si, tengo 18+",
@@ -1108,6 +1120,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.age-btn.yes { background: var(--primary); }
 			.age-btn.no { background: #71767B; }
+			.ranking-notice {
+				margin: 0;
+				padding: 10px 14px;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: #0F1419;
+				color: var(--muted);
+				font-size: 13px;
+				line-height: 1.5;
+				white-space: pre-line;
+			}
 			.list {
 				margin: 0;
 				padding: 0;
@@ -1228,6 +1251,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					-webkit-line-clamp: 2;
 					line-height: 1.35;
 				}
+				.ranking-notice {
+					font-size: 12px;
+					padding: 9px 10px;
+				}
 			}
 			@media (max-width: 460px) { .list { grid-template-columns: 1fr; } }
 		</style>
@@ -1281,6 +1308,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</header>
+			<p class="ranking-notice" data-i18n="ranking_location_notice">Locations are based on public information and may be inaccurate. If you do not want your location shown, I can set it to a random point in an unrelated country/region (for example, Iceland or somewhere in Africa).</p>
 			<ol class="list">
 				${renderLeaderboardRows(rows)}
 			</ol>
