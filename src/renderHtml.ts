@@ -907,7 +907,8 @@ export function renderAdminPage(): string {
 			button.danger { background: var(--danger); }
 			button[disabled] { opacity: 0.55; cursor: not-allowed; }
 			.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-			.field { display: grid; gap: 6px; }
+			.field { display: grid; gap: 6px; min-width: 0; }
+			.field input, .field textarea, .field select { width: 100%; min-width: 0; }
 			.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
 			.form .full { grid-column: 1 / -1; }
 			.avatar-inline {
@@ -1291,11 +1292,14 @@ export function renderAdminPage(): string {
 			}
 
 			function updateAvatarPreview() {
+				const emptyAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 				const url = String(els.avatar.value || '').trim();
 				if (!url) {
-					els.avatarPreview.removeAttribute('src');					return;
+					els.avatarPreview.src = emptyAvatar;
+					return;
 				}
-				els.avatarPreview.src = url;			}
+				els.avatarPreview.src = url;
+			}
 
 			function buildLocationLabel(item) {
 				const district = String(item.district || '').trim();
@@ -1821,7 +1825,8 @@ export function renderAdminPage(): string {
 				if (picked) applyLocationChoice(picked);
 			});
 			els.avatar.addEventListener('input', updateAvatarPreview);
-			els.avatarPreview.addEventListener('error', function () {\t\t\t\tels.avatarPreview.removeAttribute('src');
+			els.avatarPreview.addEventListener('error', function () {
+				els.avatarPreview.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 			});
 			els.deleteBtn.addEventListener('click', handleDelete);
 			els.resetBtn.addEventListener('click', function () {
@@ -3560,6 +3565,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 </html>
 `;
 }
+
 
 
 
