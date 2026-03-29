@@ -1139,7 +1139,7 @@ async function parsePayload(request: Request): Promise<ProfilePayload> {
 }
 
 export default {
-	async fetch(request, env: RuntimeEnv) {
+	async fetch(request, env: RuntimeEnv, ctx: ExecutionContext) {
 		const url = new URL(request.url);
 		const { pathname } = url;
 		const method = request.method.toUpperCase();
@@ -1342,7 +1342,7 @@ export default {
 				.bind(input.handle)
 				.first<Record<string, unknown>>();
 			if (inserted) {
-				void sendAdminNotification(env, "CREATE", inserted);
+				ctx.waitUntil(sendAdminNotification(env, "CREATE", inserted));
 			}
 
 			return json({ ok: true }, 201);
@@ -1403,7 +1403,7 @@ export default {
 					.bind(id)
 					.first<Record<string, unknown>>();
 				if (updated) {
-					void sendAdminNotification(env, "UPDATE", updated);
+					ctx.waitUntil(sendAdminNotification(env, "UPDATE", updated));
 				}
 
 				return json({ ok: true });
@@ -1424,7 +1424,7 @@ export default {
 					return json({ error: "not found" }, 404);
 				}
 				if (deletedRow) {
-					void sendAdminNotification(env, "DELETE", deletedRow);
+					ctx.waitUntil(sendAdminNotification(env, "DELETE", deletedRow));
 				}
 				return json({ ok: true });
 			}
