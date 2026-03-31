@@ -33,10 +33,11 @@ function escapeHtml(value: string): string {
 		.replaceAll("'", "&#39;");
 }
 
-type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "th";
+type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "th" | "vi";
 
-const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "th"];
-const RANKING_NOTICE_ZH_CN = "本网站地图上显示的所有位置均为示意标注，并非任何人的真实地址或实际居住位置。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。为保护个人隐私，地图上的位置均为近似或随机生成，不具备任何现实定位意义。如果你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的地点（例如冰岛或非洲的某个位置）。本网站不会收集、存储或公开任何个人的具体地址信息。";
+const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "th", "vi"];
+const RANKING_NOTICE_ZH_CN =
+	"1. 本网站仅收录男性账号（包括 gay 用户以及对肛门扩张感兴趣的直男）。\n2. 为了保证公平性，网站每 10 分钟轮换一次置顶账号，以确保每位用户都有机会被更多人看到。\n3. 本网站地图上显示的所有位置仅为示意标注。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。若你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的位置。本网站不会收集、存储或公开任何个人的具体地址信息。\n4. 每个人可以添加自己的账号和查看地图，手机端请点击汉堡按键查看更多操作。\n5. 任何信息请私信 @fistingguide。";
 const TH_MESSAGES: Record<string, string> = {
 	page_title_ranking: "อันดับครีเอเตอร์",
 	page_title_admin: "แผงผู้ดูแลฐานข้อมูล",
@@ -57,7 +58,7 @@ const TH_MESSAGES: Record<string, string> = {
 	country_region: "ประเทศ(ภูมิภาค)",
 	all_option: "ทั้งหมด",
 	ranking_location_notice:
-		"ตำแหน่งทั้งหมดที่แสดงบนแผนที่ของเว็บไซต์นี้เป็นเพียงตำแหน่งตัวอย่าง ไม่ใช่ที่อยู่จริงหรือที่อยู่อาศัยจริงของบุคคลใด ตำแหน่งเหล่านี้อาจอ้างอิงข้อมูลสาธารณะเพื่อระบุโดยประมาณ แต่ถูกทำให้คลุมเครือหรือสุ่มไว้โดยเจตนา จึงไม่สอดคล้องกับตำแหน่งที่แม่นยำของใคร และใช้เพื่อแสดงการกระจายตัวโดยรวมของชุมชนเท่านั้น เพื่อปกป้องความเป็นส่วนตัว ตำแหน่งบนแผนที่เป็นตำแหน่งโดยประมาณหรือสุ่มสร้าง และไม่มีความหมายในการระบุตำแหน่งจริง หากคุณไม่ต้องการให้ชื่อหรือหมุดของคุณปรากฏบนแผนที่ สามารถติดต่อฉันได้ตลอดเวลา ฉันจะลบออกหรือแทนที่ด้วยตำแหน่งแบบสุ่มทั้งหมด (เช่น ไอซ์แลนด์ หรือจุดใดจุดหนึ่งในแอฟริกา) เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ข้อมูลที่อยู่แบบเฉพาะเจาะจงของบุคคลใด",
+		"1. เว็บไซต์นี้รวบรวมเฉพาะบัญชีผู้ชาย (รวมผู้ใช้ gay และผู้ชายรักต่างเพศที่สนใจการขยายทวารหนัก)\n2. เพื่อความยุติธรรม เว็บไซต์จะสลับบัญชีปักหมุดทุก 10 นาที เพื่อให้ทุกคนมีโอกาสถูกมองเห็นมากขึ้น\n3. ตำแหน่งทั้งหมดบนแผนที่เป็นเพียงตำแหน่งเชิงสาธิต อาจอ้างอิงข้อมูลสาธารณะคร่าว ๆ แต่ถูกทำให้คลุมเครือหรือสุ่มโดยเจตนา จึงไม่ตรงกับตำแหน่งจริงของบุคคล ใช้เพื่อแสดงการกระจายของชุมชนเท่านั้น หากไม่ต้องการให้ชื่อหรือหมุดปรากฏบนแผนที่ ติดต่อฉันได้ตลอดเวลา ฉันจะลบหรือแทนที่ด้วยตำแหน่งสุ่มทั้งหมด เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ที่อยู่จริงของบุคคล\n4. ทุกคนสามารถเพิ่มบัญชีของตัวเองและดูแผนที่ได้ บนมือถือให้กดปุ่มแฮมเบอร์เกอร์เพื่อดูการทำงานเพิ่มเติม\n5. หากมีข้อมูลใด ๆ กรุณาส่งข้อความส่วนตัวถึง @fistingguide",
 	spotlight_title: "ไฮไลต์หมุนเวียน",
 	spotlight_next_switch: "สลับอีกใน {time}",
 	age_title: "ยืนยันอายุ",
@@ -105,6 +106,40 @@ const TH_MESSAGES: Record<string, string> = {
 	admin_alert_updated_success: "อัปเดตโปรไฟล์สำเร็จ",
 	admin_alert_created_success: "สร้างโปรไฟล์สำเร็จ",
 };
+const VI_MESSAGES: Record<string, string> = {
+	page_title_ranking: "Bảng xếp hạng Creator",
+	page_title_admin: "Bảng quản trị cơ sở dữ liệu",
+	page_title_dashboard: "Bản đồ",
+	page_title_about: "Giới thiệu",
+	page_title_wiki: "Fisting Wiki",
+	page_title_wiki_article: "Fisting Wiki",
+	heading_ranking: "Trang xếp hạng",
+	heading_add: "Thêm mới",
+	heading_star: "Bản đồ",
+	heading_about: "Giới thiệu",
+	heading_wiki: "Fisting Wiki",
+	nav_ranking: "Trang xếp hạng",
+	nav_add: "Thêm mới",
+	nav_star: "Bản đồ",
+	nav_wiki: "Fisting Wiki",
+	nav_about: "Giới thiệu",
+	country_region: "quoc gia(vung)",
+	all_option: "Tat ca",
+	ranking_location_notice:
+		"1. Website nay chi liet ke cac tai khoan nam (bao gom nguoi dung gay va nam thang quan tam den anal expansion).\n2. De dam bao cong bang, website se xoay tai khoan ghim moi 10 phut de moi nguoi deu co co hoi duoc nhieu nguoi thay hon.\n3. Tat ca vi tri tren ban do chi mang tinh minh hoa. Cac vi tri nay co the duoc danh dau dua tren thong tin cong khai o muc do tong quat, nhung da duoc lam mo hoac ngau nhien co chu dich, vi vay khong the hien vi tri chinh xac cua bat ky ai. Muc dich chi de hien thi phan bo tong quan cua cong dong. Neu ban khong muon ten hoac danh dau cua minh xuat hien tren ban do, hay lien he toi bat cu luc nao, toi se xoa hoac thay bang mot vi tri hoan toan ngau nhien. Website nay khong thu thap, luu tru hay cong khai dia chi cu the cua bat ky ca nhan nao.\n4. Moi nguoi deu co the them tai khoan cua minh va xem ban do. Tren dien thoai, hay bam nut hamburger de xem them thao tac.\n5. Moi thong tin vui long nhan tin @fistingguide.",
+	spotlight_title: "Ghim luan phien",
+	spotlight_next_switch: "Se doi sau {time}",
+	age_title: "Xac nhan do tuoi",
+	age_desc: "Ban phai tu 18+ moi co the vao trang nay. Ban co tu 18 tuoi tro len khong?",
+	age_yes: "Co, toi 18+",
+	age_no: "Khong",
+	age_denied: "Tu choi truy cap. Website nay chi danh cho nguoi lon 18+.",
+	article_by: "Boi",
+	article_updated: "Cap nhat",
+	wiki_submit_hint: "gui tai khoan cua toi cho FistingGuide",
+	about_description:
+		"Xin chao, toi la mot nguoi yeu thich fisting va da tao mot website dieu huong don gian de giup moi nguoi nhanh chong tim thay creator va tai khoan trong cong dong. Muc tieu cua trang la giup tim creator de hon, kham pha noi dung moi va ket noi voi nhung nguoi co cung so thich. Neu ban co goi y, phan hoi hoac muon hop tac cai thien du an, hay lien he toi tren X: @fistingguide hoac email: fistingguide@proton.me. Neu ban khong muon xuat hien tren website, hay bao toi va toi se go danh sach cua ban.",
+};
 
 const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	en: {
@@ -127,7 +162,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		country_region: "country(region)",
 		all_option: "All",
 		ranking_location_notice:
-			"All locations shown on this website map are illustrative markers and are not anyone's real address or actual residence. These locations may be roughly based on public information, but they are intentionally blurred or randomly set, so they do not correspond to anyone's precise location and are used only to show the community's general distribution. To protect personal privacy, map locations are approximate or randomly generated and have no real-world geolocation meaning. If you do not want your name or marker to appear on the map, you can contact me at any time, and I will remove it or replace it with a completely random location (for example, somewhere in Iceland or Africa). This website does not collect, store, or disclose any person's specific address information.",
+			"1. This website only lists male accounts (including gay users and straight men interested in anal expansion).\n2. To keep things fair, the site rotates the pinned spotlight account every 10 minutes, so everyone gets a chance to be seen.\n3. All map locations on this site are illustrative markers. They may be roughly based on public info, but are intentionally blurred or randomized, so they do not match any person's exact location and are only used to show the community's general distribution. If you do not want your name or marker shown, contact me anytime and I will remove it or replace it with a fully random location. This site does not collect, store, or publish anyone's specific address information.\n4. Everyone can add their own account and view the map. On mobile, tap the hamburger button to see more actions.\n5. For any information, please DM @fistingguide.",
 		spotlight_title: "Rotating Spotlight",
 		spotlight_next_switch: "Next switch in {time}",
 		age_title: "Age Confirmation",
@@ -262,7 +297,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
 		all_option: "\u5168\u90e8",
 		ranking_location_notice:
-			"本網站地圖上顯示的所有位置均為示意標註，並非任何人的真實地址或實際居住位置。這些位置可能參考公開資訊進行大致標註，但已被刻意模糊化或隨機設定，因此不會對應任何人的精確位置，僅用於展示社群的大致分布情況。為保護個人隱私，地圖上的位置均為近似或隨機生成，不具備任何現實定位意義。如果你不希望自己的名稱或標註出現在地圖上，可以隨時聯絡我，我會將其刪除或替換為一個完全隨機的地點（例如冰島或非洲的某個位置）。本網站不會收集、儲存或公開任何個人的具體地址資訊。",
+			"1. 本網站僅收錄男性帳號（包含 gay 使用者，以及對肛門擴張感興趣的直男）。\n2. 為了維持公平性，網站每 10 分鐘輪換一次置頂帳號，確保每位使用者都有被更多人看到的機會。\n3. 本網站地圖上顯示的所有位置僅為示意標註。這些位置可能參考公開資訊進行大致標註，但已被刻意模糊化或隨機設定，因此不會對應任何人的精確位置，僅用於展示社群的大致分布情況。若你不希望自己的名稱或標註出現在地圖上，可以隨時聯絡我，我會將其刪除或替換為完全隨機的位置。本網站不會收集、儲存或公開任何個人的具體地址資訊。\n4. 每個人都可以新增自己的帳號並查看地圖，手機端請點擊漢堡按鈕查看更多操作。\n5. 任何資訊請私訊 @fistingguide。",
 		spotlight_title: "\u8f2a\u64ad\u7f6e\u9802",
 		spotlight_next_switch: "{time} \u5f8c\u5207\u63db",
 		age_title: "\u5e74\u9f61\u78ba\u8a8d",
@@ -330,7 +365,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		country_region: "\u56fd(\u5730\u57df)",
 		all_option: "\u3059\u3079\u3066",
 		ranking_location_notice:
-			"本サイト地図上に表示されるすべての位置は参考用の表示であり、誰かの実際の住所や居住地を示すものではありません。これらの位置は公開情報をもとに大まかに示される場合がありますが、意図的にぼかし処理またはランダム化されているため、特定の個人の正確な位置には対応せず、コミュニティのおおまかな分布を示す目的にのみ使用されます。個人のプライバシー保護のため、地図上の位置は近似またはランダム生成であり、現実の位置特定を意味するものではありません。自分の名前や表示マーカーを地図に載せたくない場合は、いつでもご連絡ください。削除するか、完全にランダムな場所（例: アイスランドまたはアフリカのどこか）に置き換えます。本サイトは、個人の具体的な住所情報を収集・保存・公開することはありません。",
+			"1. このサイトでは男性アカウントのみ掲載します（gayユーザー、および肛門拡張に関心のあるストレート男性を含む）。\n2. 公平性のため、サイトの置頂アカウントは10分ごとにローテーションし、全員に見られる機会を作ります。\n3. サイトの地図上の位置はすべて説明用の表示です。公開情報を参考に大まかに示す場合がありますが、意図的にぼかしやランダム化を行っているため、個人の正確な位置には対応しません。コミュニティの大まかな分布表示のみを目的としています。名前やマーカーの表示を希望しない場合は、いつでも連絡してください。削除または完全ランダム位置への置換に対応します。サイトは個人の具体的住所情報を収集・保存・公開しません。\n4. 誰でも自分のアカウントを追加し、地図を閲覧できます。モバイルではハンバーガーボタンから追加操作を確認してください。\n5. 連絡は @fistingguide へDMしてください。",
 		spotlight_title: "\u30ed\u30fc\u30c6\u30fc\u30b7\u30e7\u30f3\u8868\u793a",
 		spotlight_next_switch: "{time} \u5f8c\u306b\u5207\u308a\u66ff\u3048",
 		age_title: "\u5e74\u9f62\u78ba\u8a8d",
@@ -398,7 +433,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
 		all_option: "\uc804\uccb4",
 		ranking_location_notice:
-			"이 웹사이트 지도에 표시되는 모든 위치는 예시 표기이며, 어떤 개인의 실제 주소나 거주지를 의미하지 않습니다. 이 위치들은 공개 정보를 참고해 대략적으로 표시될 수 있지만, 의도적으로 흐리게 처리되거나 무작위로 설정되어 있어 누구의 정확한 위치에도 대응하지 않으며, 커뮤니티의 대략적인 분포를 보여주기 위한 용도로만 사용됩니다. 개인 프라이버시 보호를 위해 지도 위치는 근사값 또는 무작위 생성값이며, 현실의 위치 추적 의미를 갖지 않습니다. 본인의 이름이나 표기가 지도에 나타나는 것을 원하지 않으면 언제든지 연락해 주세요. 해당 항목을 삭제하거나 완전히 무작위인 위치(예: 아이슬란드 또는 아프리카의 어느 지점)로 교체하겠습니다. 이 웹사이트는 개인의 구체적인 주소 정보를 수집, 저장 또는 공개하지 않습니다.",
+			"1. 이 사이트는 남성 계정만 수록합니다(gay 사용자 및 항문 확장에 관심 있는 이성애 남성 포함).\n2. 공정성을 위해 사이트는 10분마다 상단 고정 계정을 순환 노출하여 모든 사용자가 더 많이 보일 기회를 갖게 합니다.\n3. 지도에 표시되는 모든 위치는 안내용 표기입니다. 공개 정보를 참고해 대략적으로 표시될 수 있지만 의도적으로 흐리게 처리되거나 무작위 설정되므로 개인의 정확한 위치와 일치하지 않습니다. 커뮤니티의 대략적 분포 표시 목적입니다. 이름/표시를 원하지 않으면 언제든지 연락해 주세요. 삭제하거나 완전 무작위 위치로 대체합니다. 이 사이트는 개인의 구체적 주소 정보를 수집, 저장, 공개하지 않습니다.\n4. 누구나 자신의 계정을 추가하고 지도를 볼 수 있습니다. 모바일에서는 햄버거 버튼을 눌러 더 많은 기능을 확인하세요.\n5. 문의는 @fistingguide 로 DM 주세요.",
 		spotlight_title: "\uc21c\ud658 \uace0\uc815 \ub178\ucd9c",
 		spotlight_next_switch: "{time} \ud6c4 \uc804\ud658",
 		age_title: "\uc5f0\ub839 \ud655\uc778",
@@ -466,7 +501,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		country_region: "pais(region)",
 		all_option: "Todos",
 		ranking_location_notice:
-			"Todas las ubicaciones mostradas en el mapa de este sitio web son marcas ilustrativas y no corresponden a la direccion real ni al lugar de residencia real de ninguna persona. Estas ubicaciones pueden basarse de forma aproximada en informacion publica, pero se difuminan de forma intencional o se configuran aleatoriamente, por lo que no coinciden con la ubicacion precisa de nadie y solo se usan para mostrar la distribucion general de la comunidad. Para proteger la privacidad personal, las ubicaciones del mapa son aproximadas o generadas aleatoriamente y no tienen significado de geolocalizacion real. Si no quieres que tu nombre o marcador aparezca en el mapa, puedes contactarme en cualquier momento; lo eliminare o lo reemplazare por una ubicacion totalmente aleatoria (por ejemplo, en Islandia o en algun punto de Africa). Este sitio web no recopila, almacena ni publica informacion de direcciones especificas de ninguna persona.",
+			"1. Este sitio solo incluye cuentas masculinas (incluye usuarios gay y hombres heterosexuales interesados en la expansion anal).\n2. Para mantener la equidad, el sitio rota la cuenta fijada cada 10 minutos para que todos tengan oportunidad de ser vistos.\n3. Todas las ubicaciones del mapa son marcas ilustrativas. Pueden basarse de forma aproximada en informacion publica, pero se difuminan o aleatorizan de forma intencional, por lo que no corresponden a la ubicacion exacta de ninguna persona. Solo se usan para mostrar la distribucion general de la comunidad. Si no quieres que aparezcan tu nombre o marcador, contactame en cualquier momento y lo eliminare o lo reemplazare por una ubicacion totalmente aleatoria. Este sitio no recopila, almacena ni publica direcciones especificas de personas.\n4. Cualquiera puede agregar su propia cuenta y ver el mapa. En movil, pulsa el boton hamburguesa para ver mas acciones.\n5. Para cualquier informacion, envia DM a @fistingguide.",
 		spotlight_title: "Destacado Rotativo",
 		spotlight_next_switch: "Siguiente cambio en {time}",
 		age_title: "Confirmacion de edad",
@@ -515,6 +550,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_created_success: "Perfil creado correctamente.",
 	},
 	th: TH_MESSAGES,
+	vi: VI_MESSAGES,
 };
 function renderLanguageSwitcher(id: string): string {
 	return `
@@ -526,6 +562,7 @@ function renderLanguageSwitcher(id: string): string {
 			<option value="ko">&#54620;&#44397;&#50612;</option>
 			<option value="es">Espa&#241;ol</option>
 			<option value="th">ไทย</option>
+			<option value="vi">Tiếng Việt</option>
 		</select>
 	`;
 }
@@ -550,6 +587,7 @@ function renderI18nScript(pageTitleKey: string): string {
 					if (lower.startsWith("ko")) return "ko";
 					if (lower.startsWith("es")) return "es";
 					if (lower.startsWith("th")) return "th";
+					if (lower.startsWith("vi")) return "vi";
 					if (lower.startsWith("en")) return "en";
 					const direct = locales.find(function (item) { return item.toLowerCase() === lower; });
 					return direct || "";
