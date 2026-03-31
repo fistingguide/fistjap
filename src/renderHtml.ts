@@ -1419,9 +1419,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				const navSelect = document.getElementById('mobilePageNav');
 				const countryCustom = document.getElementById('rankCountryFilterCustom');
 				const navCustom = document.getElementById('mobilePageNavCustom');
-				const pinnedSpotlightEl = document.getElementById('pinnedSpotlight');
+				let pinnedSpotlightEl = document.getElementById('pinnedSpotlight');
 				let pinnedCountdownEl = null;
 				let pinnedNextSwitchAt = null;
+				let lastPinnedData = null;
 
 				function esc(v) {
 					return String(v || '')
@@ -1441,11 +1442,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 
 				function renderRows(rows) {
 					if (!listEl) return;
-					if (!rows.length) {
-						listEl.innerHTML = '<li class="empty">No data yet. Add records in the admin panel.</li>';
-						return;
-					}
-					listEl.innerHTML = rows.map(function (row, index) {
+					const pinnedPlaceholder = '<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>';
+					const rowsHtml = !rows.length
+						? '<li class="empty">No data yet. Add records in the admin panel.</li>'
+						: rows.map(function (row, index) {
 						const rank = index + 1;
 						const rankClass = rank <= 3 ? 'top-rank' : 'normal-rank';
 						const safeName = esc(row.name || 'Unnamed');
@@ -1482,10 +1482,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								'</a>' +
 							'</li>';
 					}).join('');
+					listEl.innerHTML = pinnedPlaceholder + rowsHtml;
+					pinnedSpotlightEl = listEl.querySelector('#pinnedSpotlight');
+					pinnedCountdownEl = null;
+					if (lastPinnedData) {
+						renderPinnedCard(lastPinnedData);
+					}
 				}
 
 				function renderPinnedCard(data) {
 					if (!pinnedSpotlightEl) return;
+					lastPinnedData = data || null;
 					const row = data && data.result ? data.result : null;
 					if (!row) {
 						pinnedSpotlightEl.hidden = true;
