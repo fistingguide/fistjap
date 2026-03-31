@@ -58,6 +58,8 @@ const TH_MESSAGES: Record<string, string> = {
 	all_option: "ทั้งหมด",
 	ranking_location_notice:
 		"ตำแหน่งทั้งหมดที่แสดงบนแผนที่ของเว็บไซต์นี้เป็นเพียงตำแหน่งตัวอย่าง ไม่ใช่ที่อยู่จริงหรือที่อยู่อาศัยจริงของบุคคลใด ตำแหน่งเหล่านี้อาจอ้างอิงข้อมูลสาธารณะเพื่อระบุโดยประมาณ แต่ถูกทำให้คลุมเครือหรือสุ่มไว้โดยเจตนา จึงไม่สอดคล้องกับตำแหน่งที่แม่นยำของใคร และใช้เพื่อแสดงการกระจายตัวโดยรวมของชุมชนเท่านั้น เพื่อปกป้องความเป็นส่วนตัว ตำแหน่งบนแผนที่เป็นตำแหน่งโดยประมาณหรือสุ่มสร้าง และไม่มีความหมายในการระบุตำแหน่งจริง หากคุณไม่ต้องการให้ชื่อหรือหมุดของคุณปรากฏบนแผนที่ สามารถติดต่อฉันได้ตลอดเวลา ฉันจะลบออกหรือแทนที่ด้วยตำแหน่งแบบสุ่มทั้งหมด (เช่น ไอซ์แลนด์ หรือจุดใดจุดหนึ่งในแอฟริกา) เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ข้อมูลที่อยู่แบบเฉพาะเจาะจงของบุคคลใด",
+	spotlight_title: "ไฮไลต์หมุนเวียน",
+	spotlight_next_switch: "สลับอีกใน {time}",
 	age_title: "ยืนยันอายุ",
 	age_desc: "คุณต้องมีอายุ 18 ปีขึ้นไปเพื่อเข้าสู่เว็บไซต์นี้ คุณอายุ 18 ปีขึ้นไปหรือไม่?",
 	age_yes: "ใช่ ฉันอายุ 18+",
@@ -126,6 +128,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		all_option: "All",
 		ranking_location_notice:
 			"All locations shown on this website map are illustrative markers and are not anyone's real address or actual residence. These locations may be roughly based on public information, but they are intentionally blurred or randomly set, so they do not correspond to anyone's precise location and are used only to show the community's general distribution. To protect personal privacy, map locations are approximate or randomly generated and have no real-world geolocation meaning. If you do not want your name or marker to appear on the map, you can contact me at any time, and I will remove it or replace it with a completely random location (for example, somewhere in Iceland or Africa). This website does not collect, store, or disclose any person's specific address information.",
+		spotlight_title: "Rotating Spotlight",
+		spotlight_next_switch: "Next switch in {time}",
 		age_title: "Age Confirmation",
 		age_desc: "You must be 18+ to enter this site. Are you 18 years old or above?",
 		age_yes: "Yes, I am 18+",
@@ -191,6 +195,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
 		ranking_location_notice: RANKING_NOTICE_ZH_CN,
+		spotlight_title: "\u8f6e\u64ad\u7f6e\u9876",
+		spotlight_next_switch: "{time} \u540e\u5207\u6362",
 		age_title: "\u5e74\u9f84\u786e\u8ba4",
 		age_desc: "\u4f60\u5fc5\u987b\u5e74\u6ee118\u5c81\u624d\u80fd\u8fdb\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6ee118\u5c81\uff1f",
 		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6ee118\u5c81",
@@ -257,6 +263,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		all_option: "\u5168\u90e8",
 		ranking_location_notice:
 			"本網站地圖上顯示的所有位置均為示意標註，並非任何人的真實地址或實際居住位置。這些位置可能參考公開資訊進行大致標註，但已被刻意模糊化或隨機設定，因此不會對應任何人的精確位置，僅用於展示社群的大致分布情況。為保護個人隱私，地圖上的位置均為近似或隨機生成，不具備任何現實定位意義。如果你不希望自己的名稱或標註出現在地圖上，可以隨時聯絡我，我會將其刪除或替換為一個完全隨機的地點（例如冰島或非洲的某個位置）。本網站不會收集、儲存或公開任何個人的具體地址資訊。",
+		spotlight_title: "\u8f2a\u64ad\u7f6e\u9802",
+		spotlight_next_switch: "{time} \u5f8c\u5207\u63db",
 		age_title: "\u5e74\u9f61\u78ba\u8a8d",
 		age_desc: "\u4f60\u5fc5\u9808\u5e74\u6eff18\u6b72\u624d\u80fd\u9032\u5165\u672c\u7ad9\u3002\u4f60\u662f\u5426\u5df2\u6eff18\u6b72\uff1f",
 		age_yes: "\u662f\u7684\uff0c\u6211\u5df2\u6eff18\u6b72",
@@ -323,6 +331,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		all_option: "\u3059\u3079\u3066",
 		ranking_location_notice:
 			"本サイト地図上に表示されるすべての位置は参考用の表示であり、誰かの実際の住所や居住地を示すものではありません。これらの位置は公開情報をもとに大まかに示される場合がありますが、意図的にぼかし処理またはランダム化されているため、特定の個人の正確な位置には対応せず、コミュニティのおおまかな分布を示す目的にのみ使用されます。個人のプライバシー保護のため、地図上の位置は近似またはランダム生成であり、現実の位置特定を意味するものではありません。自分の名前や表示マーカーを地図に載せたくない場合は、いつでもご連絡ください。削除するか、完全にランダムな場所（例: アイスランドまたはアフリカのどこか）に置き換えます。本サイトは、個人の具体的な住所情報を収集・保存・公開することはありません。",
+		spotlight_title: "\u30ed\u30fc\u30c6\u30fc\u30b7\u30e7\u30f3\u8868\u793a",
+		spotlight_next_switch: "{time} \u5f8c\u306b\u5207\u308a\u66ff\u3048",
 		age_title: "\u5e74\u9f62\u78ba\u8a8d",
 		age_desc: "\u3053\u306e\u30b5\u30a4\u30c8\u306f18\u6b73\u4ee5\u4e0a\u304c\u5bfe\u8c61\u3067\u3059\u300218\u6b73\u4ee5\u4e0a\u3067\u3059\u304b\uff1f",
 		age_yes: "\u306f\u3044\u300118\u6b73\u4ee5\u4e0a\u3067\u3059",
@@ -389,6 +399,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		all_option: "\uc804\uccb4",
 		ranking_location_notice:
 			"이 웹사이트 지도에 표시되는 모든 위치는 예시 표기이며, 어떤 개인의 실제 주소나 거주지를 의미하지 않습니다. 이 위치들은 공개 정보를 참고해 대략적으로 표시될 수 있지만, 의도적으로 흐리게 처리되거나 무작위로 설정되어 있어 누구의 정확한 위치에도 대응하지 않으며, 커뮤니티의 대략적인 분포를 보여주기 위한 용도로만 사용됩니다. 개인 프라이버시 보호를 위해 지도 위치는 근사값 또는 무작위 생성값이며, 현실의 위치 추적 의미를 갖지 않습니다. 본인의 이름이나 표기가 지도에 나타나는 것을 원하지 않으면 언제든지 연락해 주세요. 해당 항목을 삭제하거나 완전히 무작위인 위치(예: 아이슬란드 또는 아프리카의 어느 지점)로 교체하겠습니다. 이 웹사이트는 개인의 구체적인 주소 정보를 수집, 저장 또는 공개하지 않습니다.",
+		spotlight_title: "\uc21c\ud658 \uace0\uc815 \ub178\ucd9c",
+		spotlight_next_switch: "{time} \ud6c4 \uc804\ud658",
 		age_title: "\uc5f0\ub839 \ud655\uc778",
 		age_desc: "\uc774 \uc0ac\uc774\ud2b8\ub294 18\uc138 \uc774\uc0c1\ub9cc \uc774\uc6a9\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \ub9cc 18\uc138 \uc774\uc0c1\uc778\uac00\uc694?",
 		age_yes: "\ub124, \ub9cc 18\uc138 \uc774\uc0c1\uc785\ub2c8\ub2e4",
@@ -455,6 +467,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		all_option: "Todos",
 		ranking_location_notice:
 			"Todas las ubicaciones mostradas en el mapa de este sitio web son marcas ilustrativas y no corresponden a la direccion real ni al lugar de residencia real de ninguna persona. Estas ubicaciones pueden basarse de forma aproximada en informacion publica, pero se difuminan de forma intencional o se configuran aleatoriamente, por lo que no coinciden con la ubicacion precisa de nadie y solo se usan para mostrar la distribucion general de la comunidad. Para proteger la privacidad personal, las ubicaciones del mapa son aproximadas o generadas aleatoriamente y no tienen significado de geolocalizacion real. Si no quieres que tu nombre o marcador aparezca en el mapa, puedes contactarme en cualquier momento; lo eliminare o lo reemplazare por una ubicacion totalmente aleatoria (por ejemplo, en Islandia o en algun punto de Africa). Este sitio web no recopila, almacena ni publica informacion de direcciones especificas de ninguna persona.",
+		spotlight_title: "Destacado Rotativo",
+		spotlight_next_switch: "Siguiente cambio en {time}",
 		age_title: "Confirmacion de edad",
 		age_desc: "Debes tener 18+ para entrar a este sitio. Tienes 18 anos o mas?",
 		age_yes: "Si, tengo 18+",
@@ -1229,6 +1243,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				transform: translateY(-2px);
 				box-shadow: 0 10px 24px rgba(15, 20, 25, 0.09);
 			}
+			.spotlight-label {
+				font-size: 11px;
+				font-weight: 700;
+				color: #7FC4FF;
+				letter-spacing: 0.02em;
+				text-transform: uppercase;
+				margin-bottom: 4px;
+			}
 			.card-top { display: flex; justify-content: space-between; align-items: center; }
 			.rank { font-size: 17px; font-weight: 800; color: var(--muted); }
 			.top-rank { color: var(--top); }
@@ -1324,6 +1346,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					font-size: 12px;
 					padding: 9px 10px;
 				}
+				.spotlight-label {
+					font-size: 10px;
+					margin-bottom: 2px;
+				}
 			}
 			@media (max-width: 460px) { .list { grid-template-columns: 1fr; } }
 		</style>
@@ -1380,6 +1406,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			</header>
 			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<ol class="list">
+				<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>
 				${renderLeaderboardRows(rows)}
 			</ol>
 		</section>
@@ -1392,6 +1419,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				const navSelect = document.getElementById('mobilePageNav');
 				const countryCustom = document.getElementById('rankCountryFilterCustom');
 				const navCustom = document.getElementById('mobilePageNavCustom');
+				const pinnedSpotlightEl = document.getElementById('pinnedSpotlight');
+				let pinnedCountdownEl = null;
+				let pinnedNextSwitchAt = null;
 
 				function esc(v) {
 					return String(v || '')
@@ -1400,6 +1430,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						.replace(/>/g, '&gt;')
 						.replace(/"/g, '&quot;')
 						.replace(/'/g, '&#39;');
+				}
+
+				function t(key, fallback) {
+					if (typeof window.__t === 'function') {
+						return window.__t(key, fallback || '');
+					}
+					return fallback || '';
 				}
 
 				function renderRows(rows) {
@@ -1445,6 +1482,76 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								'</a>' +
 							'</li>';
 					}).join('');
+				}
+
+				function renderPinnedCard(data) {
+					if (!pinnedSpotlightEl) return;
+					const row = data && data.result ? data.result : null;
+					if (!row) {
+						pinnedSpotlightEl.hidden = true;
+						pinnedSpotlightEl.innerHTML = '';
+						pinnedCountdownEl = null;
+						pinnedNextSwitchAt = null;
+						return;
+					}
+					const safeName = esc(row.name || 'Unnamed');
+					const safeHandle = esc(row.handle || '');
+					const safeUrl = esc(row.profile_url || '#');
+					const safeBio = esc(row.bio || 'No bio');
+					const safeAvatar = esc(row.avatar || '');
+					const safeRegion = esc((row.region || row.province) || 'Tokyo');
+					const safeCountry = esc(row.country || 'Japan');
+					const safeDistrict = esc((row.district || row.city) || 'Itabashi');
+					const safeOrientation = esc(row.sexual_orientation || 'Gay');
+					const fans = Number(row.followers_count || 0);
+					const avatarEl = safeAvatar
+						? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
+						: '<div class="avatar placeholder">N/A</div>';
+					pinnedSpotlightEl.innerHTML =
+						'<a class="card-link" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" aria-label="Open ' + safeName + ' on X">' +
+							'<div class="card-top">' +
+								'<div class="rank top-rank">' + esc(t('spotlight_title', 'Rotating Spotlight')) + '</div>' +
+								'<div class="badges">' +
+									'<div class="badge">Orientation ' + safeOrientation + '</div>' +
+									'<div class="badge">Fans ' + fans + '</div>' +
+								'</div>' +
+							'</div>' +
+							'<div class="identity">' +
+								avatarEl +
+								'<div>' +
+									'<div class="spotlight-label">' + esc(t('spotlight_title', 'Rotating Spotlight')) + '</div>' +
+									'<div class="name-link">' + safeName + '</div>' +
+									'<div class="handle">' + safeHandle + '</div>' +
+								'</div>' +
+							'</div>' +
+							'<div class="badge location-badge">' + safeDistrict + ' / ' + safeRegion + ' / ' + safeCountry + '</div>' +
+							'<div class="bio"><span id="pinnedCountdownText"></span> · ' + safeBio + '</div>' +
+						'</a>';
+					pinnedCountdownEl = pinnedSpotlightEl.querySelector('#pinnedCountdownText');
+					pinnedSpotlightEl.hidden = false;
+					const parsed = Date.parse(String(data.nextSwitchAt || ''));
+					pinnedNextSwitchAt = Number.isFinite(parsed) ? parsed : null;
+					updatePinnedCountdown();
+				}
+
+				function updatePinnedCountdown() {
+					if (!pinnedCountdownEl || !pinnedNextSwitchAt) return;
+					const remainSec = Math.max(0, Math.floor((pinnedNextSwitchAt - Date.now()) / 1000));
+					const min = String(Math.floor(remainSec / 60)).padStart(2, '0');
+					const sec = String(remainSec % 60).padStart(2, '0');
+					const timeText = min + ':' + sec;
+					const template = t('spotlight_next_switch', 'Next switch in {time}');
+					pinnedCountdownEl.textContent = String(template).replace('{time}', timeText);
+				}
+
+				async function loadPinnedProfile() {
+					let query = '';
+					const country = countrySelect ? countrySelect.value.trim() : '';
+					if (country) query = '?country=' + encodeURIComponent(country);
+					const res = await fetch('/api/profiles/pinned' + query);
+					if (!res.ok) return;
+					const data = await res.json();
+					renderPinnedCard(data);
 				}
 
 				function closeAllCustomSelects() {
@@ -1541,17 +1648,28 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					if (!countrySelect) return;
 					const country = countrySelect.value.trim();
 					const query = country ? ('?country=' + encodeURIComponent(country)) : '';
-					const res = await fetch('/api/profiles' + query);
-					if (!res.ok) return;
-					const data = await res.json();
-					const rows = Array.isArray(data.results) ? data.results : [];
-					renderRows(rows);
+					const [profileRes, pinnedRes] = await Promise.all([
+						fetch('/api/profiles' + query),
+						fetch('/api/profiles/pinned' + query),
+					]);
+					if (profileRes.ok) {
+						const data = await profileRes.json();
+						const rows = Array.isArray(data.results) ? data.results : [];
+						renderRows(rows);
+					}
+					if (pinnedRes.ok) {
+						const data = await pinnedRes.json();
+						renderPinnedCard(data);
+					}
 				}
 
 				if (countrySelect) {
 					countrySelect.addEventListener('change', filterByCountry);
 				}
 				loadCountries();
+				loadPinnedProfile();
+				setInterval(updatePinnedCountdown, 1000);
+				setInterval(loadPinnedProfile, 30000);
 
 				const key = 'age_verified_18_v1';
 				const overlay = document.getElementById('ageGate');

@@ -47,6 +47,7 @@ type ProfilePayload = {
 const DEFAULT_COUNTRY = "Japan";
 const DEFAULT_REGION = "Tokyo";
 const DEFAULT_DISTRICT = "Itabashi";
+const PINNED_ROTATION_SECONDS = 600;
 
 type WikiPayload = {
 	title?: unknown;
@@ -1090,6 +1091,36 @@ async function sendAdminNotification(
 	}
 }
 
+function computePinnedIndex(poolSize: number, nowUnixSeconds: number): { slot: number; index: number; nextSwitchAt: string } {
+	const slot = Math.floor(nowUnixSeconds / PINNED_ROTATION_SECONDS);
+	const index = slot % poolSize;
+	const nextSwitchAt = new Date((slot + 1) * PINNED_ROTATION_SECONDS * 1000).toISOString();
+	return { slot, index, nextSwitchAt };
+}
+
+async function queryPinnedProfile(
+	db: D1Database,
+	params: {
+		country?: string;
+	},
+): Promise<{ result: ProfileRecord | null; poolSize: number; slot: number | null; nextSwitchAt: string | null }> {
+	const country = params.country?.trim() ?? "";
+	const rows = await queryProfiles(db, { country });
+	const poolSize = rows.length;
+	if (poolSize === 0) {
+		return { result: null, poolSize: 0, slot: null, nextSwitchAt: null };
+	}
+
+	const nowUnixSeconds = Math.floor(Date.now() / 1000);
+	const { slot, index, nextSwitchAt } = computePinnedIndex(poolSize, nowUnixSeconds);
+	return {
+		result: rows[index] ?? null,
+		poolSize,
+		slot,
+		nextSwitchAt,
+	};
+}
+
 async function sendTestNotification(env: RuntimeEnv, triggerIp: string): Promise<{ ok: boolean; error?: string }> {
 	const apiKey = (env.RESEND_API_KEY || "").trim();
 	if (!apiKey) return { ok: false, error: "RESEND_API_KEY is missing" };
@@ -1239,6 +1270,12 @@ export default {
 			const handle = url.searchParams.get("handle")?.trim() ?? "";
 			const rows = await queryProfiles(env.DB, { keyword, country, handle });
 			return json({ results: rows });
+		}
+
+		if (method === "GET" && pathname === "/api/profiles/pinned") {
+			const country = url.searchParams.get("country")?.trim() ?? "";
+			const pinned = await queryPinnedProfile(env.DB, { country });
+			return json(pinned);
 		}
 
 		if (method === "GET" && pathname === "/api/countries") {
