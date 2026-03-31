@@ -2619,21 +2619,12 @@ export function renderAdminPage(): string {
 				await loadSuggestions();
 			}
 
-			function sleep(ms) {
-				return new Promise(function (resolve) { setTimeout(resolve, ms); });
-			}
-
 			async function handleDelete() {
 				if (!editingId) {
 					setStatus('Please select a handle first.');
 					return;
 				}
-				alert('High-risk action: deletion will be available after 10 seconds. Verify the ID again.');
-				for (let i = 10; i >= 1; i -= 1) {
-					setStatus('Delete cooldown: ' + i + 's before confirming ID ' + editingId);
-					await sleep(1000);
-				}
-				if (!confirm('10 seconds passed. Delete ID ' + editingId + '?')) return;
+				if (!confirm('Delete ID ' + editingId + '?')) return;
 				const deletePassword = window.prompt('Enter delete password to continue:');
 				if (!deletePassword) {
 					setStatus('Delete cancelled: password is required.');
@@ -2647,6 +2638,10 @@ export function renderAdminPage(): string {
 				});
 				if (!res.ok) {
 					const msg = await res.text();
+					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
+						setStatus('密码输入错误');
+						return;
+					}
 					setStatus('Delete failed: ' + msg);
 					return;
 				}
@@ -4369,7 +4364,12 @@ export function renderWikiPage(): string {
 					headers: { 'x-delete-password': deletePassword }
 				});
 				if (!res.ok) {
-					setStatus('Delete failed');
+					const msg = await res.text();
+					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
+						setStatus('密码输入错误');
+						return;
+					}
+					setStatus(msg ? 'Delete failed: ' + msg : 'Delete failed');
 					return;
 				}
 
@@ -4390,7 +4390,12 @@ export function renderWikiPage(): string {
 					headers: { 'x-delete-password': deletePassword }
 				});
 				if (!res.ok) {
-					setStatus('Delete failed');
+					const msg = await res.text();
+					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
+						setStatus('密码输入错误');
+						return;
+					}
+					setStatus(msg ? 'Delete failed: ' + msg : 'Delete failed');
 					return;
 				}
 				window.alert('Article deleted successfully.');
