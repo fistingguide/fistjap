@@ -2634,9 +2634,17 @@ export function renderAdminPage(): string {
 					await sleep(1000);
 				}
 				if (!confirm('10 seconds passed. Delete ID ' + editingId + '?')) return;
+				const deletePassword = window.prompt('Enter delete password to continue:');
+				if (!deletePassword) {
+					setStatus('Delete cancelled: password is required.');
+					return;
+				}
 
 				setStatus('Deleting...');
-				const res = await fetch('/api/profiles/' + editingId, { method: 'DELETE' });
+				const res = await fetch('/api/profiles/' + editingId, {
+					method: 'DELETE',
+					headers: { 'x-delete-password': deletePassword }
+				});
 				if (!res.ok) {
 					const msg = await res.text();
 					setStatus('Delete failed: ' + msg);
@@ -4350,8 +4358,16 @@ export function renderWikiPage(): string {
 			async function deleteCurrent() {
 				if (!editingId) return;
 				if (!confirm('Delete article #' + editingId + '?')) return;
+				const deletePassword = window.prompt('Enter delete password to continue:');
+				if (!deletePassword) {
+					setStatus('Delete cancelled: password is required.');
+					return;
+				}
 
-				const res = await fetch('/api/wiki/' + editingId, { method: 'DELETE' });
+				const res = await fetch('/api/wiki/' + editingId, {
+					method: 'DELETE',
+					headers: { 'x-delete-password': deletePassword }
+				});
 				if (!res.ok) {
 					setStatus('Delete failed');
 					return;
@@ -4364,7 +4380,15 @@ export function renderWikiPage(): string {
 
 			async function deleteById(id) {
 				if (!confirm('Delete article #' + id + '?')) return;
-				const res = await fetch('/api/wiki/' + id, { method: 'DELETE' });
+				const deletePassword = window.prompt('Enter delete password to continue:');
+				if (!deletePassword) {
+					setStatus('Delete cancelled: password is required.');
+					return;
+				}
+				const res = await fetch('/api/wiki/' + id, {
+					method: 'DELETE',
+					headers: { 'x-delete-password': deletePassword }
+				});
 				if (!res.ok) {
 					setStatus('Delete failed');
 					return;

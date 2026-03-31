@@ -15,6 +15,7 @@ type RuntimeEnv = Env & {
 	RESEND_API_KEY?: string;
 	RESEND_FROM?: string;
 	TEST_EMAIL_TOKEN?: string;
+	DELETE_PASSWORD?: string;
 };
 
 type GeoSuggestion = {
@@ -76,6 +77,20 @@ function json(data: unknown, status = 200): Response {
 
 function badRequest(message: string): Response {
 	return new Response(message, { status: 400 });
+}
+
+function verifyDeletePassword(request: Request, env: RuntimeEnv): Response | null {
+	const expected = (env.DELETE_PASSWORD || "").trim();
+	if (!expected) {
+		return json({ error: "server delete password is not configured" }, 500);
+	}
+
+	const provided = (request.headers.get("x-delete-password") || "").trim();
+	if (!provided || provided !== expected) {
+		return json({ error: "invalid delete password" }, 403);
+	}
+
+	return null;
 }
 
 const reverseGeoCache = new Map<string, GeoSuggestion | null>();
@@ -1420,6 +1435,9 @@ export default {
 			}
 
 			if (method === "DELETE") {
+				const authError = verifyDeletePassword(request, env);
+				if (authError) return authError;
+
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				const deletedRow = await env.DB
 					.prepare(
@@ -1478,6 +1496,9 @@ export default {
 			}
 
 			if (method === "DELETE") {
+				const authError = verifyDeletePassword(request, env);
+				if (authError) return authError;
+
 				const result = await env.DB.prepare("DELETE FROM wiki_articles WHERE id = ?").bind(id).run();
 				if ((result.meta.changes ?? 0) === 0) {
 					return json({ error: "not found" }, 404);
