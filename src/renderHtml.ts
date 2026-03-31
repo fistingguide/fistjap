@@ -1545,10 +1545,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				}
 
 				async function loadPinnedProfile() {
-					let query = '';
-					const country = countrySelect ? countrySelect.value.trim() : '';
-					if (country) query = '?country=' + encodeURIComponent(country);
-					const res = await fetch('/api/profiles/pinned' + query);
+					const res = await fetch('/api/profiles/pinned');
 					if (!res.ok) return;
 					const data = await res.json();
 					renderPinnedCard(data);
@@ -1650,7 +1647,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const query = country ? ('?country=' + encodeURIComponent(country)) : '';
 					const [profileRes, pinnedRes] = await Promise.all([
 						fetch('/api/profiles' + query),
-						fetch('/api/profiles/pinned' + query),
+						fetch('/api/profiles/pinned'),
 					]);
 					if (profileRes.ok) {
 						const data = await profileRes.json();
