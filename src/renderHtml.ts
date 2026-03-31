@@ -1327,6 +1327,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			@media (max-width: 460px) { .list { grid-template-columns: 1fr; } }
 		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
@@ -1962,6 +1963,7 @@ export function renderAdminPage(): string {
 				.location-meta { grid-template-columns: 1fr; }
 			}
 		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
@@ -3117,6 +3119,7 @@ export function renderDashboardPage(): string {
 				th, td { font-size: 12px; padding: 7px 6px; }
 			}
 		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
@@ -3731,6 +3734,7 @@ export function renderAboutPage(): string {
 				}
 			}
 		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
@@ -4173,6 +4177,7 @@ export function renderWikiPage(): string {
 				}
 			}
 		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
@@ -4620,6 +4625,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				.article-body { font-size: 16px; }
 			}
 		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
 	</head>
 	<body>
 		<div class="age-gate-overlay" id="ageGate">
