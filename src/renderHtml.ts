@@ -2639,7 +2639,7 @@ export function renderAdminPage(): string {
 				if (!res.ok) {
 					const msg = await res.text();
 					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						setStatus('密码输入错误');
+						window.alert('密码输入错误');
 						return;
 					}
 					setStatus('Delete failed: ' + msg);
@@ -4366,7 +4366,7 @@ export function renderWikiPage(): string {
 				if (!res.ok) {
 					const msg = await res.text();
 					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						setStatus('密码输入错误');
+						window.alert('密码输入错误');
 						return;
 					}
 					setStatus(msg ? 'Delete failed: ' + msg : 'Delete failed');
@@ -4392,7 +4392,7 @@ export function renderWikiPage(): string {
 				if (!res.ok) {
 					const msg = await res.text();
 					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						setStatus('密码输入错误');
+						window.alert('密码输入错误');
 						return;
 					}
 					setStatus(msg ? 'Delete failed: ' + msg : 'Delete failed');
