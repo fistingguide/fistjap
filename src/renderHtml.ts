@@ -68,10 +68,10 @@ const TH_MESSAGES: Record<string, string> = {
 	age_denied: "ปฏิเสธการเข้าถึง เว็บไซต์นี้สำหรับผู้ใหญ่ 18+ เท่านั้น",
 	article_by: "โดย",
 	article_updated: "อัปเดต",
-	wiki_submit_hint: "ส่งบัญชีของฉันไปยัง FistingGuide",
+	wiki_submit_hint: "ส่งบทความไปยัง fistingguide",
 	about_description:
 		"สวัสดี ฉันเป็นผู้ที่สนใจ fisting และเพิ่งสร้างเว็บไซต์นำทางแบบเรียบง่ายเพื่อช่วยให้ค้นหาครีเอเตอร์และบัญชีในชุมชนได้รวดเร็วขึ้น เป้าหมายของเว็บไซต์นี้คือช่วยให้ค้นพบครีเอเตอร์ สำรวจเนื้อหาใหม่ และเชื่อมต่อกับผู้ที่มีความสนใจเดียวกันได้ง่ายขึ้น หากคุณมีข้อเสนอแนะ คำติชม หรืออยากร่วมพัฒนาโครงการนี้ สามารถติดต่อฉันได้ที่ X: @fistingguide หรืออีเมล: fistingguide@proton.me หากคุณไม่ต้องการให้แสดงบนเว็บไซต์ แจ้งฉันได้และฉันจะลบรายการของคุณ ขอบคุณ และหวังว่าโครงการนี้จะช่วยให้ชุมชนเติบโต",
-	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X (รองรับบางส่วน เช่น @tak)",
+	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X (รองรับเฉพาะบัญชีที่มีอยู่ เพื่อแก้ไขข้อมูลที่เกี่ยวข้องหรือลบ)",
 	admin_search_btn: "ค้นหา",
 	admin_reset_btn: "รีเซ็ต",
 	admin_label_display_name: "ชื่อที่แสดง",
@@ -80,12 +80,12 @@ const TH_MESSAGES: Record<string, string> = {
 	admin_ph_x_handle: "แฮนเดิล (เช่น @demo)",
 	admin_label_orientation: "รสนิยมทางเพศ",
 	admin_ph_orientation: "รสนิยมทางเพศ",
-	admin_label_fans_count: "จำนวนแฟน",
-	admin_ph_fans_count: "จำนวนแฟน",
+	admin_label_fans_count: "ผู้ติดตาม",
+	admin_ph_fans_count: "ผู้ติดตาม",
 	admin_label_location: "เขต / ภูมิภาค / ประเทศ (ภูมิภาค)",
 	admin_ph_location_search: "ค้นหาประเทศ(ภูมิภาค)หรือเมือง (ค้นหาบนแผนที่)",
 	admin_selected_prefix: "ที่เลือก:",
-	admin_label_map_preview: "ตัวอย่างแผนที่ตำแหน่ง",
+	admin_label_map_preview: "โปรดคลิกตำแหน่งของคุณจนกว่าที่อยู่เริ่มต้นจะเปลี่ยนแปลง",
 	admin_label_profile_url: "URL โปรไฟล์",
 	admin_ph_profile_url: "URL โปรไฟล์",
 	admin_label_avatar_url: "URL รูปโปรไฟล์",
@@ -136,7 +136,7 @@ const VI_MESSAGES: Record<string, string> = {
 	age_denied: "Tu choi truy cap. Website nay chi danh cho nguoi lon 18+.",
 	article_by: "Boi",
 	article_updated: "Cap nhat",
-	wiki_submit_hint: "gui tai khoan cua toi cho FistingGuide",
+	wiki_submit_hint: "gui bai viet cho fistingguide",
 	about_description:
 		"Xin chao, toi la mot nguoi yeu thich fisting va da tao mot website dieu huong don gian de giup moi nguoi nhanh chong tim thay creator va tai khoan trong cong dong. Muc tieu cua trang la giup tim creator de hon, kham pha noi dung moi va ket noi voi nhung nguoi co cung so thich. Neu ban co goi y, phan hoi hoac muon hop tac cai thien du an, hay lien he toi tren X: @fistingguide hoac email: fistingguide@proton.me. Neu ban khong muon xuat hien tren website, hay bao toi va toi se go danh sach cua ban.",
 };
@@ -172,10 +172,10 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		age_denied: "Access denied. This website is for adults 18+ only.",
 		article_by: "By",
 		article_updated: "Updated",
-		wiki_submit_hint: "submit my account to FistingGuide",
+		wiki_submit_hint: "submit an article to fistingguide",
 		about_description:
 			"Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.",
-		admin_search_placeholder: "Search by X handle (supports partial match, e.g. @tak)",
+		admin_search_placeholder: "Search by X handle (only supports existing accounts for modifying their related information or deleting)",
 		admin_search_btn: "Search",
 		admin_reset_btn: "Reset",
 		admin_label_display_name: "Display Name",
@@ -184,12 +184,12 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_x_handle: "Handle (e.g. @demo)",
 		admin_label_orientation: "Orientation",
 		admin_ph_orientation: "Orientation",
-		admin_label_fans_count: "Fans Count",
-		admin_ph_fans_count: "Fans count",
+		admin_label_fans_count: "Followers",
+		admin_ph_fans_count: "Followers",
 		admin_label_location: "District / Region / Country (Region)",
 		admin_ph_location_search: "Search country (region) or city (map search)",
 		admin_selected_prefix: "Selected:",
-		admin_label_map_preview: "Location Map Preview",
+		admin_label_map_preview: "Please click your location until the default address changes",
 		admin_label_profile_url: "Profile URL",
 		admin_ph_profile_url: "Profile URL",
 		admin_label_avatar_url: "Avatar URL",
@@ -239,10 +239,10 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		age_denied: "\u8bbf\u95ee\u88ab\u62d2\u7edd\u3002\u672c\u7ad9\u4ec5\u965018\u5c81\u4ee5\u4e0a\u6210\u4eba\u3002",
 		article_by: "\u4f5c\u8005",
 		article_updated: "\u66f4\u65b0\u4e8e",
-		wiki_submit_hint: "\u5411 FistingGuide \u63d0\u4ea4\u6211\u7684\u8d26\u53f7",
+		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
-		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22\uff08\u652f\u6301\u6a21\u7cca\u5339\u914d\uff0c\u4f8b\u5982 @tak\uff09",
+		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22\uff08\u4ec5\u652f\u6301\u5df2\u5b58\u5728\u8d26\u53f7\uff0c\u7528\u4e8e\u4fee\u6539\u5176\u76f8\u5173\u4fe1\u606f\u6216\u5220\u9664\uff09",
 		admin_search_btn: "\u641c\u7d22",
 		admin_reset_btn: "\u91cd\u7f6e",
 		admin_label_display_name: "\u663e\u793a\u540d\u79f0",
@@ -251,12 +251,12 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_x_handle: "\u8d26\u53f7\uff08\u4f8b\u5982 @demo\uff09",
 		admin_label_orientation: "\u53d6\u5411",
 		admin_ph_orientation: "\u53d6\u5411",
-		admin_label_fans_count: "\u7c89\u4e1d\u6570",
-		admin_ph_fans_count: "\u7c89\u4e1d\u6570",
+		admin_label_fans_count: "\u5173\u6ce8\u8005",
+		admin_ph_fans_count: "\u5173\u6ce8\u8005",
 		admin_label_location: "\u533a/\u57df/\u56fd\u5bb6(\u5730\u533a)",
 		admin_ph_location_search: "\u641c\u7d22\u56fd\u5bb6(\u5730\u533a)\u6216\u57ce\u5e02\uff08\u5730\u56fe\u641c\u7d22\uff09",
 		admin_selected_prefix: "\u5df2\u9009\u62e9\uff1a",
-		admin_label_map_preview: "\u5730\u56fe\u9884\u89c8",
+		admin_label_map_preview: "\u8bf7\u70b9\u51fb\u4f60\u7684\u4f4d\u7f6e\uff0c\u76f4\u5230\u9ed8\u8ba4\u5730\u5740\u53d1\u751f\u53d8\u5316",
 		admin_label_profile_url: "\u4e3b\u9875 URL",
 		admin_ph_profile_url: "\u4e3b\u9875 URL",
 		admin_label_avatar_url: "\u5934\u50cf URL",
@@ -307,10 +307,10 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		age_denied: "\u5b58\u53d6\u88ab\u62d2\u7d55\u3002\u672c\u7ad9\u50c5\u965018\u6b72\u4ee5\u4e0a\u6210\u4eba\u3002",
 		article_by: "\u4f5c\u8005",
 		article_updated: "\u66f4\u65b0\u65bc",
-		wiki_submit_hint: "\u5411 FistingGuide \u63d0\u4ea4\u6211\u7684\u5e33\u865f",
+		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
-		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b\uff08\u652f\u63f4\u6a21\u7cca\u5339\u914d\uff0c\u4f8b\u5982 @tak\uff09",
+		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b\uff08\u50c5\u652f\u63f4\u5df2\u5b58\u5728\u5e33\u865f\uff0c\u7528\u65bc\u4fee\u6539\u5176\u76f8\u95dc\u8cc7\u8a0a\u6216\u522a\u9664\uff09",
 		admin_search_btn: "\u641c\u5c0b",
 		admin_reset_btn: "\u91cd\u8a2d",
 		admin_label_display_name: "\u986f\u793a\u540d\u7a31",
@@ -319,12 +319,12 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_x_handle: "\u5e33\u865f\uff08\u4f8b\u5982 @demo\uff09",
 		admin_label_orientation: "\u53d6\u5411",
 		admin_ph_orientation: "\u53d6\u5411",
-		admin_label_fans_count: "\u7c89\u7d72\u6578",
-		admin_ph_fans_count: "\u7c89\u7d72\u6578",
+		admin_label_fans_count: "\u8ffd\u8e64\u8005",
+		admin_ph_fans_count: "\u8ffd\u8e64\u8005",
 		admin_label_location: "\u5340/\u57df/\u570b\u5bb6(\u5730\u5340)",
 		admin_ph_location_search: "\u641c\u5c0b\u570b\u5bb6(\u5730\u5340)\u6216\u57ce\u5e02\uff08\u5730\u5716\u641c\u5c0b\uff09",
 		admin_selected_prefix: "\u5df2\u9078\u64c7\uff1a",
-		admin_label_map_preview: "\u5730\u5716\u9810\u89bd",
+		admin_label_map_preview: "\u8acb\u9ede\u64ca\u4f60\u7684\u4f4d\u7f6e\uff0c\u76f4\u5230\u9810\u8a2d\u5730\u5740\u767c\u751f\u8b8a\u5316",
 		admin_label_profile_url: "\u500b\u4eba\u9801 URL",
 		admin_ph_profile_url: "\u500b\u4eba\u9801 URL",
 		admin_label_avatar_url: "\u982d\u50cf URL",
@@ -375,10 +375,10 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		age_denied: "\u30a2\u30af\u30bb\u30b9\u62d2\u5426\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306f18\u6b73\u4ee5\u4e0a\u9650\u5b9a\u3067\u3059\u3002",
 		article_by: "\u8457\u8005",
 		article_updated: "\u66f4\u65b0",
-		wiki_submit_hint: "FistingGuide \u306b\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u9001\u4fe1",
+		wiki_submit_hint: "fistingguide \u3078\u8a18\u4e8b\u3092\u6295\u7a3f",
 		about_description:
 			"\u3053\u3093\u306b\u3061\u306f\u3002\u79c1\u306f fisting \u611b\u597d\u5bb6\u3067\u3001\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3084\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u3059\u3070\u3084\u304f\u898b\u3064\u3051\u3089\u308c\u308b\u3088\u3046\u306b\u3001\u30b7\u30f3\u30d7\u30eb\u306a\u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3\u30b5\u30a4\u30c8\u3092\u4f5c\u308a\u307e\u3057\u305f\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u3001\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3092\u63a2\u3057\u3084\u3059\u304f\u3057\u3001\u65b0\u3057\u3044\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u898b\u3064\u3051\u3001\u540c\u3058\u8208\u5473\u3092\u6301\u3064\u4eba\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3059\u3002\u3054\u610f\u898b\u30fb\u3054\u611f\u60f3\u30fb\u6539\u5584\u306e\u305f\u3081\u306e\u30b3\u30e9\u30dc\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u304a\u6c17\u8efd\u306b\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002X: @fistingguide \u307e\u305f\u306f\u30e1\u30fc\u30eb: fistingguide@proton.me \u3067\u9023\u7d61\u53ef\u80fd\u3067\u3059\u3002\u30b5\u30a4\u30c8\u306b\u63b2\u8f09\u3055\u308c\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044\u3002\u4e00\u89a7\u304b\u3089\u524a\u9664\u3057\u307e\u3059\u3002\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002\u3053\u306e\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u304c\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u6210\u9577\u306b\u5f79\u7acb\u3064\u3053\u3068\u3092\u9858\u3063\u3066\u3044\u307e\u3059\u3002",
-		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22\uff08\u90e8\u5206\u4e00\u81f4\u53ef\uff1a\u4f8b @tak\uff09",
+		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22\uff08\u65e2\u5b58\u30a2\u30ab\u30a6\u30f3\u30c8\u306e\u307f\u5bfe\u5fdc\u3001\u95a2\u9023\u60c5\u5831\u306e\u4fee\u6b63\u307e\u305f\u306f\u524a\u9664\u7528\uff09",
 		admin_search_btn: "\u691c\u7d22",
 		admin_reset_btn: "\u30ea\u30bb\u30c3\u30c8",
 		admin_label_display_name: "\u8868\u793a\u540d",
@@ -387,12 +387,12 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_x_handle: "\u30cf\u30f3\u30c9\u30eb\uff08\u4f8b @demo\uff09",
 		admin_label_orientation: "\u6307\u5411",
 		admin_ph_orientation: "\u6307\u5411",
-		admin_label_fans_count: "\u30d5\u30a1\u30f3\u6570",
-		admin_ph_fans_count: "\u30d5\u30a1\u30f3\u6570",
+		admin_label_fans_count: "\u30d5\u30a9\u30ed\u30ef\u30fc",
+		admin_ph_fans_count: "\u30d5\u30a9\u30ed\u30ef\u30fc",
 		admin_label_location: "\u5730\u57df / \u90fd\u9053\u5e9c\u770c / \u56fd(\u5730\u57df)",
 		admin_ph_location_search: "\u56fd(\u5730\u57df)\u307e\u305f\u306f\u90fd\u5e02\u3092\u691c\u7d22\uff08\u5730\u56f3\u691c\u7d22\uff09",
 		admin_selected_prefix: "\u9078\u629e\u4e2d:",
-		admin_label_map_preview: "\u5730\u56f3\u30d7\u30ec\u30d3\u30e5\u30fc",
+		admin_label_map_preview: "\u30c7\u30d5\u30a9\u30eb\u30c8\u306e\u4f4f\u6240\u304c\u5909\u308f\u308b\u307e\u3067\u4f4d\u7f6e\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u304f\u3060\u3055\u3044",
 		admin_label_profile_url: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb URL",
 		admin_ph_profile_url: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb URL",
 		admin_label_avatar_url: "\u30a2\u30d0\u30bf\u30fc URL",
@@ -443,10 +443,10 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		age_denied: "\uc811\uadfc\uc774 \uac70\ubd80\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\ub294 18\uc138 \uc774\uc0c1\ub9cc \uc774\uc6a9 \uac00\ub2a5\ud569\ub2c8\ub2e4.",
 		article_by: "\uc791\uc131\uc790",
 		article_updated: "\uc5c5\ub370\uc774\ud2b8",
-		wiki_submit_hint: "FistingGuide\uc5d0 \ub0b4 \uacc4\uc815 \uc81c\ucd9c",
+		wiki_submit_hint: "fistingguide\uc5d0 \uae00 \uae30\uace0",
 		about_description:
 			"\uc548\ub155\ud558\uc138\uc694. \uc800\ub294 fisting \uc560\ud638\uac00\uc774\uba70, \ucee4\ubba4\ub2c8\ud2f0\uc5d0\uc11c \ud06c\ub9ac\uc5d0\uc774\ud130\uc640 \uacc4\uc815\uc744 \ube60\ub974\uac8c \ucc3e\uc744 \uc218 \uc788\ub3c4\ub85d \ub2e8\uc21c\ud55c \ub124\ube44\uac8c\uc774\uc158 \uc6f9\uc0ac\uc774\ud2b8\ub97c \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\uc758 \ubaa9\ud45c\ub294 \ud06c\ub9ac\uc5d0\uc774\ud130\ub97c \ub354 \uc27d\uac8c \ucc3e\uace0, \uc0c8\ub85c\uc6b4 \ucf58\ud150\uce20\ub97c \ud0d0\uc0c9\ud558\uba70, \uac19\uc740 \uad00\uc2ec\uc0ac\ub97c \uac00\uc9c4 \uc0ac\ub78c\ub4e4\uacfc \uc5f0\uacb0\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc81c\uc548, \ud53c\ub4dc\ubc31, \ud639\uc740 \ud504\ub85c\uc81d\ud2b8 \uac1c\uc120\uc744 \ud568\uaed8\ud558\uace0 \uc2f6\uc73c\uc2dc\uba74 \ud3b8\ud558\uac8c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. X \uacc4\uc815 @fistingguide \ub610\ub294 \uc774\uba54\uc77c fistingguide@proton.me \ub85c \uc5f0\ub77d\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc6f9\uc0ac\uc774\ud2b8\uc5d0 \ub178\ucd9c\ub418\uace0 \uc2f6\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc54c\ub824 \uc8fc\uc138\uc694. \ub9ac\uc2a4\ud305\uc744 \uc81c\uac70\ud574 \ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4. \uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774 \ud504\ub85c\uc81d\ud2b8\uac00 \ucee4\ubba4\ub2c8\ud2f0 \uc131\uc7a5\uc5d0 \ub3c4\uc6c0\uc774 \ub418\uae30\ub97c \ubc14\ub78d\ub2c8\ub2e4.",
-		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9(\ubd80\ubd84 \uc77c\uce58 \uc9c0\uc6d0, \uc608: @tak)",
+		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9(\uae30\uc874 \uacc4\uc815\ub9cc \uc9c0\uc6d0\ud558\uba70 \uad00\ub828 \uc815\ubcf4 \uc218\uc815 \ub610\ub294 \uc0ad\uc81c \uc6a9\ub3c4)",
 		admin_search_btn: "\uac80\uc0c9",
 		admin_reset_btn: "\ucd08\uae30\ud654",
 		admin_label_display_name: "\ud45c\uc2dc \uc774\ub984",
@@ -455,12 +455,12 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_x_handle: "\ud578\ub4e4(\uc608: @demo)",
 		admin_label_orientation: "\uc131\ud5a5",
 		admin_ph_orientation: "\uc131\ud5a5",
-		admin_label_fans_count: "\ud32c \uc218",
-		admin_ph_fans_count: "\ud32c \uc218",
+		admin_label_fans_count: "\ud314\ub85c\uc6cc",
+		admin_ph_fans_count: "\ud314\ub85c\uc6cc",
 		admin_label_location: "\uad6c/\uc9c0\uc5ed/\uad6d\uac00(\uc9c0\uc5ed)",
 		admin_ph_location_search: "\uad6d\uac00(\uc9c0\uc5ed) \ub610\ub294 \ub3c4\uc2dc \uac80\uc0c9(\uc9c0\ub3c4 \uac80\uc0c9)",
 		admin_selected_prefix: "\uc120\ud0dd:",
-		admin_label_map_preview: "\uc9c0\ub3c4 \ubbf8\ub9ac\ubcf4\uae30",
+		admin_label_map_preview: "\uae30\ubcf8 \uc8fc\uc18c\uac00 \ubcc0\uacbd\ub420 \ub54c\uae4c\uc9c0 \uc704\uce58\ub97c \ud074\ub9ad\ud574 \uc8fc\uc138\uc694",
 		admin_label_profile_url: "\ud504\ub85c\ud544 URL",
 		admin_ph_profile_url: "\ud504\ub85c\ud544 URL",
 		admin_label_avatar_url: "\uc544\ubc14\ud0c0 URL",
@@ -511,10 +511,10 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		age_denied: "Acceso denegado. Este sitio es solo para adultos de 18+.",
 		article_by: "Por",
 		article_updated: "Actualizado",
-		wiki_submit_hint: "enviar mi cuenta a FistingGuide",
+		wiki_submit_hint: "enviar un articulo a fistingguide",
 		about_description:
 			"Hola, soy un entusiasta del fisting y hace poco cree un sitio de navegacion simple para ayudar a descubrir rapidamente creadores y cuentas de la comunidad. El objetivo de este sitio es facilitar encontrar creadores, explorar contenido nuevo y conectar con otras personas que comparten los mismos intereses. Si tienes sugerencias, comentarios o quieres colaborar para mejorar el proyecto, no dudes en escribirme. Puedes contactarme en X: @fistingguide o por correo: fistingguide@proton.me. Si prefieres no aparecer en el sitio web, avisame y eliminare tu listado. Gracias, y espero que este proyecto ayude a que la comunidad siga creciendo.",
-		admin_search_placeholder: "Buscar por handle de X (coincidencia parcial, ej. @tak)",
+		admin_search_placeholder: "Buscar por handle de X (solo admite cuentas existentes para modificar su informacion relacionada o eliminar)",
 		admin_search_btn: "Buscar",
 		admin_reset_btn: "Restablecer",
 		admin_label_display_name: "Nombre visible",
@@ -523,12 +523,12 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_x_handle: "Handle (ej. @demo)",
 		admin_label_orientation: "Orientacion",
 		admin_ph_orientation: "Orientacion",
-		admin_label_fans_count: "Cantidad de fans",
-		admin_ph_fans_count: "Cantidad de fans",
+		admin_label_fans_count: "Seguidores",
+		admin_ph_fans_count: "Seguidores",
 		admin_label_location: "Distrito / Region / Pais (Region)",
 		admin_ph_location_search: "Buscar pais (region) o ciudad (busqueda en mapa)",
 		admin_selected_prefix: "Seleccionado:",
-		admin_label_map_preview: "Vista previa del mapa",
+		admin_label_map_preview: "Haz clic en tu ubicacion hasta que cambie la direccion predeterminada",
 		admin_label_profile_url: "URL del perfil",
 		admin_ph_profile_url: "URL del perfil",
 		admin_label_avatar_url: "URL del avatar",
@@ -2166,7 +2166,7 @@ export function renderAdminPage(): string {
 
 			<section class="card">
 				<div class="toolbar">
-					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (supports partial match, e.g. @tak)" data-i18n-placeholder="admin_search_placeholder" />
+					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (only supports existing accounts for modifying their related information or deleting)" data-i18n-placeholder="admin_search_placeholder" />
 					<datalist id="handleSuggestions"></datalist>
 					<button id="searchBtn" data-i18n="admin_search_btn">Search</button>
 					<button id="resetBtn" class="secondary" data-i18n="admin_reset_btn">Reset</button>
@@ -2189,8 +2189,8 @@ export function renderAdminPage(): string {
 						<input id="orientation" value="Gay" placeholder="Orientation" data-i18n-placeholder="admin_ph_orientation" />
 					</div>
 					<div class="field identity-field">
-						<label for="followers" data-i18n="admin_label_fans_count">Fans Count</label>
-						<input id="followers" type="number" min="0" value="20" placeholder="Fans count" data-i18n-placeholder="admin_ph_fans_count" />
+						<label for="followers" data-i18n="admin_label_fans_count">Followers</label>
+						<input id="followers" type="number" min="0" value="20" placeholder="Followers" data-i18n-placeholder="admin_ph_fans_count" />
 					</div>
 					<div class="field full">
 						<label for="locationSearch" data-i18n="admin_label_location">District / Region / Country (Region)</label>
@@ -2205,7 +2205,7 @@ export function renderAdminPage(): string {
 						<div class="location-selected" id="locationSelected"><span data-i18n="admin_selected_prefix">Selected:</span> Itabashi / Tokyo / Japan</div>
 					</div>
 					<div class="field full">
-						<label data-i18n="admin_label_map_preview">Location Map Preview</label>
+						<label data-i18n="admin_label_map_preview">Please click your location until the default address changes</label>
 						<div id="locationPreview" class="location-preview"></div>
 					</div>
 					<div class="field full">
@@ -4386,8 +4386,8 @@ export function renderWikiPage(): string {
 
 			<section class="card">
 				<div class="submit-bar">
-					<div class="submit-hint" data-i18n="wiki_submit_hint">submit my account to FistingGuide</div>
-					<a class="submit-btn" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Submit account to FistingGuide"></a>
+					<div class="submit-hint" data-i18n="wiki_submit_hint">submit an article to fistingguide</div>
+					<a class="submit-btn" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Submit an article to fistingguide"></a>
 				</div>
 				<p class="status" id="status"></p>
 			</section>
