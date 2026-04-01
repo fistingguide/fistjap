@@ -55,6 +55,391 @@ type WikiPayload = {
 	author?: unknown;
 };
 
+const SUPPORTED_UI_LANGS = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "th", "vi"] as const;
+type UiLang = (typeof SUPPORTED_UI_LANGS)[number];
+
+type SeoOptions = {
+	title: string;
+	description: string;
+	pathname: string;
+	robots?: "index,follow" | "noindex,nofollow";
+	jsonLd?: Record<string, unknown>;
+	locale?: string;
+	siteName?: string;
+	articlePublishedTime?: string;
+	articleModifiedTime?: string;
+	articleAuthor?: string;
+};
+
+type SeoPageKey = "ranking" | "admin" | "dashboard" | "about" | "wiki";
+type SeoLocalePack = Record<SeoPageKey, { title: string; description: string }>;
+
+const SEO_I18N: Record<UiLang, SeoLocalePack> = {
+	en: {
+		ranking: {
+			title: "Creator Ranking",
+			description:
+				"Global directory and ranking for adult gay fisting creators and profiles, with multilingual browsing and community wiki.",
+		},
+		admin: {
+			title: "Database Admin Panel",
+			description: "Administrative panel for profile and wiki management.",
+		},
+		dashboard: {
+			title: "Data Dashboard",
+			description: "Explore the global community map of adult creator profiles.",
+		},
+		about: {
+			title: "About",
+			description: "About this multilingual adult community project and contact information.",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "Multilingual wiki with adult harm-reduction guides, community knowledge, and practical resources.",
+		},
+	},
+	"zh-CN": {
+		ranking: {
+			title: "创作者排行",
+			description: "面向全球成年社群的创作者目录与排行，支持多语言浏览与社区 Wiki。",
+		},
+		admin: {
+			title: "数据库管理面板",
+			description: "用于管理资料与 Wiki 内容的后台页面。",
+		},
+		dashboard: {
+			title: "数据地图",
+			description: "查看全球成年社群创作者资料分布地图。",
+		},
+		about: {
+			title: "关于",
+			description: "了解这个多语言成年社群项目及联系方式。",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "多语言成年社群 Wiki，聚合安全与知识内容。",
+		},
+	},
+	"zh-TW": {
+		ranking: {
+			title: "創作者排行",
+			description: "面向全球成年社群的創作者目錄與排行，支援多語言瀏覽與社群 Wiki。",
+		},
+		admin: {
+			title: "資料庫管理面板",
+			description: "用於管理資料與 Wiki 內容的後台頁面。",
+		},
+		dashboard: {
+			title: "資料地圖",
+			description: "查看全球成年社群創作者資料分佈地圖。",
+		},
+		about: {
+			title: "關於",
+			description: "了解這個多語言成年社群專案與聯絡方式。",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "多語言成年社群 Wiki，彙整安全與知識內容。",
+		},
+	},
+	ja: {
+		ranking: {
+			title: "クリエイターランキング",
+			description: "成人向けコミュニティのグローバルなクリエイターディレクトリとランキング。",
+		},
+		admin: {
+			title: "管理パネル",
+			description: "プロフィールと Wiki 記事を管理するための管理ページ。",
+		},
+		dashboard: {
+			title: "データマップ",
+			description: "世界の成人コミュニティプロフィール分布を地図で確認できます。",
+		},
+		about: {
+			title: "このサイトについて",
+			description: "多言語対応の成人コミュニティプロジェクトの紹介と連絡先。",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "成人向けの安全情報とコミュニティ知識をまとめた多言語 Wiki。",
+		},
+	},
+	ko: {
+		ranking: {
+			title: "크리에이터 랭킹",
+			description: "성인 커뮤니티를 위한 글로벌 크리에이터 디렉터리 및 랭킹.",
+		},
+		admin: {
+			title: "관리 패널",
+			description: "프로필과 위키 콘텐츠를 관리하는 관리자 페이지입니다.",
+		},
+		dashboard: {
+			title: "데이터 지도",
+			description: "글로벌 성인 커뮤니티 프로필 분포를 지도에서 확인하세요.",
+		},
+		about: {
+			title: "소개",
+			description: "다국어 성인 커뮤니티 프로젝트 소개 및 연락 정보.",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "성인 안전 정보와 커뮤니티 지식을 담은 다국어 위키.",
+		},
+	},
+	es: {
+		ranking: {
+			title: "Ranking de Creadores",
+			description: "Directorio y ranking global para perfiles adultos, con navegación multilingüe y wiki comunitaria.",
+		},
+		admin: {
+			title: "Panel de Administración",
+			description: "Panel administrativo para gestionar perfiles y contenido wiki.",
+		},
+		dashboard: {
+			title: "Mapa de Datos",
+			description: "Explora el mapa global de perfiles de la comunidad adulta.",
+		},
+		about: {
+			title: "Acerca de",
+			description: "Información del proyecto comunitario multilingüe para adultos y contacto.",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "Wiki multilingüe con guías de reducción de riesgos y conocimiento comunitario para adultos.",
+		},
+	},
+	th: {
+		ranking: {
+			title: "อันดับครีเอเตอร์",
+			description: "ไดเรกทอรีและอันดับครีเอเตอร์สำหรับชุมชนผู้ใหญ่แบบหลายภาษาในระดับโลก",
+		},
+		admin: {
+			title: "แผงผู้ดูแลระบบ",
+			description: "แผงจัดการโปรไฟล์และเนื้อหา Wiki",
+		},
+		dashboard: {
+			title: "แผนที่ข้อมูล",
+			description: "สำรวจแผนที่โปรไฟล์ชุมชนผู้ใหญ่จากทั่วโลก",
+		},
+		about: {
+			title: "เกี่ยวกับ",
+			description: "ข้อมูลโครงการชุมชนผู้ใหญ่หลายภาษาและช่องทางติดต่อ",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "วิกิหลายภาษาสำหรับความรู้ชุมชนและข้อมูลความปลอดภัยสำหรับผู้ใหญ่",
+		},
+	},
+	vi: {
+		ranking: {
+			title: "Bảng xếp hạng Creator",
+			description: "Danh bạ và bảng xếp hạng toàn cầu cho cộng đồng người lớn, hỗ trợ đa ngôn ngữ và wiki.",
+		},
+		admin: {
+			title: "Bảng quản trị",
+			description: "Trang quản trị để quản lý hồ sơ và nội dung wiki.",
+		},
+		dashboard: {
+			title: "Bản đồ dữ liệu",
+			description: "Khám phá bản đồ phân bố hồ sơ cộng đồng người lớn trên toàn cầu.",
+		},
+		about: {
+			title: "Giới thiệu",
+			description: "Thông tin về dự án cộng đồng người lớn đa ngôn ngữ và liên hệ.",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "Wiki đa ngôn ngữ về kiến thức cộng đồng và nội dung an toàn cho người lớn.",
+		},
+	},
+};
+
+function escapeHtml(value: string): string {
+	return value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&#39;");
+}
+
+function escapeXml(value: string): string {
+	return value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&apos;");
+}
+
+function getOrigin(url: URL): string {
+	return `${url.protocol}//${url.host}`;
+}
+
+function buildHreflangTags(origin: string, pathname: string): string {
+	const tags = SUPPORTED_UI_LANGS.map((lang: UiLang) => {
+		const href = new URL(pathname, origin);
+		href.searchParams.set("lang", lang);
+		return `<link rel="alternate" hreflang="${escapeHtml(lang)}" href="${escapeHtml(href.toString())}" />`;
+	});
+	const xDefaultHref = new URL(pathname, origin).toString();
+	return `${tags.join("\n\t\t")}\n\t\t<link rel="alternate" hreflang="x-default" href="${escapeHtml(xDefaultHref)}" />`;
+}
+
+function normalizeUiLang(value: string | null | undefined): UiLang | null {
+	if (!value) return null;
+	const raw = value.trim();
+	if (!raw) return null;
+	const lower = raw.toLowerCase();
+	if (lower === "zh-cn" || lower === "zh-hans") return "zh-CN";
+	if (lower === "zh-tw" || lower === "zh-hk" || lower === "zh-hant") return "zh-TW";
+	const direct = SUPPORTED_UI_LANGS.find((lang) => lang.toLowerCase() === lower);
+	if (direct) return direct;
+	const base = lower.split("-")[0];
+	const byBase = SUPPORTED_UI_LANGS.find((lang) => lang.toLowerCase() === base);
+	return byBase || null;
+}
+
+function pickUiLang(url: URL, request: Request): UiLang {
+	const fromUrl = normalizeUiLang(url.searchParams.get("lang"));
+	if (fromUrl) return fromUrl;
+	const acceptLanguage = request.headers.get("accept-language") || "";
+	for (const part of acceptLanguage.split(",")) {
+		const token = part.split(";")[0]?.trim();
+		const normalized = normalizeUiLang(token);
+		if (normalized) return normalized;
+	}
+	return "en";
+}
+
+function pageSeo(lang: UiLang, page: SeoPageKey): { title: string; description: string } {
+	const pack = SEO_I18N[lang] || SEO_I18N.en;
+	return pack[page] || SEO_I18N.en[page];
+}
+
+function toOgLocale(lang: UiLang): string {
+	const map: Record<UiLang, string> = {
+		en: "en_US",
+		"zh-CN": "zh_CN",
+		"zh-TW": "zh_TW",
+		ja: "ja_JP",
+		ko: "ko_KR",
+		es: "es_ES",
+		th: "th_TH",
+		vi: "vi_VN",
+	};
+	return map[lang] || "en_US";
+}
+
+function normalizeTextSnippet(value: string, maxLen: number): string {
+	const collapsed = value.replace(/\s+/g, " ").trim();
+	if (!collapsed) return "";
+	if (collapsed.length <= maxLen) return collapsed;
+	return `${collapsed.slice(0, Math.max(0, maxLen - 1)).trim()}…`;
+}
+
+function articleFallbackDescription(lang: UiLang): string {
+	const fallbackByLang: Record<UiLang, string> = {
+		en: "Adult community wiki article.",
+		"zh-CN": "成人社群 Wiki 文章。",
+		"zh-TW": "成人社群 Wiki 文章。",
+		ja: "成人コミュニティ向けの Wiki 記事です。",
+		ko: "성인 커뮤니티 위키 문서입니다.",
+		es: "Artículo de la wiki de la comunidad adulta.",
+		th: "บทความวิกิของชุมชนผู้ใหญ่",
+		vi: "Bài viết wiki của cộng đồng người lớn.",
+	};
+	return fallbackByLang[lang] || fallbackByLang.en;
+}
+
+function injectSeoTags(html: string, origin: string, seo: SeoOptions): string {
+	if (!html.includes("</head>")) return html;
+	const canonical = new URL(seo.pathname, origin).toString();
+	const robots = seo.robots || "index,follow";
+	const ogType = seo.pathname.startsWith("/wiki/article/") ? "article" : "website";
+	const jsonLdBlock = seo.jsonLd
+		? `\n\t\t<script type="application/ld+json">${JSON.stringify(seo.jsonLd).replaceAll("<", "\\u003c")}</script>`
+		: "";
+	const articleMetaBlock =
+		ogType === "article"
+			? [
+					seo.articlePublishedTime
+						? `<meta property="article:published_time" content="${escapeHtml(seo.articlePublishedTime)}" />`
+						: "",
+					seo.articleModifiedTime
+						? `<meta property="article:modified_time" content="${escapeHtml(seo.articleModifiedTime)}" />`
+						: "",
+					seo.articleAuthor ? `<meta property="article:author" content="${escapeHtml(seo.articleAuthor)}" />` : "",
+				]
+					.filter(Boolean)
+					.join("\n\t\t")
+			: "";
+	const tags = `
+		<meta name="description" content="${escapeHtml(seo.description)}" />
+		<meta name="robots" content="${escapeHtml(robots)}" />
+		<link rel="canonical" href="${escapeHtml(canonical)}" />
+		${buildHreflangTags(origin, seo.pathname)}
+		<meta property="og:site_name" content="${escapeHtml(seo.siteName || "Fisting Guide")}" />
+		<meta property="og:locale" content="${escapeHtml(seo.locale || "en_US")}" />
+		<meta property="og:type" content="${escapeHtml(ogType)}" />
+		<meta property="og:title" content="${escapeHtml(seo.title)}" />
+		<meta property="og:description" content="${escapeHtml(seo.description)}" />
+		<meta property="og:url" content="${escapeHtml(canonical)}" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content="${escapeHtml(seo.title)}" />
+		<meta name="twitter:description" content="${escapeHtml(seo.description)}" />
+		${articleMetaBlock}${jsonLdBlock}
+	`;
+	return html.replace("</head>", `${tags}\n\t</head>`);
+}
+
+function htmlResponse(html: string, origin: string, seo: SeoOptions): Response {
+	const output = injectSeoTags(html, origin, seo);
+	const headers: Record<string, string> = {
+		"content-type": "text/html; charset=UTF-8",
+	};
+	if (seo.robots === "noindex,nofollow") {
+		headers["x-robots-tag"] = "noindex, nofollow";
+	}
+	return new Response(output, {
+		headers,
+	});
+}
+
+function buildRobotsTxt(origin: string): string {
+	return [
+		"User-agent: *",
+		"Allow: /",
+		"Disallow: /admin",
+		"Disallow: /api/",
+		`Sitemap: ${origin}/sitemap.xml`,
+	].join("\n");
+}
+
+function buildSitemapXml(
+	origin: string,
+	wikiRows: Array<Pick<WikiArticleRecord, "id" | "updated_at" | "created_at">>,
+): string {
+	const staticPages = ["/", "/about", "/dashboard", "/wiki"];
+	const staticUrls = staticPages.map(
+		(pathname) =>
+			`  <url><loc>${escapeXml(new URL(pathname, origin).toString())}</loc><changefreq>daily</changefreq></url>`,
+	);
+	const wikiUrls = wikiRows.map((row) => {
+		const loc = new URL(`/wiki/article/${row.id}`, origin).toString();
+		const lastmodRaw = row.updated_at || row.created_at || "";
+		const lastmod = lastmodRaw ? `<lastmod>${escapeXml(new Date(lastmodRaw).toISOString())}</lastmod>` : "";
+		return `  <url><loc>${escapeXml(loc)}</loc>${lastmod}<changefreq>weekly</changefreq></url>`;
+	});
+	return [
+		`<?xml version="1.0" encoding="UTF-8"?>`,
+		`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+		...staticUrls,
+		...wikiUrls,
+		`</urlset>`,
+	].join("\n");
+}
+
 function toText(value: unknown, fallback = ""): string {
 	return typeof value === "string" ? value.trim() : fallback;
 }
@@ -72,6 +457,7 @@ function json(data: unknown, status = 200): Response {
 		status,
 		headers: {
 			"content-type": "application/json; charset=UTF-8",
+			"x-robots-tag": "noindex, nofollow",
 		},
 	});
 }
@@ -1196,10 +1582,34 @@ export default {
 	async fetch(request, env: RuntimeEnv, ctx: ExecutionContext) {
 		const url = new URL(request.url);
 		const { pathname } = url;
+		const origin = getOrigin(url);
+		const uiLang = pickUiLang(url, request);
 		const method = request.method.toUpperCase();
 		const idMatch = pathname.match(/^\/api\/profiles\/(\d+)$/);
 		const wikiIdMatch = pathname.match(/^\/api\/wiki\/(\d+)$/);
 		const wikiArticlePageMatch = pathname.match(/^\/wiki\/article\/(\d+)$/);
+
+		if (method === "GET" && pathname === "/robots.txt") {
+			return new Response(buildRobotsTxt(origin), {
+				headers: {
+					"content-type": "text/plain; charset=UTF-8",
+				},
+			});
+		}
+
+		if (method === "GET" && pathname === "/sitemap.xml") {
+			let rows: WikiArticleRecord[] = [];
+			try {
+				rows = await queryWikiArticles(env.DB);
+			} catch {
+				rows = [];
+			}
+			return new Response(buildSitemapXml(origin, rows), {
+				headers: {
+					"content-type": "application/xml; charset=UTF-8",
+				},
+			});
+		}
 
 		if (
 			pathname === "/" ||
@@ -1224,32 +1634,64 @@ export default {
 
 		if (method === "GET" && pathname === "/") {
 			const rows = await queryProfiles(env.DB, {});
-			return new Response(renderLeaderboardPage(rows), {
-				headers: { "content-type": "text/html; charset=UTF-8" },
+			const seo = pageSeo(uiLang, "ranking");
+			return htmlResponse(renderLeaderboardPage(rows), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
 			});
 		}
 
 		if (method === "GET" && pathname === "/admin") {
-			return new Response(renderAdminPage(), {
-				headers: { "content-type": "text/html; charset=UTF-8" },
+			const seo = pageSeo(uiLang, "admin");
+			return htmlResponse(renderAdminPage(), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/admin",
+				robots: "noindex,nofollow",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
 			});
 		}
 
 		if (method === "GET" && pathname === "/dashboard") {
-			return new Response(renderDashboardPage(), {
-				headers: { "content-type": "text/html; charset=UTF-8" },
+			const seo = pageSeo(uiLang, "dashboard");
+			return htmlResponse(renderDashboardPage(), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/dashboard",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
 			});
 		}
 
 		if (method === "GET" && pathname === "/about") {
-			return new Response(renderAboutPage(), {
-				headers: { "content-type": "text/html; charset=UTF-8" },
+			const seo = pageSeo(uiLang, "about");
+			return htmlResponse(renderAboutPage(), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/about",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
 			});
 		}
 
 		if (method === "GET" && pathname === "/wiki") {
-			return new Response(renderWikiPage(), {
-				headers: { "content-type": "text/html; charset=UTF-8" },
+			const seo = pageSeo(uiLang, "wiki");
+			return htmlResponse(renderWikiPage(), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/wiki",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+				jsonLd: {
+					"@context": "https://schema.org",
+					"@type": "WebSite",
+					name: "Fisting Wiki",
+					url: new URL("/wiki", origin).toString(),
+				},
 			});
 		}
 
@@ -1259,8 +1701,30 @@ export default {
 			if (!row) {
 				return new Response("Not Found", { status: 404 });
 			}
-			return new Response(renderWikiArticlePage(row), {
-				headers: { "content-type": "text/html; charset=UTF-8" },
+			const articleTitle = toText(row.title, "Fisting Wiki Article");
+			const articleDescription =
+				normalizeTextSnippet(toText(row.content), 160) || articleFallbackDescription(uiLang);
+			return htmlResponse(renderWikiArticlePage(row), origin, {
+				title: `${articleTitle} - Fisting Wiki`,
+				description: articleDescription,
+				pathname: `/wiki/article/${id}`,
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+				articlePublishedTime: row.created_at || undefined,
+				articleModifiedTime: row.updated_at || row.created_at || undefined,
+				articleAuthor: toText(row.author, "fistingguide"),
+				jsonLd: {
+					"@context": "https://schema.org",
+					"@type": "Article",
+					headline: articleTitle,
+					author: {
+						"@type": "Person",
+						name: toText(row.author, "fistingguide"),
+					},
+					datePublished: row.created_at,
+					dateModified: row.updated_at || row.created_at,
+					mainEntityOfPage: new URL(`/wiki/article/${id}`, origin).toString(),
+				},
 			});
 		}
 
