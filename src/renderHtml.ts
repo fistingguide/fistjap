@@ -866,7 +866,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 
 			return `
 				<li class="leaderboard-item">
-					<a class="card-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Open ${safeName} on X">
+					<a class="card-link" href="${safeUrl}" target="_self" aria-label="Open ${safeName} on X">
 						<div class="card-top">
 							<div class="rank ${rankClass}">#${rank}</div>
 							<div class="badges">
@@ -1500,7 +1500,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							: '<div class="avatar placeholder">N/A</div>';
 						return '' +
 							'<li class="leaderboard-item">' +
-								'<a class="card-link" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" aria-label="Open ' + safeName + ' on X">' +
+								'<a class="card-link" href="' + safeUrl + '" target="_self" aria-label="Open ' + safeName + ' on X">' +
 									'<div class="card-top">' +
 										'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
 										'<div class="badges">' +
@@ -1553,7 +1553,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
 						: '<div class="avatar placeholder">N/A</div>';
 					pinnedSpotlightEl.innerHTML =
-						'<a class="card-link" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer" aria-label="Open ' + safeName + ' on X">' +
+						'<a class="card-link" href="' + safeUrl + '" target="_self" aria-label="Open ' + safeName + ' on X">' +
 							'<div class="card-top">' +
 								'<div class="rank top-rank">' + esc(t('spotlight_title', 'Rotating Spotlight')) + '</div>' +
 								'<div class="badges">' +
