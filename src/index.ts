@@ -1614,6 +1614,9 @@ export default {
 		if (
 			pathname === "/" ||
 			pathname === "/admin" ||
+			pathname === "/admin/create" ||
+			pathname === "/admin/edit" ||
+			pathname === "/admin/delete" ||
 			pathname === "/dashboard" ||
 			pathname === "/about" ||
 			pathname === "/wiki" ||
@@ -1646,10 +1649,46 @@ export default {
 
 		if (method === "GET" && pathname === "/admin") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage(), origin, {
+			return htmlResponse(renderAdminPage("home"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin",
+				robots: "noindex,nofollow",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+			});
+		}
+
+		if (method === "GET" && pathname === "/admin/create") {
+			const seo = pageSeo(uiLang, "admin");
+			return htmlResponse(renderAdminPage("create"), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/admin/create",
+				robots: "noindex,nofollow",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+			});
+		}
+
+		if (method === "GET" && pathname === "/admin/edit") {
+			const seo = pageSeo(uiLang, "admin");
+			return htmlResponse(renderAdminPage("edit"), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/admin/edit",
+				robots: "noindex,nofollow",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+			});
+		}
+
+		if (method === "GET" && pathname === "/admin/delete") {
+			const seo = pageSeo(uiLang, "admin");
+			return htmlResponse(renderAdminPage("delete"), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/admin/delete",
 				robots: "noindex,nofollow",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",

@@ -39,22 +39,24 @@ const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "t
 const RANKING_NOTICE_ZH_CN =
 	"1. 本网站仅收录男性账号（包括 gay 用户以及对肛门扩张感兴趣的直男）。\n2. 为了保证公平性，网站每 10 分钟轮换一次置顶账号，以确保每位用户都有机会被更多人看到。\n3. 本网站地图上显示的所有位置仅为示意标注。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。若你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的位置。本网站不会收集、存储或公开任何个人的具体地址信息。\n4. 每个人可以添加自己的账号和查看地图，手机端请点击汉堡按键查看更多操作。\n5. 任何信息请私信 @fistingguide。";
 const TH_MESSAGES: Record<string, string> = {
-	page_title_ranking: "อันดับครีเอเตอร์",
+	page_title_ranking: "รายชื่อนักแสดง",
 	page_title_admin: "แผงผู้ดูแลฐานข้อมูล",
 	page_title_dashboard: "แผนที่",
 	page_title_about: "เกี่ยวกับ",
 	page_title_wiki: "Fisting Wiki",
 	page_title_wiki_article: "Fisting Wiki",
-	heading_ranking: "หน้าจัดอันดับ",
+	heading_ranking: "รายชื่อนักแสดง",
 	heading_add: "เพิ่มใหม่",
 	heading_star: "แผนที่",
 	heading_about: "เกี่ยวกับ",
 	heading_wiki: "Fisting Wiki",
-	nav_ranking: "หน้าจัดอันดับ",
+	nav_ranking: "รายชื่อนักแสดง",
 	nav_add: "เพิ่มใหม่",
 	nav_star: "แผนที่",
 	nav_wiki: "Fisting Wiki",
 	nav_about: "เกี่ยวกับ",
+	dashboard_visit_select: "เลือกนักแสดงบนแผนที่ก่อน",
+	dashboard_visit_named: "ไปที่ {handle}",
 	country_region: "ประเทศ(ภูมิภาค)",
 	all_option: "ทั้งหมด",
 	ranking_location_notice:
@@ -71,7 +73,8 @@ const TH_MESSAGES: Record<string, string> = {
 	wiki_submit_hint: "ส่งบทความไปยัง fistingguide",
 	about_description:
 		"สวัสดี ฉันเป็นผู้ที่สนใจ fisting และเพิ่งสร้างเว็บไซต์นำทางแบบเรียบง่ายเพื่อช่วยให้ค้นหาครีเอเตอร์และบัญชีในชุมชนได้รวดเร็วขึ้น เป้าหมายของเว็บไซต์นี้คือช่วยให้ค้นพบครีเอเตอร์ สำรวจเนื้อหาใหม่ และเชื่อมต่อกับผู้ที่มีความสนใจเดียวกันได้ง่ายขึ้น หากคุณมีข้อเสนอแนะ คำติชม หรืออยากร่วมพัฒนาโครงการนี้ สามารถติดต่อฉันได้ที่ X: @fistingguide หรืออีเมล: fistingguide@proton.me หากคุณไม่ต้องการให้แสดงบนเว็บไซต์ แจ้งฉันได้และฉันจะลบรายการของคุณ ขอบคุณ และหวังว่าโครงการนี้จะช่วยให้ชุมชนเติบโต",
-	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X (รองรับเฉพาะบัญชีที่มีอยู่ เพื่อแก้ไขข้อมูลที่เกี่ยวข้องหรือลบ)",
+	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X",
+	admin_search_hint: "รองรับเฉพาะบัญชีที่มีอยู่ เพื่อแก้ไขข้อมูลที่เกี่ยวข้องหรือลบ",
 	admin_search_btn: "ค้นหา",
 	admin_reset_btn: "รีเซ็ต",
 	admin_label_display_name: "ชื่อที่แสดง",
@@ -93,9 +96,20 @@ const TH_MESSAGES: Record<string, string> = {
 	admin_label_bio: "ชีวประวัติ",
 	admin_ph_bio: "ชีวประวัติ",
 	admin_btn_create: "สร้าง",
-	admin_btn_save_changes: "บันทึกการเปลี่ยนแปลง",
+	admin_btn_save_changes: "ยืนยันการแก้ไข",
 	admin_btn_delete_current: "ลบรายการปัจจุบัน",
 	admin_btn_cancel_edit: "ยกเลิกการแก้ไข",
+	admin_mode_title_home: "เลือกการทำงาน",
+	admin_mode_title_create: "เพิ่มผู้แสดง",
+	admin_mode_title_edit: "แก้ไขผู้แสดง",
+	admin_mode_title_delete: "ลบผู้แสดง",
+	admin_mode_btn_create: "เพิ่มผู้แสดง",
+	admin_mode_btn_edit: "แก้ไขผู้แสดง",
+	admin_mode_btn_delete: "ลบผู้แสดง",
+	admin_delete_hint: "กรุณาค้นหาและเลือกผู้แสดงที่มีอยู่ก่อน",
+	admin_delete_selected: "ที่เลือก: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "ไม่พบแฮนเดิลที่ตรงทั้งหมดสำหรับโหมดนี้",
+	admin_status_pick_existing_first: "กรุณาค้นหาและเลือกผู้แสดงที่มีอยู่ก่อน",
 	admin_status_ready: "พร้อม",
 	admin_status_no_exact_match: "ไม่พบแฮนเดิลที่ตรงทั้งหมด คุณสามารถสร้างรายการใหม่ได้",
 	admin_status_matched_handles: "พบแฮนเดิลที่ตรงกัน {count} รายการ",
@@ -107,22 +121,24 @@ const TH_MESSAGES: Record<string, string> = {
 	admin_alert_created_success: "สร้างโปรไฟล์สำเร็จ",
 };
 const VI_MESSAGES: Record<string, string> = {
-	page_title_ranking: "Bảng xếp hạng Creator",
+	page_title_ranking: "Danh sach nguoi bieu dien",
 	page_title_admin: "Bảng quản trị cơ sở dữ liệu",
 	page_title_dashboard: "Bản đồ",
 	page_title_about: "Giới thiệu",
 	page_title_wiki: "Fisting Wiki",
 	page_title_wiki_article: "Fisting Wiki",
-	heading_ranking: "Trang xếp hạng",
+	heading_ranking: "Danh sach nguoi bieu dien",
 	heading_add: "Thêm mới",
 	heading_star: "Bản đồ",
 	heading_about: "Giới thiệu",
 	heading_wiki: "Fisting Wiki",
-	nav_ranking: "Trang xếp hạng",
+	nav_ranking: "Danh sach nguoi bieu dien",
 	nav_add: "Thêm mới",
 	nav_star: "Bản đồ",
 	nav_wiki: "Fisting Wiki",
 	nav_about: "Giới thiệu",
+	dashboard_visit_select: "Select a performer on the map first",
+	dashboard_visit_named: "Visit {handle}",
 	country_region: "quoc gia(vung)",
 	all_option: "Tat ca",
 	ranking_location_notice:
@@ -139,26 +155,41 @@ const VI_MESSAGES: Record<string, string> = {
 	wiki_submit_hint: "gui bai viet cho fistingguide",
 	about_description:
 		"Xin chao, toi la mot nguoi yeu thich fisting va da tao mot website dieu huong don gian de giup moi nguoi nhanh chong tim thay creator va tai khoan trong cong dong. Muc tieu cua trang la giup tim creator de hon, kham pha noi dung moi va ket noi voi nhung nguoi co cung so thich. Neu ban co goi y, phan hoi hoac muon hop tac cai thien du an, hay lien he toi tren X: @fistingguide hoac email: fistingguide@proton.me. Neu ban khong muon xuat hien tren website, hay bao toi va toi se go danh sach cua ban.",
+	admin_search_placeholder: "Search by X handle",
+	admin_search_hint: "Only supports existing accounts for modifying related information or deleting.",
+	admin_mode_title_home: "Chon thao tac",
+	admin_mode_title_create: "Them nguoi bieu dien",
+	admin_mode_title_edit: "Sua nguoi bieu dien",
+	admin_mode_title_delete: "Xoa nguoi bieu dien",
+	admin_mode_btn_create: "Them nguoi bieu dien",
+	admin_mode_btn_edit: "Sua nguoi bieu dien",
+	admin_mode_btn_delete: "Xoa nguoi bieu dien",
+	admin_delete_hint: "Hay tim va chon mot nguoi bieu dien da ton tai truoc.",
+	admin_delete_selected: "Da chon: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "Khong co handle trung khop chinh xac cho che do nay.",
+	admin_status_pick_existing_first: "Hay tim va chon mot nguoi bieu dien da ton tai truoc.",
 };
 
 const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	en: {
-		page_title_ranking: "Creator Ranking",
+		page_title_ranking: "Performers List",
 		page_title_admin: "Database Admin Panel",
 		page_title_dashboard: "Map",
 		page_title_about: "About",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
-		heading_ranking: "Ranking Page",
+		heading_ranking: "Performers List",
 		heading_add: "Add new",
 		heading_star: "Map",
 		heading_about: "About",
 		heading_wiki: "Fisting Wiki",
-		nav_ranking: "Ranking Page",
+		nav_ranking: "Performers List",
 		nav_add: "Add new",
 		nav_star: "Map",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "About",
+		dashboard_visit_select: "Select a performer on the map first",
+		dashboard_visit_named: "Visit {handle}",
 		country_region: "country(region)",
 		all_option: "All",
 		ranking_location_notice:
@@ -175,7 +206,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "submit an article to fistingguide",
 		about_description:
 			"Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.",
-		admin_search_placeholder: "Search by X handle (only supports existing accounts for modifying their related information or deleting)",
+		admin_search_placeholder: "Search by X handle",
+		admin_search_hint: "Only supports existing accounts for modifying their related information or deleting.",
 		admin_search_btn: "Search",
 		admin_reset_btn: "Reset",
 		admin_label_display_name: "Display Name",
@@ -196,10 +228,21 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_avatar_url: "Avatar URL",
 		admin_label_bio: "Bio",
 		admin_ph_bio: "Bio",
-		admin_btn_create: "Create",
-		admin_btn_save_changes: "Save Changes",
-		admin_btn_delete_current: "Delete Current",
-		admin_btn_cancel_edit: "Cancel Edit",
+	admin_btn_create: "Create",
+		admin_btn_save_changes: "Confirm Edit",
+	admin_btn_delete_current: "Delete Current",
+	admin_btn_cancel_edit: "Cancel Edit",
+	admin_mode_title_home: "Choose action",
+	admin_mode_title_create: "Add performer",
+	admin_mode_title_edit: "Edit performer",
+	admin_mode_title_delete: "Delete performer",
+	admin_mode_btn_create: "Add Performer",
+	admin_mode_btn_edit: "Edit Performer",
+	admin_mode_btn_delete: "Delete Performer",
+	admin_delete_hint: "Please search and select an existing performer first.",
+	admin_delete_selected: "Selected: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "No exact handle match for this mode.",
+	admin_status_pick_existing_first: "Please search and select an existing performer first.",
 		admin_status_ready: "Ready",
 		admin_status_no_exact_match: "No exact handle match. You can create a new record.",
 		admin_status_matched_handles: "Matched {count} handles",
@@ -211,22 +254,24 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_created_success: "Profile created successfully.",
 	},
 	"zh-CN": {
-		page_title_ranking: "\u521b\u4f5c\u8005\u6392\u884c",
+		page_title_ranking: "\u8868\u6f14\u8005\u5217\u8868",
 		page_title_admin: "\u6570\u636e\u5e93\u7ba1\u7406\u9762\u677f",
 		page_title_dashboard: "\u5730\u56fe",
 		page_title_about: "\u5173\u4e8e",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
-		heading_ranking: "\u6392\u884c\u699c",
+		heading_ranking: "\u8868\u6f14\u8005\u5217\u8868",
 		heading_add: "\u65b0\u589e",
 		heading_star: "\u5730\u56fe",
 		heading_about: "\u5173\u4e8e",
 		heading_wiki: "Fisting Wiki",
-		nav_ranking: "\u6392\u884c\u699c",
+		nav_ranking: "\u8868\u6f14\u8005\u5217\u8868",
 		nav_add: "\u65b0\u589e",
 		nav_star: "\u5730\u56fe",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u5173\u4e8e",
+		dashboard_visit_select: "\u8bf7\u5148\u5728\u5730\u56fe\u4e0a\u9009\u62e9\u8868\u6f14\u8005",
+		dashboard_visit_named: "\u8bbf\u95ee{handle}",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
 		ranking_location_notice: RANKING_NOTICE_ZH_CN,
@@ -242,7 +287,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
-		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22\uff08\u4ec5\u652f\u6301\u5df2\u5b58\u5728\u8d26\u53f7\uff0c\u7528\u4e8e\u4fee\u6539\u5176\u76f8\u5173\u4fe1\u606f\u6216\u5220\u9664\uff09",
+		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22",
+		admin_search_hint: "\u4ec5\u652f\u6301\u5df2\u5b58\u5728\u8d26\u53f7\uff0c\u7528\u4e8e\u4fee\u6539\u5176\u76f8\u5173\u4fe1\u606f\u6216\u5220\u9664",
 		admin_search_btn: "\u641c\u7d22",
 		admin_reset_btn: "\u91cd\u7f6e",
 		admin_label_display_name: "\u663e\u793a\u540d\u79f0",
@@ -263,10 +309,21 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_avatar_url: "\u5934\u50cf URL",
 		admin_label_bio: "\u7b80\u4ecb",
 		admin_ph_bio: "\u7b80\u4ecb",
-		admin_btn_create: "\u521b\u5efa",
-		admin_btn_save_changes: "\u4fdd\u5b58\u4fee\u6539",
-		admin_btn_delete_current: "\u5220\u9664\u5f53\u524d",
-		admin_btn_cancel_edit: "\u53d6\u6d88\u7f16\u8f91",
+	admin_btn_create: "\u521b\u5efa",
+	admin_btn_save_changes: "\u786e\u8ba4\u7f16\u8f91",
+	admin_btn_delete_current: "\u5220\u9664\u5f53\u524d",
+	admin_btn_cancel_edit: "\u53d6\u6d88\u7f16\u8f91",
+	admin_mode_title_home: "\u9009\u62e9\u64cd\u4f5c",
+	admin_mode_title_create: "\u65b0\u589e\u8868\u6f14\u8005",
+	admin_mode_title_edit: "\u7f16\u8f91\u8868\u6f14\u8005",
+	admin_mode_title_delete: "\u5220\u9664\u8868\u6f14\u8005",
+	admin_mode_btn_create: "\u65b0\u589e\u8868\u6f14\u8005",
+	admin_mode_btn_edit: "\u7f16\u8f91\u8868\u6f14\u8005",
+	admin_mode_btn_delete: "\u5220\u9664\u8868\u6f14\u8005",
+	admin_delete_hint: "\u8bf7\u5148\u641c\u7d22\u5e76\u9009\u62e9\u5df2\u5b58\u5728\u7684\u8868\u6f14\u8005",
+	admin_delete_selected: "\u5df2\u9009\u62e9\uff1a{name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "\u5f53\u524d\u6a21\u5f0f\u4e0b\u672a\u627e\u5230\u7cbe\u786e\u5339\u914d\u7684\u8d26\u53f7",
+	admin_status_pick_existing_first: "\u8bf7\u5148\u641c\u7d22\u5e76\u9009\u62e9\u5df2\u5b58\u5728\u7684\u8868\u6f14\u8005",
 		admin_status_ready: "\u5c31\u7eea",
 		admin_status_no_exact_match: "\u6ca1\u6709\u7cbe\u786e\u5339\u914d\u7684\u8d26\u53f7\uff0c\u4f60\u53ef\u4ee5\u521b\u5efa\u65b0\u8bb0\u5f55\u3002",
 		admin_status_matched_handles: "\u5339\u914d\u5230 {count} \u4e2a\u8d26\u53f7",
@@ -278,22 +335,24 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_created_success: "\u8d44\u6599\u521b\u5efa\u6210\u529f\u3002",
 	},
 	"zh-TW": {
-		page_title_ranking: "\u5275\u4f5c\u8005\u6392\u884c",
+		page_title_ranking: "\u8868\u6f14\u8005\u6e05\u55ae",
 		page_title_admin: "\u8cc7\u6599\u5eab\u7ba1\u7406\u9762\u677f",
 		page_title_dashboard: "\u5730\u5716",
 		page_title_about: "\u95dc\u65bc",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
-		heading_ranking: "\u6392\u884c\u699c",
+		heading_ranking: "\u8868\u6f14\u8005\u6e05\u55ae",
 		heading_add: "\u65b0\u589e",
 		heading_star: "\u5730\u5716",
 		heading_about: "\u95dc\u65bc",
 		heading_wiki: "Fisting Wiki",
-		nav_ranking: "\u6392\u884c\u699c",
+		nav_ranking: "\u8868\u6f14\u8005\u6e05\u55ae",
 		nav_add: "\u65b0\u589e",
 		nav_star: "\u5730\u5716",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u95dc\u65bc",
+		dashboard_visit_select: "\u8acb\u5148\u5728\u5730\u5716\u4e0a\u9078\u64c7\u8868\u6f14\u8005",
+		dashboard_visit_named: "\u8a2a\u554f{handle}",
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
 		all_option: "\u5168\u90e8",
 		ranking_location_notice:
@@ -310,7 +369,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
-		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b\uff08\u50c5\u652f\u63f4\u5df2\u5b58\u5728\u5e33\u865f\uff0c\u7528\u65bc\u4fee\u6539\u5176\u76f8\u95dc\u8cc7\u8a0a\u6216\u522a\u9664\uff09",
+		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b",
+		admin_search_hint: "\u50c5\u652f\u63f4\u5df2\u5b58\u5728\u5e33\u865f\uff0c\u7528\u65bc\u4fee\u6539\u5176\u76f8\u95dc\u8cc7\u8a0a\u6216\u522a\u9664",
 		admin_search_btn: "\u641c\u5c0b",
 		admin_reset_btn: "\u91cd\u8a2d",
 		admin_label_display_name: "\u986f\u793a\u540d\u7a31",
@@ -331,10 +391,21 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_avatar_url: "\u982d\u50cf URL",
 		admin_label_bio: "\u7c21\u4ecb",
 		admin_ph_bio: "\u7c21\u4ecb",
-		admin_btn_create: "\u5efa\u7acb",
-		admin_btn_save_changes: "\u5132\u5b58\u8b8a\u66f4",
-		admin_btn_delete_current: "\u522a\u9664\u7576\u524d",
-		admin_btn_cancel_edit: "\u53d6\u6d88\u7de8\u8f2f",
+	admin_btn_create: "\u5efa\u7acb",
+	admin_btn_save_changes: "\u78ba\u8a8d\u7de8\u8f2f",
+	admin_btn_delete_current: "\u522a\u9664\u7576\u524d",
+	admin_btn_cancel_edit: "\u53d6\u6d88\u7de8\u8f2f",
+	admin_mode_title_home: "\u9078\u64c7\u64cd\u4f5c",
+	admin_mode_title_create: "\u65b0\u589e\u8868\u6f14\u8005",
+	admin_mode_title_edit: "\u7de8\u8f2f\u8868\u6f14\u8005",
+	admin_mode_title_delete: "\u522a\u9664\u8868\u6f14\u8005",
+	admin_mode_btn_create: "\u65b0\u589e\u8868\u6f14\u8005",
+	admin_mode_btn_edit: "\u7de8\u8f2f\u8868\u6f14\u8005",
+	admin_mode_btn_delete: "\u522a\u9664\u8868\u6f14\u8005",
+	admin_delete_hint: "\u8acb\u5148\u641c\u5c0b\u4e26\u9078\u64c7\u5df2\u5b58\u5728\u7684\u8868\u6f14\u8005",
+	admin_delete_selected: "\u5df2\u9078\u64c7\uff1a{name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "\u6b64\u6a21\u5f0f\u4e0b\u627e\u4e0d\u5230\u7cbe\u78ba\u5339\u914d\u7684\u5e33\u865f",
+	admin_status_pick_existing_first: "\u8acb\u5148\u641c\u5c0b\u4e26\u9078\u64c7\u5df2\u5b58\u5728\u7684\u8868\u6f14\u8005",
 		admin_status_ready: "\u5c31\u7dd2",
 		admin_status_no_exact_match: "\u6c92\u6709\u7cbe\u78ba\u5339\u914d\u7684\u5e33\u865f\uff0c\u4f60\u53ef\u4ee5\u5efa\u7acb\u65b0\u7d00\u9304\u3002",
 		admin_status_matched_handles: "\u5339\u914d\u5230 {count} \u500b\u5e33\u865f",
@@ -346,22 +417,24 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_created_success: "\u8cc7\u6599\u5efa\u7acb\u6210\u529f\u3002",
 	},
 	ja: {
-		page_title_ranking: "\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u30e9\u30f3\u30ad\u30f3\u30b0",
+		page_title_ranking: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u4e00\u89a7",
 		page_title_admin: "\u30c7\u30fc\u30bf\u30d9\u30fc\u30b9\u7ba1\u7406\u30d1\u30cd\u30eb",
 		page_title_dashboard: "\u30de\u30c3\u30d7",
 		page_title_about: "\u6982\u8981",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
-		heading_ranking: "\u30e9\u30f3\u30ad\u30f3\u30b0",
+		heading_ranking: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u4e00\u89a7",
 		heading_add: "\u65b0\u898f\u8ffd\u52a0",
 		heading_star: "\u30de\u30c3\u30d7",
 		heading_about: "\u6982\u8981",
 		heading_wiki: "Fisting Wiki",
-		nav_ranking: "\u30e9\u30f3\u30ad\u30f3\u30b0",
+		nav_ranking: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u4e00\u89a7",
 		nav_add: "\u65b0\u898f\u8ffd\u52a0",
 		nav_star: "\u30de\u30c3\u30d7",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u6982\u8981",
+		dashboard_visit_select: "\u5730\u56f3\u4e0a\u3067\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
+		dashboard_visit_named: "{handle}\u3078\u79fb\u52d5",
 		country_region: "\u56fd(\u5730\u57df)",
 		all_option: "\u3059\u3079\u3066",
 		ranking_location_notice:
@@ -378,7 +451,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "fistingguide \u3078\u8a18\u4e8b\u3092\u6295\u7a3f",
 		about_description:
 			"\u3053\u3093\u306b\u3061\u306f\u3002\u79c1\u306f fisting \u611b\u597d\u5bb6\u3067\u3001\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3084\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u3059\u3070\u3084\u304f\u898b\u3064\u3051\u3089\u308c\u308b\u3088\u3046\u306b\u3001\u30b7\u30f3\u30d7\u30eb\u306a\u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3\u30b5\u30a4\u30c8\u3092\u4f5c\u308a\u307e\u3057\u305f\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u3001\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3092\u63a2\u3057\u3084\u3059\u304f\u3057\u3001\u65b0\u3057\u3044\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u898b\u3064\u3051\u3001\u540c\u3058\u8208\u5473\u3092\u6301\u3064\u4eba\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3059\u3002\u3054\u610f\u898b\u30fb\u3054\u611f\u60f3\u30fb\u6539\u5584\u306e\u305f\u3081\u306e\u30b3\u30e9\u30dc\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u304a\u6c17\u8efd\u306b\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002X: @fistingguide \u307e\u305f\u306f\u30e1\u30fc\u30eb: fistingguide@proton.me \u3067\u9023\u7d61\u53ef\u80fd\u3067\u3059\u3002\u30b5\u30a4\u30c8\u306b\u63b2\u8f09\u3055\u308c\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044\u3002\u4e00\u89a7\u304b\u3089\u524a\u9664\u3057\u307e\u3059\u3002\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002\u3053\u306e\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u304c\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u6210\u9577\u306b\u5f79\u7acb\u3064\u3053\u3068\u3092\u9858\u3063\u3066\u3044\u307e\u3059\u3002",
-		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22\uff08\u65e2\u5b58\u30a2\u30ab\u30a6\u30f3\u30c8\u306e\u307f\u5bfe\u5fdc\u3001\u95a2\u9023\u60c5\u5831\u306e\u4fee\u6b63\u307e\u305f\u306f\u524a\u9664\u7528\uff09",
+		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22",
+		admin_search_hint: "\u65e2\u5b58\u30a2\u30ab\u30a6\u30f3\u30c8\u306e\u307f\u5bfe\u5fdc\u3001\u95a2\u9023\u60c5\u5831\u306e\u4fee\u6b63\u307e\u305f\u306f\u524a\u9664\u7528",
 		admin_search_btn: "\u691c\u7d22",
 		admin_reset_btn: "\u30ea\u30bb\u30c3\u30c8",
 		admin_label_display_name: "\u8868\u793a\u540d",
@@ -399,10 +473,21 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_avatar_url: "\u30a2\u30d0\u30bf\u30fc URL",
 		admin_label_bio: "\u7d39\u4ecb\u6587",
 		admin_ph_bio: "\u7d39\u4ecb\u6587",
-		admin_btn_create: "\u4f5c\u6210",
-		admin_btn_save_changes: "\u5909\u66f4\u3092\u4fdd\u5b58",
-		admin_btn_delete_current: "\u73fe\u5728\u306e\u9805\u76ee\u3092\u524a\u9664",
-		admin_btn_cancel_edit: "\u7de8\u96c6\u3092\u30ad\u30e3\u30f3\u30bb\u30eb",
+	admin_btn_create: "\u4f5c\u6210",
+	admin_btn_save_changes: "\u7de8\u96c6\u3092\u78ba\u5b9a",
+	admin_btn_delete_current: "\u73fe\u5728\u306e\u9805\u76ee\u3092\u524a\u9664",
+	admin_btn_cancel_edit: "\u7de8\u96c6\u3092\u30ad\u30e3\u30f3\u30bb\u30eb",
+	admin_mode_title_home: "\u64cd\u4f5c\u3092\u9078\u629e",
+	admin_mode_title_create: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u8ffd\u52a0",
+	admin_mode_title_edit: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u7de8\u96c6",
+	admin_mode_title_delete: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u524a\u9664",
+	admin_mode_btn_create: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u8ffd\u52a0",
+	admin_mode_btn_edit: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u7de8\u96c6",
+	admin_mode_btn_delete: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u524a\u9664",
+	admin_delete_hint: "\u307e\u305a\u5b58\u5728\u3059\u308b\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u691c\u7d22\u3057\u3066\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
+	admin_delete_selected: "\u9078\u629e\u4e2d: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "\u3053\u306e\u30e2\u30fc\u30c9\u3067\u306f\u4e00\u81f4\u3059\u308b\u30cf\u30f3\u30c9\u30eb\u304c\u3042\u308a\u307e\u305b\u3093",
+	admin_status_pick_existing_first: "\u307e\u305a\u5b58\u5728\u3059\u308b\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u691c\u7d22\u3057\u3066\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
 		admin_status_ready: "\u6e96\u5099\u5b8c\u4e86",
 		admin_status_no_exact_match: "\u5b8c\u5168\u4e00\u81f4\u3059\u308b\u30cf\u30f3\u30c9\u30eb\u304c\u3042\u308a\u307e\u305b\u3093\u3002\u65b0\u898f\u4f5c\u6210\u3067\u304d\u307e\u3059\u3002",
 		admin_status_matched_handles: "{count} \u4ef6\u306e\u30cf\u30f3\u30c9\u30eb\u304c\u4e00\u81f4",
@@ -414,22 +499,24 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_created_success: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u3092\u4f5c\u6210\u3057\u307e\u3057\u305f\u3002",
 	},
 	ko: {
-		page_title_ranking: "\ud06c\ub9ac\uc5d0\uc774\ud130 \uc21c\uc704",
+		page_title_ranking: "\ud37c\ud3ec\uba38 \ubaa9\ub85d",
 		page_title_admin: "\ub370\uc774\ud130\ubca0\uc774\uc2a4 \uad00\ub9ac\uc790 \ud328\ub110",
 		page_title_dashboard: "\uc9c0\ub3c4",
 		page_title_about: "\uc18c\uac1c",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
-		heading_ranking: "\ub7ad\ud0b9",
+		heading_ranking: "\ud37c\ud3ec\uba38 \ubaa9\ub85d",
 		heading_add: "\ucd94\uac00",
 		heading_star: "\uc9c0\ub3c4",
 		heading_about: "\uc18c\uac1c",
 		heading_wiki: "Fisting Wiki",
-		nav_ranking: "\ub7ad\ud0b9",
+		nav_ranking: "\ud37c\ud3ec\uba38 \ubaa9\ub85d",
 		nav_add: "\ucd94\uac00",
 		nav_star: "\uc9c0\ub3c4",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\uc18c\uac1c",
+		dashboard_visit_select: "\uc9c0\ub3c4\uc5d0\uc11c \ud37c\ud3ec\uba38\ub97c \uba3c\uc800 \uc120\ud0dd\ud574 \uc8fc\uc138\uc694",
+		dashboard_visit_named: "{handle}\ub85c \uc774\ub3d9",
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
 		all_option: "\uc804\uccb4",
 		ranking_location_notice:
@@ -446,7 +533,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "fistingguide\uc5d0 \uae00 \uae30\uace0",
 		about_description:
 			"\uc548\ub155\ud558\uc138\uc694. \uc800\ub294 fisting \uc560\ud638\uac00\uc774\uba70, \ucee4\ubba4\ub2c8\ud2f0\uc5d0\uc11c \ud06c\ub9ac\uc5d0\uc774\ud130\uc640 \uacc4\uc815\uc744 \ube60\ub974\uac8c \ucc3e\uc744 \uc218 \uc788\ub3c4\ub85d \ub2e8\uc21c\ud55c \ub124\ube44\uac8c\uc774\uc158 \uc6f9\uc0ac\uc774\ud2b8\ub97c \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\uc758 \ubaa9\ud45c\ub294 \ud06c\ub9ac\uc5d0\uc774\ud130\ub97c \ub354 \uc27d\uac8c \ucc3e\uace0, \uc0c8\ub85c\uc6b4 \ucf58\ud150\uce20\ub97c \ud0d0\uc0c9\ud558\uba70, \uac19\uc740 \uad00\uc2ec\uc0ac\ub97c \uac00\uc9c4 \uc0ac\ub78c\ub4e4\uacfc \uc5f0\uacb0\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc81c\uc548, \ud53c\ub4dc\ubc31, \ud639\uc740 \ud504\ub85c\uc81d\ud2b8 \uac1c\uc120\uc744 \ud568\uaed8\ud558\uace0 \uc2f6\uc73c\uc2dc\uba74 \ud3b8\ud558\uac8c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. X \uacc4\uc815 @fistingguide \ub610\ub294 \uc774\uba54\uc77c fistingguide@proton.me \ub85c \uc5f0\ub77d\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc6f9\uc0ac\uc774\ud2b8\uc5d0 \ub178\ucd9c\ub418\uace0 \uc2f6\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc54c\ub824 \uc8fc\uc138\uc694. \ub9ac\uc2a4\ud305\uc744 \uc81c\uac70\ud574 \ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4. \uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774 \ud504\ub85c\uc81d\ud2b8\uac00 \ucee4\ubba4\ub2c8\ud2f0 \uc131\uc7a5\uc5d0 \ub3c4\uc6c0\uc774 \ub418\uae30\ub97c \ubc14\ub78d\ub2c8\ub2e4.",
-		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9(\uae30\uc874 \uacc4\uc815\ub9cc \uc9c0\uc6d0\ud558\uba70 \uad00\ub828 \uc815\ubcf4 \uc218\uc815 \ub610\ub294 \uc0ad\uc81c \uc6a9\ub3c4)",
+		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9",
+		admin_search_hint: "\uae30\uc874 \uacc4\uc815\ub9cc \uc9c0\uc6d0\ud558\uba70 \uad00\ub828 \uc815\ubcf4 \uc218\uc815 \ub610\ub294 \uc0ad\uc81c \uc6a9\ub3c4",
 		admin_search_btn: "\uac80\uc0c9",
 		admin_reset_btn: "\ucd08\uae30\ud654",
 		admin_label_display_name: "\ud45c\uc2dc \uc774\ub984",
@@ -467,10 +555,21 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_avatar_url: "\uc544\ubc14\ud0c0 URL",
 		admin_label_bio: "\uc18c\uac1c",
 		admin_ph_bio: "\uc18c\uac1c",
-		admin_btn_create: "\uc0dd\uc131",
-		admin_btn_save_changes: "\ubcc0\uacbd \uc800\uc7a5",
-		admin_btn_delete_current: "\ud604\uc7ac \ud56d\ubaa9 \uc0ad\uc81c",
-		admin_btn_cancel_edit: "\ud3b8\uc9d1 \ucde8\uc18c",
+	admin_btn_create: "\uc0dd\uc131",
+	admin_btn_save_changes: "\ud3b8\uc9d1 \ud655\uc778",
+	admin_btn_delete_current: "\ud604\uc7ac \ud56d\ubaa9 \uc0ad\uc81c",
+	admin_btn_cancel_edit: "\ud3b8\uc9d1 \ucde8\uc18c",
+	admin_mode_title_home: "\uc791\uc5c5 \uc120\ud0dd",
+	admin_mode_title_create: "\ud37c\ud3ec\uba38 \ucd94\uac00",
+	admin_mode_title_edit: "\ud37c\ud3ec\uba38 \uc218\uc815",
+	admin_mode_title_delete: "\ud37c\ud3ec\uba38 \uc0ad\uc81c",
+	admin_mode_btn_create: "\ud37c\ud3ec\uba38 \ucd94\uac00",
+	admin_mode_btn_edit: "\ud37c\ud3ec\uba38 \uc218\uc815",
+	admin_mode_btn_delete: "\ud37c\ud3ec\uba38 \uc0ad\uc81c",
+	admin_delete_hint: "\uba3c\uc800 \uae30\uc874 \ud37c\ud3ec\uba38\ub97c \uac80\uc0c9\ud558\uace0 \uc120\ud0dd\ud574 \uc8fc\uc138\uc694",
+	admin_delete_selected: "\uc120\ud0dd\ub428: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "\ud604\uc7ac \ubaa8\ub4dc\uc5d0\uc11c \uc77c\uce58\ud558\ub294 \ud578\ub4e4\uc744 \ucc3e\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4",
+	admin_status_pick_existing_first: "\uba3c\uc800 \uae30\uc874 \ud37c\ud3ec\uba38\ub97c \uac80\uc0c9\ud558\uace0 \uc120\ud0dd\ud574 \uc8fc\uc138\uc694",
 		admin_status_ready: "\uc900\ube44\ub428",
 		admin_status_no_exact_match: "\uc815\ud655\ud788 \uc77c\uce58\ud558\ub294 \ud578\ub4e4\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \uc0c8 \uae30\ub85d\uc744 \ub9cc\ub4e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
 		admin_status_matched_handles: "{count}\uac1c \ud578\ub4e4 \uc77c\uce58",
@@ -482,22 +581,24 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_created_success: "\ud504\ub85c\ud544\uc774 \uc131\uacf5\uc801\uc73c\ub85c \uc0dd\uc131\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
 	},
 	es: {
-		page_title_ranking: "Clasificacion de creadores",
+		page_title_ranking: "Lista de artistas",
 		page_title_admin: "Panel de administracion de base de datos",
 		page_title_dashboard: "Mapa",
 		page_title_about: "Acerca de",
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
-		heading_ranking: "Clasificacion",
+		heading_ranking: "Lista de artistas",
 		heading_add: "Agregar",
 		heading_star: "Mapa",
 		heading_about: "Acerca de",
 		heading_wiki: "Fisting Wiki",
-		nav_ranking: "Clasificacion",
+		nav_ranking: "Lista de artistas",
 		nav_add: "Agregar",
 		nav_star: "Mapa",
 		nav_wiki: "Fisting Wiki",
 		nav_about: "Acerca de",
+		dashboard_visit_select: "Primero selecciona un artista en el mapa",
+		dashboard_visit_named: "Visitar {handle}",
 		country_region: "pais(region)",
 		all_option: "Todos",
 		ranking_location_notice:
@@ -514,7 +615,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "enviar un articulo a fistingguide",
 		about_description:
 			"Hola, soy un entusiasta del fisting y hace poco cree un sitio de navegacion simple para ayudar a descubrir rapidamente creadores y cuentas de la comunidad. El objetivo de este sitio es facilitar encontrar creadores, explorar contenido nuevo y conectar con otras personas que comparten los mismos intereses. Si tienes sugerencias, comentarios o quieres colaborar para mejorar el proyecto, no dudes en escribirme. Puedes contactarme en X: @fistingguide o por correo: fistingguide@proton.me. Si prefieres no aparecer en el sitio web, avisame y eliminare tu listado. Gracias, y espero que este proyecto ayude a que la comunidad siga creciendo.",
-		admin_search_placeholder: "Buscar por handle de X (solo admite cuentas existentes para modificar su informacion relacionada o eliminar)",
+		admin_search_placeholder: "Buscar por handle de X",
+		admin_search_hint: "Solo admite cuentas existentes para modificar su informacion relacionada o eliminar.",
 		admin_search_btn: "Buscar",
 		admin_reset_btn: "Restablecer",
 		admin_label_display_name: "Nombre visible",
@@ -535,10 +637,21 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_ph_avatar_url: "URL del avatar",
 		admin_label_bio: "Bio",
 		admin_ph_bio: "Bio",
-		admin_btn_create: "Crear",
-		admin_btn_save_changes: "Guardar cambios",
-		admin_btn_delete_current: "Eliminar actual",
-		admin_btn_cancel_edit: "Cancelar edicion",
+	admin_btn_create: "Crear",
+	admin_btn_save_changes: "Confirmar edicion",
+	admin_btn_delete_current: "Eliminar actual",
+	admin_btn_cancel_edit: "Cancelar edicion",
+	admin_mode_title_home: "Elegir accion",
+	admin_mode_title_create: "Agregar artista",
+	admin_mode_title_edit: "Editar artista",
+	admin_mode_title_delete: "Eliminar artista",
+	admin_mode_btn_create: "Agregar artista",
+	admin_mode_btn_edit: "Editar artista",
+	admin_mode_btn_delete: "Eliminar artista",
+	admin_delete_hint: "Primero busca y selecciona un artista existente.",
+	admin_delete_selected: "Seleccionado: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "No hay coincidencia exacta del handle para este modo.",
+	admin_status_pick_existing_first: "Primero busca y selecciona un artista existente.",
 		admin_status_ready: "Listo",
 		admin_status_no_exact_match: "No hay coincidencia exacta del handle. Puedes crear un nuevo registro.",
 		admin_status_matched_handles: "{count} handles coinciden",
@@ -898,7 +1011,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Creator Ranking</title>
+		<title>Performers List</title>
 		<style>
 			:root {
 				color-scheme: dark;
@@ -1410,11 +1523,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<div class="header-main">
 					<div class="header-left">
 						<div class="header-title-row">
-							<h1 data-i18n="heading_ranking">Ranking Page</h1>
+							<h1 data-i18n="heading_ranking">Performers List</h1>
 							${renderLanguageSwitcher("rankingLangSwitch")}
 							<div class="mobile-nav-row">
 								<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-									<option value="/" selected data-i18n="nav_ranking">Ranking Page</option>
+									<option value="/" selected data-i18n="nav_ranking">Performers List</option>
 									<option value="/admin" data-i18n="nav_add">Add new</option>
 									<option value="/dashboard" data-i18n="nav_star">Map</option>
 									<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
@@ -1433,7 +1546,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								<div id="rankCountryFilterCustom" class="mobile-select-enhanced"></div>
 							</div>
 						<nav class="top-nav">
-							<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Ranking Page</a>
+							<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
 							<a class="nav-btn secondary" href="/admin" data-i18n="nav_add">Add new</a>
 							<a class="nav-btn secondary" href="/dashboard" data-i18n="nav_star">Map</a>
 							<a class="nav-btn secondary" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
@@ -1740,7 +1853,18 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 `;
 }
 
-export function renderAdminPage(): string {
+export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "home"): string {
+	const adminMode = mode === "create" || mode === "edit" || mode === "delete" ? mode : "home";
+	const adminTitleKey =
+		adminMode === "create"
+			? "admin_mode_title_create"
+			: adminMode === "edit"
+				? "admin_mode_title_edit"
+				: adminMode === "delete"
+					? "admin_mode_title_delete"
+					: "admin_mode_title_home";
+	const adminTitle =
+		adminMode === "create" ? "Add performer" : adminMode === "edit" ? "Edit performer" : adminMode === "delete" ? "Delete performer" : "Choose action";
 	return `
 <!DOCTYPE html>
 <html lang="en">
@@ -1906,7 +2030,6 @@ export function renderAdminPage(): string {
 			.avatar-inline input { height: 44px; }
 			.actions { display: flex; gap: 8px; }
 			.actions #submitBtn,
-			.actions #deleteBtn,
 			.actions #cancelEditBtn {
 				width: auto;
 				height: 40px;
@@ -1920,13 +2043,53 @@ export function renderAdminPage(): string {
 			.actions #submitBtn {
 				color: #28C76F;
 			}
-			.actions #deleteBtn {
-				color: #FF2D55;
-			}
 			.actions #cancelEditBtn {
 				color: #FFFFFF;
 			}
+			.admin-mode-switch {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 10px;
+			}
+			.mode-btn {
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: #E7E9EA;
+				font-weight: 600;
+			}
+			.mode-btn[data-mode="create"] { color: #28C76F; }
+			.mode-btn[data-mode="edit"] { color: #1D9BF0; }
+			.mode-btn[data-mode="delete"] { color: #FF2D55; }
+			.mode-btn.active {
+				border-color: #1D9BF0;
+				box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.22);
+			}
+			.delete-panel {
+				display: grid;
+				gap: 12px;
+			}
+			#deleteOnlyBtn {
+				width: fit-content;
+				min-width: 160px;
+				height: 40px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #000000;
+				color: #FF2D55;
+			}
+			.delete-target {
+				color: #E7E9EA;
+				font-size: 14px;
+				line-height: 1.5;
+			}
 			.status { color: var(--muted); font-size: 13px; }
+			.search-hint {
+				color: var(--muted);
+				font-size: 12px;
+				margin-top: 8px;
+			}
 			.location-selected { color: var(--muted); font-size: 12px; }
 			.location-meta {
 				display: grid;
@@ -2092,6 +2255,9 @@ export function renderAdminPage(): string {
 					gap: 8px;
 					align-items: center;
 				}
+				.admin-mode-switch {
+					grid-template-columns: 1fr;
+				}
 				.toolbar #handleSearch {
 					height: 40px;
 					padding: 0 12px;
@@ -2141,11 +2307,11 @@ export function renderAdminPage(): string {
 			<section class="card head-card">
 				<div class="head">
 					<div class="head-title">
-						<h1 data-i18n="heading_add">Add new</h1>
+						<h1 id="adminModeTitle" data-i18n="${adminTitleKey}">${adminTitle}</h1>
 						${renderLanguageSwitcher("adminLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="adminPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+								<option value="/" data-i18n="nav_ranking">Performers List</option>
 								<option value="/admin" selected data-i18n="nav_add">Add new</option>
 								<option value="/dashboard" data-i18n="nav_star">Map</option>
 								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
@@ -2155,7 +2321,7 @@ export function renderAdminPage(): string {
 						</div>
 					</div>
 					<nav class="top-nav">
-						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 						<a class="nav-btn primary active" href="/admin" data-i18n="nav_add">Add new</a>
 						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
@@ -2164,16 +2330,27 @@ export function renderAdminPage(): string {
 				</div>
 			</section>
 
+			${adminMode === "home" ? `
 			<section class="card">
+				<div class="admin-mode-switch">
+					<button type="button" class="mode-btn" id="modeCreateBtn" data-mode="create" data-i18n="admin_mode_btn_create">Add Performer</button>
+					<button type="button" class="mode-btn" id="modeEditBtn" data-mode="edit" data-i18n="admin_mode_btn_edit">Edit Performer</button>
+					<button type="button" class="mode-btn" id="modeDeleteBtn" data-mode="delete" data-i18n="admin_mode_btn_delete">Delete Performer</button>
+				</div>
+			</section>
+			` : ""}
+
+			<section class="card" id="searchSection">
 				<div class="toolbar">
-					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (only supports existing accounts for modifying their related information or deleting)" data-i18n-placeholder="admin_search_placeholder" />
+					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle" data-i18n-placeholder="admin_search_placeholder" />
 					<datalist id="handleSuggestions"></datalist>
 					<button id="searchBtn" data-i18n="admin_search_btn">Search</button>
 					<button id="resetBtn" class="secondary" data-i18n="admin_reset_btn">Reset</button>
 				</div>
+				<div class="search-hint" data-i18n="admin_search_hint">Only supports existing accounts for modifying their related information or deleting.</div>
 			</section>
 
-			<section class="card">
+			<section class="card" id="formSection">
 				<form id="profileForm" class="form">
 					<input type="hidden" id="id" />
 					<div class="field identity-field">
@@ -2225,17 +2402,24 @@ export function renderAdminPage(): string {
 					</div>
 					<div class="full actions">
 						<button type="submit" id="submitBtn" data-i18n="admin_btn_create">Create</button>
-						<button type="button" id="deleteBtn" class="danger" data-i18n="admin_btn_delete_current" disabled>Delete Current</button>
 						<button type="button" id="cancelEditBtn" class="secondary" data-i18n="admin_btn_cancel_edit">Cancel Edit</button>
 					</div>
 				</form>
 				<p class="status" id="status" data-i18n="admin_status_ready">Ready</p>
+			</section>
+
+			<section class="card" id="deleteSection" hidden>
+				<div class="delete-panel">
+					<div class="delete-target" id="deleteTargetText">Please search and select an existing performer first.</div>
+					<button type="button" id="deleteOnlyBtn" class="danger" data-i18n="admin_btn_delete_current" disabled>Delete Current</button>
+				</div>
 			</section>
 		</div>
 
 		${renderI18nScript("page_title_admin")}
 		<script src="/assets/leaflet.js"></script>
 <script>
+			const INITIAL_ADMIN_MODE = ${JSON.stringify(adminMode)};
 			let currentRows = [];
 			let editingId = null;
 			let locationCandidates = [];
@@ -2243,8 +2427,20 @@ export function renderAdminPage(): string {
 			let locationMap = null;
 			let locationMarker = null;
 			let reverseRequestSeq = 0;
+			const MODE_CREATE = 'create';
+			const MODE_EDIT = 'edit';
+			const MODE_DELETE = 'delete';
+			const MODE_HOME = 'home';
+			let currentMode = INITIAL_ADMIN_MODE;
 
 			const els = {
+				modeTitle: document.getElementById('adminModeTitle'),
+				modeCreateBtn: document.getElementById('modeCreateBtn'),
+				modeEditBtn: document.getElementById('modeEditBtn'),
+				modeDeleteBtn: document.getElementById('modeDeleteBtn'),
+				searchSection: document.getElementById('searchSection'),
+				formSection: document.getElementById('formSection'),
+				deleteSection: document.getElementById('deleteSection'),
 				handleSearch: document.getElementById('handleSearch'),
 				handleSuggestions: document.getElementById('handleSuggestions'),
 				locationSearch: document.getElementById('locationSearch'),
@@ -2269,8 +2465,9 @@ export function renderAdminPage(): string {
 				region: document.getElementById('region'),
 				district: document.getElementById('district'),
 				submitBtn: document.getElementById('submitBtn'),
-				deleteBtn: document.getElementById('deleteBtn'),
-				cancelEditBtn: document.getElementById('cancelEditBtn')
+				cancelEditBtn: document.getElementById('cancelEditBtn'),
+				deleteOnlyBtn: document.getElementById('deleteOnlyBtn'),
+				deleteTargetText: document.getElementById('deleteTargetText')
 			};
 
 			function t(key, fallback) {
@@ -2284,6 +2481,61 @@ export function renderAdminPage(): string {
 				return String(template || '').replace(/\{(\w+)\}/g, function (_, name) {
 					return String(vars && vars[name] != null ? vars[name] : '');
 				});
+			}
+
+			function getModeFromUrl() {
+				return INITIAL_ADMIN_MODE;
+			}
+
+			function setModeInUrl(mode) {
+				void mode;
+			}
+
+			function updateModeTitle() {
+				if (!els.modeTitle) return;
+				if (currentMode === MODE_CREATE) {
+					els.modeTitle.textContent = t('admin_mode_title_create', 'Add performer');
+					return;
+				}
+				if (currentMode === MODE_EDIT) {
+					els.modeTitle.textContent = t('admin_mode_title_edit', 'Edit performer');
+					return;
+				}
+				if (currentMode === MODE_DELETE) {
+					els.modeTitle.textContent = t('admin_mode_title_delete', 'Delete performer');
+					return;
+				}
+				els.modeTitle.textContent = t('admin_mode_title_home', 'Choose action');
+			}
+
+			function updateDeleteTarget() {
+				if (!els.deleteTargetText || !els.deleteOnlyBtn) return;
+				if (!editingId) {
+					els.deleteTargetText.textContent = t('admin_delete_hint', 'Please search and select an existing performer first.');
+					els.deleteOnlyBtn.disabled = true;
+					return;
+				}
+				const name = String(els.name.value || 'Unnamed').trim();
+				const handle = String(els.handle.value || '').trim();
+				els.deleteTargetText.textContent = fmt(
+					t('admin_delete_selected', 'Selected: {name} ({handle}) ID {id}'),
+					{ name, handle, id: editingId }
+				);
+				els.deleteOnlyBtn.disabled = false;
+			}
+
+			function applyMode(mode) {
+				currentMode = mode;
+				if (els.searchSection) els.searchSection.hidden = (mode === MODE_CREATE || mode === MODE_HOME);
+				if (els.formSection) els.formSection.hidden = (mode === MODE_DELETE || mode === MODE_HOME);
+				if (els.deleteSection) els.deleteSection.hidden = mode !== MODE_DELETE;
+				if (els.modeCreateBtn) els.modeCreateBtn.classList.toggle('active', mode === MODE_CREATE);
+				if (els.modeEditBtn) els.modeEditBtn.classList.toggle('active', mode === MODE_EDIT);
+				if (els.modeDeleteBtn) els.modeDeleteBtn.classList.toggle('active', mode === MODE_DELETE);
+				setEditingState(Boolean(editingId));
+				setModeInUrl(mode);
+				updateModeTitle();
+				updateDeleteTarget();
 			}
 
 			function selectedText(district, region, country) {
@@ -2617,8 +2869,16 @@ export function renderAdminPage(): string {
 			}
 
 			function setEditingState(isEditing) {
-				els.submitBtn.textContent = isEditing ? t('admin_btn_save_changes', 'Save Changes') : t('admin_btn_create', 'Create');
-				els.deleteBtn.disabled = !isEditing;
+				if (currentMode === MODE_EDIT) {
+					els.submitBtn.textContent = t('admin_btn_save_changes', 'Confirm Edit');
+					els.submitBtn.disabled = !isEditing;
+					els.cancelEditBtn.style.display = isEditing ? '' : 'none';
+				} else if (currentMode === MODE_CREATE) {
+					els.submitBtn.textContent = t('admin_btn_create', 'Create');
+					els.submitBtn.disabled = false;
+					els.cancelEditBtn.style.display = 'none';
+				}
+				updateDeleteTarget();
 			}
 
 			async function refreshLocationPreviewByValue() {
@@ -2666,6 +2926,7 @@ export function renderAdminPage(): string {
 				renderLocationPreview(35.7512, 139.7093);
 				updateAvatarPreview();
 				setEditingState(false);
+				updateDeleteTarget();
 			}
 
 			function fillForm(row) {
@@ -2686,6 +2947,7 @@ export function renderAdminPage(): string {
 				refreshLocationPreviewByValue();
 				updateAvatarPreview();
 				setEditingState(true);
+				updateDeleteTarget();
 			}
 
 			function renderSuggestions(rows) {
@@ -2696,20 +2958,22 @@ export function renderAdminPage(): string {
 			}
 
 			function selectByHandle(handle) {
+				if (currentMode === MODE_CREATE) return;
 				const target = currentRows.find(function (row) {
 					return String(row.handle || '').toLowerCase() === String(handle || '').toLowerCase();
 				});
 				if (!target) {
-					setStatus(t('admin_status_no_exact_match', 'No exact handle match. You can create a new record.'));
+					setStatus(t('admin_status_no_exact_match_mode', 'No exact handle match for this mode.'));
 					resetForm();
-					els.handle.value = handle || '';
+					updateDeleteTarget();
 					return;
 				}
 				fillForm(target);
-				setStatus('Selected ID ' + target.id + '. You can edit or delete it.');
+				setStatus('Selected ID ' + target.id + '.');
 			}
 
 			async function loadSuggestions() {
+				if (currentMode === MODE_CREATE) return;
 				const keyword = els.handleSearch.value.trim();
 				if (!keyword) {
 					currentRows = [];
@@ -2749,13 +3013,18 @@ export function renderAdminPage(): string {
 
 			async function submitForm(event) {
 				event.preventDefault();
+				if (currentMode === MODE_DELETE) return;
 				if (!els.handle.value.trim()) {
 					setStatus(t('admin_status_handle_required', 'Handle is required'));
 					return;
 				}
+				if (currentMode === MODE_EDIT && !editingId) {
+					setStatus(t('admin_status_pick_existing_first', 'Please search and select an existing performer first.'));
+					return;
+				}
 
 				const payload = collectPayload();
-				const isUpdate = Boolean(editingId);
+				const isUpdate = currentMode === MODE_EDIT;
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
 
@@ -2775,11 +3044,14 @@ export function renderAdminPage(): string {
 				setStatus(isUpdate ? t('admin_status_updated_success', 'Updated successfully') : t('admin_status_created_success', 'Created successfully'));
 				showSuccessDialog(isUpdate ? t('admin_alert_updated_success', 'Profile updated successfully.') : t('admin_alert_created_success', 'Profile created successfully.'));
 				resetForm();
-				els.handleSearch.value = payload.handle;
-				await loadSuggestions();
+				if (currentMode === MODE_EDIT) {
+					els.handleSearch.value = payload.handle;
+					await loadSuggestions();
+				}
 			}
 
 			async function handleDelete() {
+				if (currentMode !== MODE_DELETE) return;
 				if (!editingId) {
 					setStatus('Please select a handle first.');
 					return;
@@ -2814,6 +3086,21 @@ export function renderAdminPage(): string {
 			}
 
 			els.form.addEventListener('submit', submitForm);
+			if (els.modeCreateBtn) {
+				els.modeCreateBtn.addEventListener('click', function () {
+					window.location.href = '/admin/create';
+				});
+			}
+			if (els.modeEditBtn) {
+				els.modeEditBtn.addEventListener('click', function () {
+					window.location.href = '/admin/edit';
+				});
+			}
+			if (els.modeDeleteBtn) {
+				els.modeDeleteBtn.addEventListener('click', function () {
+					window.location.href = '/admin/delete';
+				});
+			}
 			els.searchBtn.addEventListener('click', loadSuggestions);
 			els.handleSearch.addEventListener('input', loadSuggestions);
 			els.handleSearch.addEventListener('change', function () {
@@ -2847,7 +3134,9 @@ export function renderAdminPage(): string {
 			els.avatarPreview.addEventListener('error', function () {
 				els.avatarPreview.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 			});
-			els.deleteBtn.addEventListener('click', handleDelete);
+			if (els.deleteOnlyBtn) {
+				els.deleteOnlyBtn.addEventListener('click', handleDelete);
+			}
 			els.resetBtn.addEventListener('click', function () {
 				els.handleSearch.value = '';
 				renderSuggestions([]);
@@ -2860,6 +3149,7 @@ export function renderAdminPage(): string {
 			});
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
+			applyMode(getModeFromUrl());
 			updateAvatarPreview();
 			renderLocationPreview(35.7512, 139.7093);
 			setStatus('');
@@ -3124,6 +3414,19 @@ export function renderDashboardPage(): string {
 				word-break: break-word;
 			}
 			#map { width: 100%; height: 480px; border-radius: 12px; overflow: hidden; }
+			#visitPerformerBtn {
+				width: 100%;
+				height: 44px;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+				background: #0F1419;
+				color: #1D9BF0;
+				font-weight: 700;
+			}
+			#visitPerformerBtn[disabled] {
+				color: #71767B;
+				cursor: not-allowed;
+			}
 			@media (max-width: 900px) {
 				body { font-size: 14px; }
 				h1 { font-size: 20px; }
@@ -3306,7 +3609,7 @@ export function renderDashboardPage(): string {
 						${renderLanguageSwitcher("dashboardLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="dashboardPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+								<option value="/" data-i18n="nav_ranking">Performers List</option>
 								<option value="/admin" data-i18n="nav_add">Add new</option>
 								<option value="/dashboard" selected data-i18n="nav_star">Map</option>
 								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
@@ -3316,7 +3619,7 @@ export function renderDashboardPage(): string {
 						</div>
 					</div>
 					<nav class="top-nav">
-						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
 						<a class="nav-btn primary active" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
@@ -3329,6 +3632,10 @@ export function renderDashboardPage(): string {
 				<select id="countryFilter" data-uniform-dropdown="1"><option value="">All Countries (Regions)</option></select>
 				<button id="reloadBtn">Reload Data</button>
 				<div id="status"></div>
+			</section>
+
+			<section class="card">
+				<button id="visitPerformerBtn" type="button" data-i18n="dashboard_visit_select" disabled>Select a performer on the map first</button>
 			</section>
 
 			<section class="card map-section"><div id="map"></div></section>
@@ -3347,6 +3654,7 @@ export function renderDashboardPage(): string {
 			const statusEl = document.getElementById('status');
 			const countryFilterEl = document.getElementById('countryFilter');
 			const rowsEl = document.getElementById('rows');
+			const visitPerformerBtn = document.getElementById('visitPerformerBtn');
 			const GEO_CACHE_STORAGE_KEY = 'dashboard_geo_cache_v1';
 			const GEO_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 			const GEO_MAX_CACHE_ENTRIES = 3000;
@@ -3358,9 +3666,32 @@ export function renderDashboardPage(): string {
 				attribution: '&copy; OpenStreetMap contributors'
 			}).addTo(map);
 			const markerLayer = L.layerGroup().addTo(map);
+			let selectedPerformer = null;
 
 			function setStatus(text) { statusEl.textContent = text; }
 			function formatNum(value) { return Number(value || 0).toLocaleString(); }
+			function t(key, fallback) {
+				if (typeof window.__t === 'function') return window.__t(key, fallback || '');
+				return fallback || '';
+			}
+			function fmt(template, vars) {
+				return String(template || '').replace(/\{(\w+)\}/g, function (_, name) {
+					return String(vars && vars[name] != null ? vars[name] : '');
+				});
+			}
+			function setVisitButtonState(row) {
+				if (!visitPerformerBtn) return;
+				selectedPerformer = row && row.profile_url ? row : null;
+				if (!selectedPerformer) {
+					visitPerformerBtn.disabled = true;
+					visitPerformerBtn.textContent = t('dashboard_visit_select', 'Select a performer on the map first');
+					return;
+				}
+				const rawHandle = String(selectedPerformer.handle || '').trim();
+				const displayHandle = rawHandle ? (rawHandle.startsWith('@') ? rawHandle : ('@' + rawHandle)) : '@unknown';
+				visitPerformerBtn.disabled = false;
+				visitPerformerBtn.textContent = fmt(t('dashboard_visit_named', 'Visit {handle}'), { handle: displayHandle });
+			}
 			function makeGeoKey(district, region, country) {
 				return (String(district || '') + '|' + String(region || '') + '|' + String(country || '')).toLowerCase();
 			}
@@ -3466,6 +3797,7 @@ export function renderDashboardPage(): string {
 
 			async function drawMap(rows) {
 				markerLayer.clearLayers();
+				setVisitButtonState(null);
 				if (!rows.length) {
 					return;
 				}
@@ -3526,7 +3858,7 @@ export function renderDashboardPage(): string {
 						lon = pLon + Math.cos(angle) * r;
 					}
 					bounds.push([lat, lon]);
-					L.circleMarker([lat, lon], {
+					const marker = L.circleMarker([lat, lon], {
 						radius: 6,
 						color: '#ffffff',
 						weight: 2,
@@ -3535,6 +3867,9 @@ export function renderDashboardPage(): string {
 					})
 						.bindPopup('<strong>' + (row.name || 'Unnamed') + '</strong><br/>' + (row.handle || '') + '<br/>' + district + ' / ' + region + ' / ' + country + '<br/>Fans: ' + formatNum(row.followers_count))
 						.addTo(markerLayer);
+					marker.on('click', function () {
+						setVisitButtonState(row);
+					});
 				}
 				if (bounds.length) {
 					map.fitBounds(bounds, { padding: [30, 30] });
@@ -3566,6 +3901,12 @@ export function renderDashboardPage(): string {
 
 			document.getElementById('reloadBtn').addEventListener('click', loadData);
 			countryFilterEl.addEventListener('change', loadData);
+			if (visitPerformerBtn) {
+				visitPerformerBtn.addEventListener('click', function () {
+					if (!selectedPerformer || !selectedPerformer.profile_url) return;
+					window.location.href = String(selectedPerformer.profile_url);
+				});
+			}
 
 			(async function init() {
 				loadGeoCacheFromStorage();
@@ -3919,7 +4260,7 @@ export function renderAboutPage(): string {
 					${renderLanguageSwitcher("aboutLangSwitch")}
 					<div class="mobile-nav-row">
 						<select id="aboutPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-							<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+							<option value="/" data-i18n="nav_ranking">Performers List</option>
 							<option value="/admin" data-i18n="nav_add">Add new</option>
 							<option value="/dashboard" data-i18n="nav_star">Map</option>
 							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
@@ -3929,7 +4270,7 @@ export function renderAboutPage(): string {
 					</div>
 				</div>
 				<nav class="top-nav">
-					<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+					<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
 					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
@@ -4365,7 +4706,7 @@ export function renderWikiPage(): string {
 						${renderLanguageSwitcher("wikiLangSwitch")}
 						<div class="mobile-nav-row">
 							<select id="wikiPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+								<option value="/" data-i18n="nav_ranking">Performers List</option>
 								<option value="/admin" data-i18n="nav_add">Add new</option>
 								<option value="/dashboard" data-i18n="nav_star">Map</option>
 								<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
@@ -4375,7 +4716,7 @@ export function renderWikiPage(): string {
 						</div>
 					</div>
 					<nav class="top-nav">
-						<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
 						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
@@ -4832,7 +5173,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 		<div class="wrap">
 			<section class="card head">
 				<nav class="top-nav">
-					<a class="nav-btn" href="/" data-i18n="nav_ranking">Ranking Page</a>
+					<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
 					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
@@ -4840,7 +5181,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				</nav>
 				<div class="mobile-nav-row">
 					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-						<option value="/" data-i18n="nav_ranking">Ranking Page</option>
+						<option value="/" data-i18n="nav_ranking">Performers List</option>
 						<option value="/admin" data-i18n="nav_add">Add new</option>
 						<option value="/dashboard" data-i18n="nav_star">Map</option>
 						<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
@@ -4882,6 +5223,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 </html>
 `;
 }
+
 
 
 
