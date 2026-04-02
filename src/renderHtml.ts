@@ -56,7 +56,7 @@ const TH_MESSAGES: Record<string, string> = {
 	nav_wiki: "Fisting Wiki",
 	nav_about: "เกี่ยวกับ",
 	dashboard_visit_select: "เลือกนักแสดงบนแผนที่ก่อน",
-	dashboard_visit_named: "ไปที่ {handle}",
+	dashboard_visit_named: "ไปที่ {name}",
 	country_region: "ประเทศ(ภูมิภาค)",
 	all_option: "ทั้งหมด",
 	ranking_location_notice:
@@ -138,7 +138,7 @@ const VI_MESSAGES: Record<string, string> = {
 	nav_wiki: "Fisting Wiki",
 	nav_about: "Giới thiệu",
 	dashboard_visit_select: "Select a performer on the map first",
-	dashboard_visit_named: "Visit {handle}",
+	dashboard_visit_named: "Visit {name}",
 	country_region: "quoc gia(vung)",
 	all_option: "Tat ca",
 	ranking_location_notice:
@@ -189,7 +189,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_wiki: "Fisting Wiki",
 		nav_about: "About",
 		dashboard_visit_select: "Select a performer on the map first",
-		dashboard_visit_named: "Visit {handle}",
+		dashboard_visit_named: "Visit {name}",
 		country_region: "country(region)",
 		all_option: "All",
 		ranking_location_notice:
@@ -271,7 +271,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u5173\u4e8e",
 		dashboard_visit_select: "\u8bf7\u5148\u5728\u5730\u56fe\u4e0a\u9009\u62e9\u8868\u6f14\u8005",
-		dashboard_visit_named: "\u8bbf\u95ee{handle}",
+		dashboard_visit_named: "\u8bbf\u95ee{name}",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
 		ranking_location_notice: RANKING_NOTICE_ZH_CN,
@@ -352,7 +352,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u95dc\u65bc",
 		dashboard_visit_select: "\u8acb\u5148\u5728\u5730\u5716\u4e0a\u9078\u64c7\u8868\u6f14\u8005",
-		dashboard_visit_named: "\u8a2a\u554f{handle}",
+		dashboard_visit_named: "\u8a2a\u554f{name}",
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
 		all_option: "\u5168\u90e8",
 		ranking_location_notice:
@@ -434,7 +434,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\u6982\u8981",
 		dashboard_visit_select: "\u5730\u56f3\u4e0a\u3067\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
-		dashboard_visit_named: "{handle}\u3078\u79fb\u52d5",
+		dashboard_visit_named: "{name}\u3078\u79fb\u52d5",
 		country_region: "\u56fd(\u5730\u57df)",
 		all_option: "\u3059\u3079\u3066",
 		ranking_location_notice:
@@ -516,7 +516,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_wiki: "Fisting Wiki",
 		nav_about: "\uc18c\uac1c",
 		dashboard_visit_select: "\uc9c0\ub3c4\uc5d0\uc11c \ud37c\ud3ec\uba38\ub97c \uba3c\uc800 \uc120\ud0dd\ud574 \uc8fc\uc138\uc694",
-		dashboard_visit_named: "{handle}\ub85c \uc774\ub3d9",
+		dashboard_visit_named: "{name}\ub85c \uc774\ub3d9",
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
 		all_option: "\uc804\uccb4",
 		ranking_location_notice:
@@ -598,7 +598,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_wiki: "Fisting Wiki",
 		nav_about: "Acerca de",
 		dashboard_visit_select: "Primero selecciona un artista en el mapa",
-		dashboard_visit_named: "Visitar {handle}",
+		dashboard_visit_named: "Visitar a {name}",
 		country_region: "pais(region)",
 		all_option: "Todos",
 		ranking_location_notice:
@@ -3681,16 +3681,23 @@ export function renderDashboardPage(): string {
 			}
 			function setVisitButtonState(row) {
 				if (!visitPerformerBtn) return;
-				selectedPerformer = row && row.profile_url ? row : null;
+				selectedPerformer = row || null;
 				if (!selectedPerformer) {
 					visitPerformerBtn.disabled = true;
 					visitPerformerBtn.textContent = t('dashboard_visit_select', 'Select a performer on the map first');
 					return;
 				}
-				const rawHandle = String(selectedPerformer.handle || '').trim();
-				const displayHandle = rawHandle ? (rawHandle.startsWith('@') ? rawHandle : ('@' + rawHandle)) : '@unknown';
-				visitPerformerBtn.disabled = false;
-				visitPerformerBtn.textContent = fmt(t('dashboard_visit_named', 'Visit {handle}'), { handle: displayHandle });
+				const displayName = String(selectedPerformer.name || 'Unnamed').trim() || 'Unnamed';
+				const template = String(t('dashboard_visit_named', 'Visit {handle}') || '');
+				let text = template
+					.replace('{name}', displayName)
+					.replace('{handle}', displayName)
+					.replace('(handle)', displayName);
+				if (text === template) {
+					text = 'Visit ' + displayName;
+				}
+				visitPerformerBtn.disabled = !String(selectedPerformer.profile_url || '').trim();
+				visitPerformerBtn.textContent = text;
 			}
 			function makeGeoKey(district, region, country) {
 				return (String(district || '') + '|' + String(region || '') + '|' + String(country || '')).toLowerCase();
