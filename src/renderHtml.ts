@@ -2103,6 +2103,11 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 			.location-search-wrap { position: relative; width: 100%; }
 			#locationSearch { width: 100%; }
+			#locationSearch:read-only {
+				background: #111418;
+				color: var(--muted);
+				cursor: not-allowed;
+			}
 			.location-dropdown {
 				position: absolute;
 				top: calc(100% + 4px);
@@ -2372,7 +2377,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					<div class="field full">
 						<label for="locationSearch" data-i18n="admin_label_location">District / Region / Country (Region)</label>
 						<div class="location-search-wrap">
-						<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" data-i18n-placeholder="admin_ph_location_search" value="Itabashi, Tokyo, Japan" autocomplete="off" />
+						<input id="locationSearch" list="locationSuggestions" placeholder="Search country (region) or city (map search)" data-i18n-placeholder="admin_ph_location_search" value="Itabashi, Tokyo, Japan" autocomplete="off" readonly />
 							<div id="locationDropdown" class="location-dropdown"></div>
 						</div>
 						<datalist id="locationSuggestions"></datalist>
@@ -2529,6 +2534,11 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				if (els.searchSection) els.searchSection.hidden = (mode === MODE_CREATE || mode === MODE_HOME);
 				if (els.formSection) els.formSection.hidden = (mode === MODE_DELETE || mode === MODE_HOME);
 				if (els.deleteSection) els.deleteSection.hidden = mode !== MODE_DELETE;
+				if (els.locationSearch) {
+					const lockLocationInput = (mode === MODE_CREATE || mode === MODE_EDIT);
+					els.locationSearch.readOnly = lockLocationInput;
+					els.locationSearch.setAttribute('aria-readonly', lockLocationInput ? 'true' : 'false');
+				}
 				if (els.modeCreateBtn) els.modeCreateBtn.classList.toggle('active', mode === MODE_CREATE);
 				if (els.modeEditBtn) els.modeEditBtn.classList.toggle('active', mode === MODE_EDIT);
 				if (els.modeDeleteBtn) els.modeDeleteBtn.classList.toggle('active', mode === MODE_DELETE);
@@ -2844,6 +2854,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			function scheduleLocationSearch() {
+				if (els.locationSearch && els.locationSearch.readOnly) return;
 				if (locationDebounce) clearTimeout(locationDebounce);
 				locationDebounce = setTimeout(function () {
 					fetchLocationSuggestions(els.locationSearch.value.trim());
@@ -2851,6 +2862,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			function applyLocationFromInput() {
+				if (els.locationSearch && els.locationSearch.readOnly) return;
 				const input = String(els.locationSearch.value || '').trim().toLowerCase();
 				if (!input) {
 					els.locationDropdown.classList.remove('show');
