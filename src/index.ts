@@ -488,9 +488,7 @@ let visitorIpTableReady: Promise<void> | null = null;
 
 function shouldTrackVisitorPage(method: string, pathname: string): boolean {
 	if (method !== "GET") return false;
-	if (pathname === "/" || pathname === "/about" || pathname === "/dashboard" || pathname === "/wiki") return true;
-	if (pathname === "/admin" || pathname === "/admin/create" || pathname === "/admin/edit" || pathname === "/admin/delete") return true;
-	return /^\/wiki\/article\/\d+$/.test(pathname);
+	return pathname === "/";
 }
 
 function countryCodeToFlag(code: string): string {
@@ -536,6 +534,9 @@ async function ensureVisitorIpTable(db: D1Database): Promise<void> {
 }
 
 async function reportVisitorIfFirstSeen(db: D1Database, request: Request): Promise<void> {
+	const fetchDest = (request.headers.get("sec-fetch-dest") || "").trim().toLowerCase();
+	if (fetchDest && fetchDest !== "document") return;
+
 	const ip = (request.headers.get("CF-Connecting-IP") || "").trim();
 	if (!ip) return;
 
@@ -553,7 +554,17 @@ async function reportVisitorIfFirstSeen(db: D1Database, request: Request): Promi
 		reportUrl.searchParams.set("ip", ip);
 		reportUrl.searchParams.set("flag", flag);
 		reportUrl.searchParams.set("time", time);
-		await fetch(reportUrl.toString(), { method: "GET" });
+		await fetch(reportUrl.toString(), {
+			method: "GET",
+			headers: {
+				"cache-control": "no-store",
+				pragma: "no-cache",
+			},
+			cf: {
+				cacheEverything: false,
+				cacheTtl: 0,
+			},
+		});
 	} catch (error) {
 		console.error("visitor report failed", error);
 	}
