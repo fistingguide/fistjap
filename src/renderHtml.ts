@@ -1365,6 +1365,46 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				line-height: 1.5;
 				white-space: pre-line;
 			}
+			.mobile-inline-carousel {
+				display: none;
+				position: relative;
+				margin: 10px 0 0;
+				border-radius: 12px;
+				overflow: hidden;
+				border: 1px solid var(--line);
+				background: #0F1419;
+			}
+			.mobile-inline-carousel-slide {
+				display: none;
+			}
+			.mobile-inline-carousel-slide.is-active {
+				display: block;
+			}
+			.mobile-inline-carousel img {
+				display: block;
+				width: 100%;
+				aspect-ratio: 16 / 9;
+				object-fit: cover;
+			}
+			.mobile-inline-carousel-dots {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 8px;
+				display: flex;
+				justify-content: center;
+				gap: 6px;
+				pointer-events: none;
+			}
+			.mobile-inline-carousel-dots span {
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.45);
+			}
+			.mobile-inline-carousel-dots span.is-active {
+				background: #FFFFFF;
+			}
 			.list {
 				margin: 0;
 				padding: 0;
@@ -1497,6 +1537,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					font-size: 12px;
 					padding: 9px 10px;
 				}
+				.mobile-inline-carousel {
+					display: block;
+					margin-top: 8px;
+				}
 				.spotlight-label {
 					font-size: 10px;
 					margin-bottom: 2px;
@@ -1556,6 +1600,20 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				</div>
 			</header>
 			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
+			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Mobile Carousel">
+				<a class="mobile-inline-carousel-slide is-active" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="lazy" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/3.png" alt="3" loading="lazy" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/4.png" alt="4" loading="lazy" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="5" loading="lazy" /></a>
+				<div class="mobile-inline-carousel-dots" aria-hidden="true">
+					<span class="is-active"></span>
+					<span></span>
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
 			<ol class="list">
 				<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>
 				${renderLeaderboardRows(rows)}
@@ -1574,6 +1632,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				let pinnedCountdownEl = null;
 				let pinnedNextSwitchAt = null;
 				let lastPinnedData = null;
+				const mobileInlineCarouselEl = document.getElementById('mobileInlineCarousel');
+				let mobileInlineCarouselTimer = null;
 
 				function esc(v) {
 					return String(v || '')
@@ -1702,6 +1762,30 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					pinnedCountdownEl.textContent = String(template).replace('{time}', timeText);
 				}
 
+				function startMobileInlineCarousel() {
+					if (!mobileInlineCarouselEl) return;
+					const slides = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-slide'));
+					const dots = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-dots span'));
+					if (slides.length <= 1) return;
+					let index = 0;
+					function renderSlide() {
+						slides.forEach(function (slide, i) {
+							if (i === index) slide.classList.add('is-active');
+							else slide.classList.remove('is-active');
+						});
+						dots.forEach(function (dot, i) {
+							if (i === index) dot.classList.add('is-active');
+							else dot.classList.remove('is-active');
+						});
+					}
+					renderSlide();
+					if (mobileInlineCarouselTimer) clearInterval(mobileInlineCarouselTimer);
+					mobileInlineCarouselTimer = setInterval(function () {
+						index = (index + 1) % slides.length;
+						renderSlide();
+					}, 60000);
+				}
+
 				async function loadPinnedProfile() {
 					const res = await fetch('/api/profiles/pinned');
 					if (!res.ok) return;
@@ -1823,6 +1907,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				}
 				loadCountries();
 				loadPinnedProfile();
+				startMobileInlineCarousel();
 				setInterval(updatePinnedCountdown, 1000);
 				setInterval(loadPinnedProfile, 30000);
 
