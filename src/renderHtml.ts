@@ -1601,11 +1601,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			</header>
 			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Mobile Carousel">
-				<a class="mobile-inline-carousel-slide is-active" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="lazy" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/3.png" alt="3" loading="lazy" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/4.png" alt="4" loading="lazy" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="5" loading="lazy" /></a>
+				<a class="mobile-inline-carousel-slide is-active" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="eager" fetchpriority="high" decoding="async" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" fetchpriority="low" decoding="async" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/3.png" alt="3" loading="lazy" fetchpriority="low" decoding="async" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/4.png" alt="4" loading="lazy" fetchpriority="low" decoding="async" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="5" loading="lazy" fetchpriority="low" decoding="async" /></a>
 				<div class="mobile-inline-carousel-dots" aria-hidden="true">
 					<span class="is-active"></span>
 					<span></span>
@@ -1767,6 +1767,18 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const slides = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-slide'));
 					const dots = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-dots span'));
 					if (slides.length <= 1) return;
+					const imgUrls = slides.map(function (slide) {
+						const img = slide.querySelector('img');
+						return img ? String(img.getAttribute('src') || '') : '';
+					}).filter(Boolean);
+					// Keep first paint fast, then warm the rest in background to avoid slow switch.
+					setTimeout(function () {
+						imgUrls.slice(1).forEach(function (url) {
+							const preloadImg = new Image();
+							preloadImg.decoding = 'async';
+							preloadImg.src = url;
+						});
+					}, 1200);
 					let index = 0;
 					function renderSlide() {
 						slides.forEach(function (slide, i) {
