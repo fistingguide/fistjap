@@ -59,6 +59,7 @@ const TH_MESSAGES: Record<string, string> = {
 	dashboard_visit_named: "ไปที่ {name}",
 	country_region: "ประเทศ(ภูมิภาค)",
 	all_option: "ทั้งหมด",
+	friendly_links: "ลิงก์เพื่อน",
 	ranking_location_notice:
 		"1. เว็บไซต์นี้รวบรวมเฉพาะบัญชีผู้ชาย (รวมผู้ใช้ gay และผู้ชายรักต่างเพศที่สนใจการขยายทวารหนัก)\n2. เพื่อความยุติธรรม เว็บไซต์จะสลับบัญชีปักหมุดทุก 10 นาที เพื่อให้ทุกคนมีโอกาสถูกมองเห็นมากขึ้น\n3. ตำแหน่งทั้งหมดบนแผนที่เป็นเพียงตำแหน่งเชิงสาธิต อาจอ้างอิงข้อมูลสาธารณะคร่าว ๆ แต่ถูกทำให้คลุมเครือหรือสุ่มโดยเจตนา จึงไม่ตรงกับตำแหน่งจริงของบุคคล ใช้เพื่อแสดงการกระจายของชุมชนเท่านั้น หากไม่ต้องการให้ชื่อหรือหมุดปรากฏบนแผนที่ ติดต่อฉันได้ตลอดเวลา ฉันจะลบหรือแทนที่ด้วยตำแหน่งสุ่มทั้งหมด เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ที่อยู่จริงของบุคคล\n4. ทุกคนสามารถเพิ่มบัญชีของตัวเองและดูแผนที่ได้ บนมือถือให้กดปุ่มแฮมเบอร์เกอร์เพื่อดูการทำงานเพิ่มเติม\n5. หากมีข้อมูลใด ๆ กรุณาส่งข้อความส่วนตัวถึง @fistingguide",
 	spotlight_title: "ไฮไลต์หมุนเวียน",
@@ -141,6 +142,7 @@ const VI_MESSAGES: Record<string, string> = {
 	dashboard_visit_named: "Visit {name}",
 	country_region: "quoc gia(vung)",
 	all_option: "Tat ca",
+	friendly_links: "Lien ket ban be",
 	ranking_location_notice:
 		"1. Website nay chi liet ke cac tai khoan nam (bao gom nguoi dung gay va nam thang quan tam den anal expansion).\n2. De dam bao cong bang, website se xoay tai khoan ghim moi 10 phut de moi nguoi deu co co hoi duoc nhieu nguoi thay hon.\n3. Tat ca vi tri tren ban do chi mang tinh minh hoa. Cac vi tri nay co the duoc danh dau dua tren thong tin cong khai o muc do tong quat, nhung da duoc lam mo hoac ngau nhien co chu dich, vi vay khong the hien vi tri chinh xac cua bat ky ai. Muc dich chi de hien thi phan bo tong quan cua cong dong. Neu ban khong muon ten hoac danh dau cua minh xuat hien tren ban do, hay lien he toi bat cu luc nao, toi se xoa hoac thay bang mot vi tri hoan toan ngau nhien. Website nay khong thu thap, luu tru hay cong khai dia chi cu the cua bat ky ca nhan nao.\n4. Moi nguoi deu co the them tai khoan cua minh va xem ban do. Tren dien thoai, hay bam nut hamburger de xem them thao tac.\n5. Moi thong tin vui long nhan tin @fistingguide.",
 	spotlight_title: "Ghim luan phien",
@@ -192,6 +194,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "Visit {name}",
 		country_region: "country(region)",
 		all_option: "All",
+		friendly_links: "Friendly Links",
 		ranking_location_notice:
 			"1. This website only lists male accounts (including gay users and straight men interested in anal expansion).\n2. To keep things fair, the site rotates the pinned spotlight account every 10 minutes, so everyone gets a chance to be seen.\n3. All map locations on this site are illustrative markers. They may be roughly based on public info, but are intentionally blurred or randomized, so they do not match any person's exact location and are only used to show the community's general distribution. If you do not want your name or marker shown, contact me anytime and I will remove it or replace it with a fully random location. This site does not collect, store, or publish anyone's specific address information.\n4. Everyone can add their own account and view the map. On mobile, tap the hamburger button to see more actions.\n5. For any information, please DM @fistingguide.",
 		spotlight_title: "Rotating Spotlight",
@@ -274,6 +277,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "\u8bbf\u95ee{name}",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
+		friendly_links: "\u53cb\u60c5\u94fe\u63a5",
 		ranking_location_notice: RANKING_NOTICE_ZH_CN,
 		spotlight_title: "\u8f6e\u64ad\u7f6e\u9876",
 		spotlight_next_switch: "{time} \u540e\u5207\u6362",
@@ -355,6 +359,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "\u8a2a\u554f{name}",
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
 		all_option: "\u5168\u90e8",
+		friendly_links: "\u53cb\u60c5\u9023\u7d50",
 		ranking_location_notice:
 			"1. 本網站僅收錄男性帳號（包含 gay 使用者，以及對肛門擴張感興趣的直男）。\n2. 為了維持公平性，網站每 10 分鐘輪換一次置頂帳號，確保每位使用者都有被更多人看到的機會。\n3. 本網站地圖上顯示的所有位置僅為示意標註。這些位置可能參考公開資訊進行大致標註，但已被刻意模糊化或隨機設定，因此不會對應任何人的精確位置，僅用於展示社群的大致分布情況。若你不希望自己的名稱或標註出現在地圖上，可以隨時聯絡我，我會將其刪除或替換為完全隨機的位置。本網站不會收集、儲存或公開任何個人的具體地址資訊。\n4. 每個人都可以新增自己的帳號並查看地圖，手機端請點擊漢堡按鈕查看更多操作。\n5. 任何資訊請私訊 @fistingguide。",
 		spotlight_title: "\u8f2a\u64ad\u7f6e\u9802",
@@ -437,6 +442,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "{name}\u3078\u79fb\u52d5",
 		country_region: "\u56fd(\u5730\u57df)",
 		all_option: "\u3059\u3079\u3066",
+		friendly_links: "\u76f8\u4e92\u30ea\u30f3\u30af",
 		ranking_location_notice:
 			"1. このサイトでは男性アカウントのみ掲載します（gayユーザー、および肛門拡張に関心のあるストレート男性を含む）。\n2. 公平性のため、サイトの置頂アカウントは10分ごとにローテーションし、全員に見られる機会を作ります。\n3. サイトの地図上の位置はすべて説明用の表示です。公開情報を参考に大まかに示す場合がありますが、意図的にぼかしやランダム化を行っているため、個人の正確な位置には対応しません。コミュニティの大まかな分布表示のみを目的としています。名前やマーカーの表示を希望しない場合は、いつでも連絡してください。削除または完全ランダム位置への置換に対応します。サイトは個人の具体的住所情報を収集・保存・公開しません。\n4. 誰でも自分のアカウントを追加し、地図を閲覧できます。モバイルではハンバーガーボタンから追加操作を確認してください。\n5. 連絡は @fistingguide へDMしてください。",
 		spotlight_title: "\u30ed\u30fc\u30c6\u30fc\u30b7\u30e7\u30f3\u8868\u793a",
@@ -519,6 +525,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "{name}\ub85c \uc774\ub3d9",
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
 		all_option: "\uc804\uccb4",
+		friendly_links: "\uce5c\uad6c \ub9c1\ud06c",
 		ranking_location_notice:
 			"1. 이 사이트는 남성 계정만 수록합니다(gay 사용자 및 항문 확장에 관심 있는 이성애 남성 포함).\n2. 공정성을 위해 사이트는 10분마다 상단 고정 계정을 순환 노출하여 모든 사용자가 더 많이 보일 기회를 갖게 합니다.\n3. 지도에 표시되는 모든 위치는 안내용 표기입니다. 공개 정보를 참고해 대략적으로 표시될 수 있지만 의도적으로 흐리게 처리되거나 무작위 설정되므로 개인의 정확한 위치와 일치하지 않습니다. 커뮤니티의 대략적 분포 표시 목적입니다. 이름/표시를 원하지 않으면 언제든지 연락해 주세요. 삭제하거나 완전 무작위 위치로 대체합니다. 이 사이트는 개인의 구체적 주소 정보를 수집, 저장, 공개하지 않습니다.\n4. 누구나 자신의 계정을 추가하고 지도를 볼 수 있습니다. 모바일에서는 햄버거 버튼을 눌러 더 많은 기능을 확인하세요.\n5. 문의는 @fistingguide 로 DM 주세요.",
 		spotlight_title: "\uc21c\ud658 \uace0\uc815 \ub178\ucd9c",
@@ -601,6 +608,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "Visitar a {name}",
 		country_region: "pais(region)",
 		all_option: "Todos",
+		friendly_links: "Enlaces Amigos",
 		ranking_location_notice:
 			"1. Este sitio solo incluye cuentas masculinas (incluye usuarios gay y hombres heterosexuales interesados en la expansion anal).\n2. Para mantener la equidad, el sitio rota la cuenta fijada cada 10 minutos para que todos tengan oportunidad de ser vistos.\n3. Todas las ubicaciones del mapa son marcas ilustrativas. Pueden basarse de forma aproximada en informacion publica, pero se difuminan o aleatorizan de forma intencional, por lo que no corresponden a la ubicacion exacta de ninguna persona. Solo se usan para mostrar la distribucion general de la comunidad. Si no quieres que aparezcan tu nombre o marcador, contactame en cualquier momento y lo eliminare o lo reemplazare por una ubicacion totalmente aleatoria. Este sitio no recopila, almacena ni publica direcciones especificas de personas.\n4. Cualquiera puede agregar su propia cuenta y ver el mapa. En movil, pulsa el boton hamburguesa para ver mas acciones.\n5. Para cualquier informacion, envia DM a @fistingguide.",
 		spotlight_title: "Destacado Rotativo",
@@ -1374,6 +1382,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				border: 1px solid var(--line);
 				background: #0F1419;
 			}
+			.mobile-inline-carousel-title {
+				display: none;
+				font-size: 12px;
+				font-weight: 700;
+				color: var(--muted);
+				margin: 8px 0 4px;
+				letter-spacing: 0.02em;
+			}
 			.mobile-inline-carousel-slide {
 				display: none;
 			}
@@ -1547,6 +1563,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					border-radius: 0;
 					background: transparent;
 				}
+				.mobile-inline-carousel-title {
+					display: block;
+				}
 				.mobile-inline-carousel img {
 					aspect-ratio: auto;
 					height: auto;
@@ -1610,7 +1629,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</header>
-			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
+			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">友情链接</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Mobile Carousel">
 				<a class="mobile-inline-carousel-slide is-active" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="eager" fetchpriority="high" decoding="async" /></a>
 				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" fetchpriority="low" decoding="async" /></a>
@@ -1625,6 +1644,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<span></span>
 				</div>
 			</div>
+			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<ol class="list">
 				<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>
 				${renderLeaderboardRows(rows)}
