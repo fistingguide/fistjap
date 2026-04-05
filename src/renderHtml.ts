@@ -1536,10 +1536,21 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.ranking-notice {
 					font-size: 12px;
 					padding: 9px 10px;
+					border: 0;
+					border-radius: 0;
+					background: transparent;
 				}
 				.mobile-inline-carousel {
 					display: block;
 					margin-top: 8px;
+					border: 0;
+					border-radius: 0;
+					background: transparent;
+				}
+				.mobile-inline-carousel img {
+					aspect-ratio: auto;
+					height: auto;
+					object-fit: contain;
 				}
 				.spotlight-label {
 					font-size: 10px;
