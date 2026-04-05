@@ -484,91 +484,6 @@ const reverseGeoCache = new Map<string, GeoSuggestion | null>();
 const pointGeoCache = new Map<string, { lat: number; lon: number } | null>();
 const countryIso3Cache = new Map<string, string | null>();
 const geoBoundaryLayerCache = new Map<string, BoundaryFeature[] | null>();
-let visitorIpTableReady: Promise<void> | null = null;
-
-function shouldTrackVisitorPage(method: string, pathname: string): boolean {
-	if (method !== "GET") return false;
-	return pathname === "/";
-}
-
-function countryCodeToFlag(code: string): string {
-	const normalized = code.trim().toUpperCase();
-	if (!/^[A-Z]{2}$/.test(normalized)) return "🌐";
-	const base = 127397;
-	const chars = Array.from(normalized).map((ch) => String.fromCodePoint(base + ch.charCodeAt(0)));
-	return chars.join("");
-}
-
-function formatReportTime(date: Date): string {
-	const parts = new Intl.DateTimeFormat("en-CA", {
-		timeZone: "Asia/Shanghai",
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hour12: false,
-	}).formatToParts(date);
-	const map: Record<string, string> = {};
-	for (const part of parts) {
-		if (part.type !== "literal") map[part.type] = part.value;
-	}
-	return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second}`;
-}
-
-async function ensureVisitorIpTable(db: D1Database): Promise<void> {
-	if (!visitorIpTableReady) {
-		visitorIpTableReady = (async () => {
-			await db
-				.prepare(
-					`CREATE TABLE IF NOT EXISTS visitor_seen_ips (
-						ip TEXT PRIMARY KEY,
-						first_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-					)`,
-				)
-				.run();
-		})();
-	}
-	return visitorIpTableReady;
-}
-
-async function reportVisitorIfFirstSeen(db: D1Database, request: Request): Promise<void> {
-	const fetchDest = (request.headers.get("sec-fetch-dest") || "").trim().toLowerCase();
-	if (fetchDest && fetchDest !== "document") return;
-
-	const ip = (request.headers.get("CF-Connecting-IP") || "").trim();
-	if (!ip) return;
-
-	try {
-		await ensureVisitorIpTable(db);
-		const insertResult = await db
-			.prepare("INSERT OR IGNORE INTO visitor_seen_ips (ip, first_seen_at) VALUES (?, CURRENT_TIMESTAMP)")
-			.bind(ip)
-			.run();
-		if ((insertResult.meta.changes ?? 0) === 0) return;
-
-		const flag = countryCodeToFlag(request.headers.get("CF-IPCountry") || "");
-		const time = formatReportTime(new Date());
-		const reportUrl = new URL("https://blog.fistingguide.workers.dev/api/report-visitor.json");
-		reportUrl.searchParams.set("ip", ip);
-		reportUrl.searchParams.set("flag", flag);
-		reportUrl.searchParams.set("time", time);
-		await fetch(reportUrl.toString(), {
-			method: "GET",
-			headers: {
-				"cache-control": "no-store",
-				pragma: "no-cache",
-			},
-			cf: {
-				cacheEverything: false,
-				cacheTtl: 0,
-			},
-		});
-	} catch (error) {
-		console.error("visitor report failed", error);
-	}
-}
 
 function reverseCacheKey(lat: number, lng: number): string {
 	return `${lat.toFixed(4)}|${lng.toFixed(4)}`;
@@ -1673,10 +1588,6 @@ export default {
 		const idMatch = pathname.match(/^\/api\/profiles\/(\d+)$/);
 		const wikiIdMatch = pathname.match(/^\/api\/wiki\/(\d+)$/);
 		const wikiArticlePageMatch = pathname.match(/^\/wiki\/article\/(\d+)$/);
-
-		if (shouldTrackVisitorPage(method, pathname)) {
-			ctx.waitUntil(reportVisitorIfFirstSeen(env.DB, request));
-		}
 
 		if (method === "GET" && pathname === "/robots.txt") {
 			return new Response(buildRobotsTxt(origin), {
