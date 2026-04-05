@@ -1551,7 +1551,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				}
 				.ranking-notice {
 					font-size: 12px;
-					padding: 9px 10px;
+					padding: 9px 0;
 					border: 0;
 					border-radius: 0;
 					background: transparent;
