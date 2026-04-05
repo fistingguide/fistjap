@@ -1798,6 +1798,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const slides = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-slide'));
 					const dots = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-dots span'));
 					if (slides.length <= 1) return;
+					const carouselStateKey = 'mobile_inline_carousel_state_v1';
+					const carouselIntervalMs = 60000;
 					const imgUrls = slides.map(function (slide) {
 						const img = slide.querySelector('img');
 						return img ? String(img.getAttribute('src') || '') : '';
@@ -1811,6 +1813,29 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						});
 					}, 1200);
 					let index = 0;
+
+					function loadSavedState() {
+						try {
+							const raw = window.localStorage.getItem(carouselStateKey);
+							if (!raw) return;
+							const parsed = JSON.parse(raw);
+							const savedIndex = Number(parsed && parsed.index);
+							const savedAt = Number(parsed && parsed.updatedAt);
+							if (!Number.isFinite(savedIndex) || !Number.isFinite(savedAt)) return;
+							const elapsedSteps = Math.max(0, Math.floor((Date.now() - savedAt) / carouselIntervalMs));
+							index = (savedIndex + elapsedSteps) % slides.length;
+						} catch (_e) {}
+					}
+
+					function saveState() {
+						try {
+							window.localStorage.setItem(carouselStateKey, JSON.stringify({
+								index: index,
+								updatedAt: Date.now()
+							}));
+						} catch (_e) {}
+					}
+
 					function renderSlide() {
 						slides.forEach(function (slide, i) {
 							if (i === index) slide.classList.add('is-active');
@@ -1821,12 +1846,16 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							else dot.classList.remove('is-active');
 						});
 					}
+
+					loadSavedState();
 					renderSlide();
+					saveState();
 					if (mobileInlineCarouselTimer) clearInterval(mobileInlineCarouselTimer);
 					mobileInlineCarouselTimer = setInterval(function () {
 						index = (index + 1) % slides.length;
 						renderSlide();
-					}, 60000);
+						saveState();
+					}, carouselIntervalMs);
 				}
 
 				async function loadPinnedProfile() {
