@@ -1799,7 +1799,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const dots = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-dots span'));
 					if (slides.length <= 1) return;
 					const carouselStateKey = 'mobile_inline_carousel_state_v1';
-					const carouselIntervalMs = 60000;
+					const carouselIntervalMs = 5000;
 					const imgUrls = slides.map(function (slide) {
 						const img = slide.querySelector('img');
 						return img ? String(img.getAttribute('src') || '') : '';
