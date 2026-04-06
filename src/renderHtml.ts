@@ -1632,7 +1632,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">友情链接</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Mobile Carousel">
 				<a class="mobile-inline-carousel-slide is-active" href="https://x.com/kikuchi168" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="eager" fetchpriority="high" decoding="async" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" fetchpriority="low" decoding="async" /></a>
+				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" fetchpriority="low" decoding="async" /></a>
 				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/3.png" alt="3" loading="lazy" fetchpriority="low" decoding="async" /></a>
 				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/4.png" alt="4" loading="lazy" fetchpriority="low" decoding="async" /></a>
 				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="5" loading="lazy" fetchpriority="low" decoding="async" /></a>
