@@ -74,6 +74,9 @@ const TH_MESSAGES: Record<string, string> = {
 	wiki_submit_hint: "ส่งบทความไปยัง fistingguide",
 	about_description:
 		"สวัสดี ฉันเป็นผู้ที่สนใจ fisting และเพิ่งสร้างเว็บไซต์นำทางแบบเรียบง่ายเพื่อช่วยให้ค้นหาครีเอเตอร์และบัญชีในชุมชนได้รวดเร็วขึ้น เป้าหมายของเว็บไซต์นี้คือช่วยให้ค้นพบครีเอเตอร์ สำรวจเนื้อหาใหม่ และเชื่อมต่อกับผู้ที่มีความสนใจเดียวกันได้ง่ายขึ้น หากคุณมีข้อเสนอแนะ คำติชม หรืออยากร่วมพัฒนาโครงการนี้ สามารถติดต่อฉันได้ที่ X: @fistingguide หรืออีเมล: fistingguide@proton.me หากคุณไม่ต้องการให้แสดงบนเว็บไซต์ แจ้งฉันได้และฉันจะลบรายการของคุณ ขอบคุณ และหวังว่าโครงการนี้จะช่วยให้ชุมชนเติบโต",
+	event_title: "List Star",
+	event_description:
+		"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
 	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X",
 	admin_search_hint: "รองรับเฉพาะบัญชีที่มีอยู่ เพื่อแก้ไขข้อมูลที่เกี่ยวข้องหรือลบ",
 	admin_search_btn: "ค้นหา",
@@ -157,6 +160,9 @@ const VI_MESSAGES: Record<string, string> = {
 	wiki_submit_hint: "gui bai viet cho fistingguide",
 	about_description:
 		"Xin chao, toi la mot nguoi yeu thich fisting va da tao mot website dieu huong don gian de giup moi nguoi nhanh chong tim thay creator va tai khoan trong cong dong. Muc tieu cua trang la giup tim creator de hon, kham pha noi dung moi va ket noi voi nhung nguoi co cung so thich. Neu ban co goi y, phan hoi hoac muon hop tac cai thien du an, hay lien he toi tren X: @fistingguide hoac email: fistingguide@proton.me. Neu ban khong muon xuat hien tren website, hay bao toi va toi se go danh sach cua ban.",
+	event_title: "List Star",
+	event_description:
+		"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
 	admin_search_placeholder: "Search by X handle",
 	admin_search_hint: "Only supports existing accounts for modifying related information or deleting.",
 	admin_mode_title_home: "Chon thao tac",
@@ -209,6 +215,9 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "submit an article to fistingguide",
 		about_description:
 			"Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.",
+		event_title: "List Star",
+		event_description:
+			"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
 		admin_search_placeholder: "Search by X handle",
 		admin_search_hint: "Only supports existing accounts for modifying their related information or deleting.",
 		admin_search_btn: "Search",
@@ -291,6 +300,9 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
+		event_title: "List Star 拳星计划",
+		event_description:
+			"List Star 拳星计划启动！为期一个月，我们将在网站和X上免费推广优秀 Fisting 爱好者！成为 List Star 可获得 \n1. 官方List排名置顶\n2. 一张专属海报\n3. 官方X平台宣传\n\n如何参与？\n私信 @fistingguide，发送：1张你的照片，1张或1条玩法视频/照片以及简短自我介绍",
 		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22",
 		admin_search_hint: "\u4ec5\u652f\u6301\u5df2\u5b58\u5728\u8d26\u53f7\uff0c\u7528\u4e8e\u4fee\u6539\u5176\u76f8\u5173\u4fe1\u606f\u6216\u5220\u9664",
 		admin_search_btn: "\u641c\u7d22",
@@ -374,6 +386,9 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
+		event_title: "List Star 拳星計畫",
+		event_description:
+			"List Star 拳星計畫啟動！為期一個月，我們將在網站和X上免費推廣優秀 Fisting 愛好者！成為 List Star 可獲得 \n1. 官方List排名置頂\n2. 一張專屬海報\n3. 官方X平台宣傳\n\n如何參與？\n私訊 @fistingguide，發送：1張你的照片，1張或1條玩法影片/照片以及簡短自我介紹",
 		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b",
 		admin_search_hint: "\u50c5\u652f\u63f4\u5df2\u5b58\u5728\u5e33\u865f\uff0c\u7528\u65bc\u4fee\u6539\u5176\u76f8\u95dc\u8cc7\u8a0a\u6216\u522a\u9664",
 		admin_search_btn: "\u641c\u5c0b",
@@ -457,6 +472,9 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "fistingguide \u3078\u8a18\u4e8b\u3092\u6295\u7a3f",
 		about_description:
 			"\u3053\u3093\u306b\u3061\u306f\u3002\u79c1\u306f fisting \u611b\u597d\u5bb6\u3067\u3001\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3084\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u3059\u3070\u3084\u304f\u898b\u3064\u3051\u3089\u308c\u308b\u3088\u3046\u306b\u3001\u30b7\u30f3\u30d7\u30eb\u306a\u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3\u30b5\u30a4\u30c8\u3092\u4f5c\u308a\u307e\u3057\u305f\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u3001\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3092\u63a2\u3057\u3084\u3059\u304f\u3057\u3001\u65b0\u3057\u3044\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u898b\u3064\u3051\u3001\u540c\u3058\u8208\u5473\u3092\u6301\u3064\u4eba\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3059\u3002\u3054\u610f\u898b\u30fb\u3054\u611f\u60f3\u30fb\u6539\u5584\u306e\u305f\u3081\u306e\u30b3\u30e9\u30dc\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u304a\u6c17\u8efd\u306b\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002X: @fistingguide \u307e\u305f\u306f\u30e1\u30fc\u30eb: fistingguide@proton.me \u3067\u9023\u7d61\u53ef\u80fd\u3067\u3059\u3002\u30b5\u30a4\u30c8\u306b\u63b2\u8f09\u3055\u308c\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044\u3002\u4e00\u89a7\u304b\u3089\u524a\u9664\u3057\u307e\u3059\u3002\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002\u3053\u306e\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u304c\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u6210\u9577\u306b\u5f79\u7acb\u3064\u3053\u3068\u3092\u9858\u3063\u3066\u3044\u307e\u3059\u3002",
+		event_title: "List Star",
+		event_description:
+			"List Star \u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u958b\u59cb\uff01\u671f\u9593\u306f1\u304b\u6708\u3002\u30b5\u30a4\u30c8\u3068X\u3067\u512a\u79c0\u306aFisting\u611b\u597d\u5bb6\u3092\u7121\u6599\u3067\u7d39\u4ecb\u3057\u307e\u3059\uff01List Star \u306b\u306a\u308b\u3068\n1. \u516c\u5f0fList\u30e9\u30f3\u30ad\u30f3\u30b0\u306e\u4e0a\u4f4d\u63b2\u8f09\n2. \u5c02\u7528\u30dd\u30b9\u30bf\u30fc1\u679a\n3. \u516c\u5f0fX\u30a2\u30ab\u30a6\u30f3\u30c8\u3067\u306e\u5ba3\u4f1d\n\n\u53c2\u52a0\u65b9\u6cd5\uff1f\n@fistingguide \u3078DM\u3057\u3001\u9001\u4ed8\uff1a\u3042\u306a\u305f\u306e\u5199\u771f1\u679a\u3001\u30d7\u30ec\u30a4\u52d5\u753b/\u5199\u771f1\u70b9\u3001\u77ed\u3044\u81ea\u5df1\u7d39\u4ecb\u3002",
 		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22",
 		admin_search_hint: "\u65e2\u5b58\u30a2\u30ab\u30a6\u30f3\u30c8\u306e\u307f\u5bfe\u5fdc\u3001\u95a2\u9023\u60c5\u5831\u306e\u4fee\u6b63\u307e\u305f\u306f\u524a\u9664\u7528",
 		admin_search_btn: "\u691c\u7d22",
@@ -540,6 +558,9 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "fistingguide\uc5d0 \uae00 \uae30\uace0",
 		about_description:
 			"\uc548\ub155\ud558\uc138\uc694. \uc800\ub294 fisting \uc560\ud638\uac00\uc774\uba70, \ucee4\ubba4\ub2c8\ud2f0\uc5d0\uc11c \ud06c\ub9ac\uc5d0\uc774\ud130\uc640 \uacc4\uc815\uc744 \ube60\ub974\uac8c \ucc3e\uc744 \uc218 \uc788\ub3c4\ub85d \ub2e8\uc21c\ud55c \ub124\ube44\uac8c\uc774\uc158 \uc6f9\uc0ac\uc774\ud2b8\ub97c \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\uc758 \ubaa9\ud45c\ub294 \ud06c\ub9ac\uc5d0\uc774\ud130\ub97c \ub354 \uc27d\uac8c \ucc3e\uace0, \uc0c8\ub85c\uc6b4 \ucf58\ud150\uce20\ub97c \ud0d0\uc0c9\ud558\uba70, \uac19\uc740 \uad00\uc2ec\uc0ac\ub97c \uac00\uc9c4 \uc0ac\ub78c\ub4e4\uacfc \uc5f0\uacb0\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc81c\uc548, \ud53c\ub4dc\ubc31, \ud639\uc740 \ud504\ub85c\uc81d\ud2b8 \uac1c\uc120\uc744 \ud568\uaed8\ud558\uace0 \uc2f6\uc73c\uc2dc\uba74 \ud3b8\ud558\uac8c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. X \uacc4\uc815 @fistingguide \ub610\ub294 \uc774\uba54\uc77c fistingguide@proton.me \ub85c \uc5f0\ub77d\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc6f9\uc0ac\uc774\ud2b8\uc5d0 \ub178\ucd9c\ub418\uace0 \uc2f6\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc54c\ub824 \uc8fc\uc138\uc694. \ub9ac\uc2a4\ud305\uc744 \uc81c\uac70\ud574 \ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4. \uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774 \ud504\ub85c\uc81d\ud2b8\uac00 \ucee4\ubba4\ub2c8\ud2f0 \uc131\uc7a5\uc5d0 \ub3c4\uc6c0\uc774 \ub418\uae30\ub97c \ubc14\ub78d\ub2c8\ub2e4.",
+		event_title: "List Star",
+		event_description:
+			"List Star \ud504\ub85c\uc81d\ud2b8 \uc2dc\uc791! \ud55c \ub2ec \ub3d9\uc548 \uc6f9\uc0ac\uc774\ud2b8\uc640 X\uc5d0\uc11c \uc6b0\uc218\ud55c Fisting \uc560\ud638\uac00\ub97c \ubb34\ub8cc\ub85c \ud64d\ubcf4\ud569\ub2c8\ub2e4! List Star\uac00 \ub418\uba74\n1. \uacf5\uc2dd List \ub7ad\ud0b9 \uc0c1\ub2e8 \uace0\uc815\n2. \uc804\uc6a9 \ud3ec\uc2a4\ud130 1\uc7a5\n3. \uacf5\uc2dd X \uacc4\uc815 \ud64d\ubcf4\n\n\ucc38\uc5ec \ubc29\ubc95?\n@fistingguide\uc5d0\uac8c DM\uc73c\ub85c \ubcf4\ub0b4\uc8fc\uc138\uc694: \ubcf8\uc778 \uc0ac\uc9c4 1\uc7a5, \ud50c\ub808\uc774 \uc601\uc0c1/\uc0ac\uc9c4 1\uac1c, \uac04\ub2e8\ud55c \uc790\uae30\uc18c\uac1c.",
 		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9",
 		admin_search_hint: "\uae30\uc874 \uacc4\uc815\ub9cc \uc9c0\uc6d0\ud558\uba70 \uad00\ub828 \uc815\ubcf4 \uc218\uc815 \ub610\ub294 \uc0ad\uc81c \uc6a9\ub3c4",
 		admin_search_btn: "\uac80\uc0c9",
@@ -623,6 +644,9 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "enviar un articulo a fistingguide",
 		about_description:
 			"Hola, soy un entusiasta del fisting y hace poco cree un sitio de navegacion simple para ayudar a descubrir rapidamente creadores y cuentas de la comunidad. El objetivo de este sitio es facilitar encontrar creadores, explorar contenido nuevo y conectar con otras personas que comparten los mismos intereses. Si tienes sugerencias, comentarios o quieres colaborar para mejorar el proyecto, no dudes en escribirme. Puedes contactarme en X: @fistingguide o por correo: fistingguide@proton.me. Si prefieres no aparecer en el sitio web, avisame y eliminare tu listado. Gracias, y espero que este proyecto ayude a que la comunidad siga creciendo.",
+		event_title: "List Star",
+		event_description:
+			"El proyecto List Star esta en marcha. Durante un mes, promocionaremos gratis a destacados entusiastas del Fisting en la web y en X. Si eres List Star, obtendras:\n1. Posicion destacada en el ranking oficial List\n2. Un poster exclusivo\n3. Promocion en la cuenta oficial de X\n\nComo participar?\nEnvia DM a @fistingguide con: 1 foto tuya, 1 video/foto de tu estilo de juego y una breve presentacion.",
 		admin_search_placeholder: "Buscar por handle de X",
 		admin_search_hint: "Solo admite cuentas existentes para modificar su informacion relacionada o eliminar.",
 		admin_search_btn: "Buscar",
@@ -1373,6 +1397,51 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				line-height: 1.5;
 				white-space: pre-line;
 			}
+			.event-promo {
+				margin: 10px 0 0;
+				padding: 14px;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background:
+					radial-gradient(circle at 14% 22%, rgba(255, 0, 0, 0.35), transparent 34%),
+					radial-gradient(circle at 88% 78%, rgba(255, 0, 0, 0.24), transparent 32%),
+					linear-gradient(135deg, #120000 0%, #260000 46%, #070707 100%);
+				overflow: hidden;
+			}
+			.event-promo-title {
+				margin: 0 0 10px;
+				font-size: 17px;
+				line-height: 1.2;
+				font-weight: 900;
+				letter-spacing: 0.04em;
+				color: #FFECEC;
+			}
+			.event-promo-banner {
+				position: relative;
+				display: grid;
+				place-items: center;
+				width: 100%;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 64, 64, 0.36);
+				overflow: hidden;
+				background: #0A0A0A;
+			}
+			.event-promo-banner-link {
+				display: block;
+				width: 100%;
+			}
+			.event-promo-banner-img {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+			.event-promo-desc {
+				margin: 10px 0 0;
+				color: #FFD8D8;
+				font-size: 13px;
+				line-height: 1.5;
+				white-space: pre-line;
+			}
 			.mobile-inline-carousel {
 				display: none;
 				position: relative;
@@ -1556,6 +1625,26 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					border-radius: 0;
 					background: transparent;
 				}
+				.event-promo {
+					padding: 10px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+				}
+				.event-promo-title {
+					font-size: 14px;
+					margin: 0 0 8px;
+					color: var(--text);
+				}
+				.event-promo-banner {
+					border-radius: 10px;
+				}
+				.event-promo-desc {
+					font-size: 12px;
+					margin: 8px 0 0;
+					color: var(--muted);
+				}
 				.mobile-inline-carousel {
 					display: block;
 					margin-top: 8px;
@@ -1629,6 +1718,21 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</header>
+			<section class="event-promo" aria-label="event promotion">
+				<h2 class="event-promo-title" data-i18n="event_title">List Star</h2>
+				<div class="event-promo-banner">
+					<a class="event-promo-banner-link" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Open FistingGuide on X">
+						<img class="event-promo-banner-img" src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+					</a>
+				</div>
+				<p class="event-promo-desc" data-i18n="event_description">List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive
+1. Official List top placement
+2. One exclusive poster
+3. Promotion on the official X account
+
+How to join?
+DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.</p>
+			</section>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">友情链接</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Mobile Carousel">
 				<a class="mobile-inline-carousel-slide is-active" href="https://x.com/kikuchi168" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="eager" fetchpriority="high" decoding="async" /></a>
