@@ -22,6 +22,10 @@ export type WikiArticleRecord = {
 	author: string;
 	created_at: string;
 	updated_at: string;
+	author_avatar?: string;
+	author_handle?: string;
+	author_url?: string;
+	is_fixed?: boolean;
 };
 
 function escapeHtml(value: string): string {
@@ -31,6 +35,86 @@ function escapeHtml(value: string): string {
 		.replaceAll(">", "&gt;")
 		.replaceAll('"', "&quot;")
 		.replaceAll("'", "&#39;");
+}
+
+function sanitizeMarkdownUrl(url: string): string {
+	const raw = String(url || "").trim();
+	if (/^(https?:|mailto:)/i.test(raw)) return escapeHtml(raw);
+	return "#";
+}
+
+function renderMarkdownInline(text: string): string {
+	let out = escapeHtml(String(text || ""));
+	const codeTokens: string[] = [];
+	out = out.replace(/`([^`]+)`/g, (_m, code) => {
+		const idx = codeTokens.push(`<code>${code}</code>`) - 1;
+		return `@@CODE_${idx}@@`;
+	});
+	out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, label, url) => {
+		const safeUrl = sanitizeMarkdownUrl(url);
+		return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+	});
+	out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+	out = out.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+	out = out.replace(/@@CODE_(\d+)@@/g, (_m, idx) => codeTokens[Number(idx)] || "");
+	return out;
+}
+
+function renderMarkdown(markdown: string): string {
+	const lines = String(markdown || "").replace(/\r\n?/g, "\n").split("\n");
+	const html: string[] = [];
+	let i = 0;
+	let inOrderedList = false;
+
+	const closeOrderedList = () => {
+		if (inOrderedList) {
+			html.push("</ol>");
+			inOrderedList = false;
+		}
+	};
+
+	while (i < lines.length) {
+		const line = lines[i].trim();
+		if (!line) {
+			closeOrderedList();
+			i += 1;
+			continue;
+		}
+
+		const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+		if (headingMatch) {
+			closeOrderedList();
+			const level = Math.min(6, headingMatch[1].length + 1);
+			html.push(`<h${level}>${renderMarkdownInline(headingMatch[2])}</h${level}>`);
+			i += 1;
+			continue;
+		}
+
+		const orderedMatch = line.match(/^\d+\.\s+(.+)$/);
+		if (orderedMatch) {
+			if (!inOrderedList) {
+				html.push("<ol>");
+				inOrderedList = true;
+			}
+			html.push(`<li>${renderMarkdownInline(orderedMatch[1])}</li>`);
+			i += 1;
+			continue;
+		}
+
+		closeOrderedList();
+		const paragraphLines: string[] = [line];
+		i += 1;
+		while (i < lines.length) {
+			const nextLine = lines[i].trim();
+			if (!nextLine || /^(#{1,6})\s+/.test(nextLine) || /^\d+\.\s+/.test(nextLine)) break;
+			paragraphLines.push(nextLine);
+			i += 1;
+		}
+		html.push(`<p>${renderMarkdownInline(paragraphLines.join("<br>"))}</p>`);
+	}
+
+	closeOrderedList();
+	return html.join("");
 }
 
 type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "th" | "vi";
@@ -53,7 +137,7 @@ const TH_MESSAGES: Record<string, string> = {
 	nav_ranking: "รายชื่อนักแสดง",
 	nav_add: "เพิ่มใหม่",
 	nav_star: "แผนที่",
-	nav_wiki: "Fisting Wiki",
+	nav_wiki: "บทความ",
 	nav_about: "เกี่ยวกับ",
 	dashboard_visit_select: "เลือกนักแสดงบนแผนที่ก่อน",
 	dashboard_visit_named: "ไปที่ {name}",
@@ -76,6 +160,11 @@ const TH_MESSAGES: Record<string, string> = {
 	about_description:
 		"สวัสดี ฉันเป็นผู้ที่สนใจ fisting และเพิ่งสร้างเว็บไซต์นำทางแบบเรียบง่ายเพื่อช่วยให้ค้นหาครีเอเตอร์และบัญชีในชุมชนได้รวดเร็วขึ้น เป้าหมายของเว็บไซต์นี้คือช่วยให้ค้นพบครีเอเตอร์ สำรวจเนื้อหาใหม่ และเชื่อมต่อกับผู้ที่มีความสนใจเดียวกันได้ง่ายขึ้น หากคุณมีข้อเสนอแนะ คำติชม หรืออยากร่วมพัฒนาโครงการนี้ สามารถติดต่อฉันได้ที่ X: @fistingguide หรืออีเมล: fistingguide@proton.me หากคุณไม่ต้องการให้แสดงบนเว็บไซต์ แจ้งฉันได้และฉันจะลบรายการของคุณ ขอบคุณ และหวังว่าโครงการนี้จะช่วยให้ชุมชนเติบโต",
 	campaign_title: "แคมเปญ",
+	author_call_title: "รับบทความ",
+	author_call_page_title: "รับบทความ",
+	author_call_back_home: "กลับหน้าหลัก",
+	author_call_intro:
+		"เปิดกิจกรรมระยะยาวสำหรับการรวบรวมและแบ่งปันประสบการณ์เกี่ยวกับ Fisting แล้ว!\nสวัสดีทุกคน ฉันเริ่มกิจกรรมระยะยาวเพื่อแบ่งปันประสบการณ์และรวบรวมเรื่องราวเกี่ยวกับ Fisting ยินดีต้อนรับทุกคนที่สนใจเข้าร่วม\n\nเนื้อหาที่เปิดรับหลักๆ:\nวิธีเริ่มเล่นอย่างปลอดภัย (ขั้นตอนสำหรับมือใหม่และการเตรียมตัว)\nวิธีทำ enema ที่ถูกต้อง ข้อควรระวัง และประสบการณ์ที่ใช้ได้จริง\nเทคนิคความปลอดภัยระหว่างการเล่น การเลือกสารหล่อลื่น ปัญหาที่พบบ่อยและวิธีแก้\nเรื่องราวจริงจากประสบการณ์ของคุณเอง (solo หรือกับคู่) ความรู้สึกและข้อคิด\nคำแนะนำของเล่น ประสบการณ์การใช้งาน และการดูแลรักษา\n\nไม่ว่าคุณจะเป็นมือใหม่ที่สนใจหรือผู้มีประสบการณ์ก็ส่งมาได้ทั้งหมด ความยาวไม่จำกัด และส่งแบบไม่เปิดเผยตัวตนได้\n\nคำชี้แจงความปลอดภัย:\nFisting เป็นกิจกรรมที่มีความเข้มข้นสูง ความปลอดภัย การค่อยๆ ทำ การหล่อลื่นให้เพียงพอ และความยินยอมของทุกฝ่ายเป็นสิ่งสำคัญมาก เนื้อหาทั้งหมดในกิจกรรมนี้มีไว้เพื่อการแลกเปลี่ยนข้อมูลเท่านั้น ไม่ใช่คำแนะนำทางการแพทย์ โปรดเตรียมตัวให้พร้อม หากรู้สึกไม่สบายให้หยุดทันทีและปรึกษาแพทย์\n\nวิธีส่ง:\nส่ง DM มาทาง X (Twitter/X)\nหรือส่งอีเมล\n\nฉันจะอ่านทุกข้อความอย่างตั้งใจ เคารพความเป็นส่วนตัว และรองรับการโพสต์แบบไม่ระบุตัวตน มาร่วมแบ่งปันประสบการณ์และเรื่องราวเพื่อช่วยให้คนอื่นสำรวจอย่างปลอดภัยและสนุกยิ่งขึ้น~\nส่งมาได้ทาง DM หรืออีเมล ขอบคุณ!",
 	event_title: "List Star",
 	event_description:
 		"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
@@ -141,7 +230,7 @@ const VI_MESSAGES: Record<string, string> = {
 	nav_ranking: "Danh sach nguoi bieu dien",
 	nav_add: "Thêm mới",
 	nav_star: "Bản đồ",
-	nav_wiki: "Fisting Wiki",
+	nav_wiki: "Bài viết",
 	nav_about: "Giới thiệu",
 	dashboard_visit_select: "Select a performer on the map first",
 	dashboard_visit_named: "Visit {name}",
@@ -164,6 +253,11 @@ const VI_MESSAGES: Record<string, string> = {
 	about_description:
 		"Xin chao, toi la mot nguoi yeu thich fisting va da tao mot website dieu huong don gian de giup moi nguoi nhanh chong tim thay creator va tai khoan trong cong dong. Muc tieu cua trang la giup tim creator de hon, kham pha noi dung moi va ket noi voi nhung nguoi co cung so thich. Neu ban co goi y, phan hoi hoac muon hop tac cai thien du an, hay lien he toi tren X: @fistingguide hoac email: fistingguide@proton.me. Neu ban khong muon xuat hien tren website, hay bao toi va toi se go danh sach cua ban.",
 	campaign_title: "Chiến dịch",
+	author_call_title: "Kêu gọi bài viết",
+	author_call_page_title: "Kêu gọi bài viết",
+	author_call_back_home: "Về trang chủ",
+	author_call_intro:
+		"Sự kiện dài hạn thu thập và chia sẻ câu chuyện Fisting chính thức bắt đầu!\nXin chào mọi người, mình đang mở một hoạt động dài hạn để chia sẻ kinh nghiệm và thu thập câu chuyện về Fisting. Tất cả những ai quan tâm đều được chào đón.\n\nNội dung chính cần thu thập:\nCách bắt đầu an toàn (các bước cho người mới, chuẩn bị)\nPhương pháp enema đúng, lưu ý và kinh nghiệm thực tế\nKỹ thuật an toàn khi chơi, lựa chọn lubricant, vấn đề thường gặp và cách xử lý\nCâu chuyện fisting thực tế của bản thân (solo hoặc cùng partner), cảm nhận và bài học\nGợi ý toy, trải nghiệm sử dụng và bảo quản\n\nDù bạn là người mới hay đã có nhiều kinh nghiệm đều có thể gửi bài. Bài dài hay ngắn đều được, có thể gửi ẩn danh.\n\nTuyên bố an toàn:\nFisting là hoạt động cường độ cao. An toàn, tiến dần từng bước, bôi trơn đầy đủ và sự đồng thuận của cả hai bên là cực kỳ quan trọng. Mọi nội dung chia sẻ chỉ nhằm mục đích tham khảo, không phải tư vấn y khoa. Hãy luôn chuẩn bị đầy đủ, nếu có bất kỳ khó chịu nào hãy dừng ngay và tham khảo bác sĩ.\n\nCách gửi bài:\nNhắn tin riêng qua X (Twitter/X)\nHoặc gửi email\n\nMình sẽ đọc kỹ tất cả bài gửi, tôn trọng quyền riêng tư và hỗ trợ đăng ẩn danh. Mong mọi người chia sẻ kinh nghiệm và câu chuyện để giúp nhiều người khám phá an toàn và thú vị hơn~\nVui lòng gửi trực tiếp qua DM hoặc email. Cảm ơn!",
 	event_title: "List Star",
 	event_description:
 		"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
@@ -198,7 +292,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_ranking: "Performers List",
 		nav_add: "Add new",
 		nav_star: "Map",
-		nav_wiki: "Fisting Wiki",
+		nav_wiki: "Articles",
 		nav_about: "About",
 		dashboard_visit_select: "Select a performer on the map first",
 		dashboard_visit_named: "Visit {name}",
@@ -221,6 +315,11 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.",
 		campaign_title: "Campaign",
+		author_call_title: "Call For Authors",
+		author_call_page_title: "Call For Authors",
+		author_call_back_home: "Back Home",
+		author_call_intro:
+			"Fisting Stories Collection & Sharing Long-term Event Launch!\nHello everyone, I’m starting a long-term event for experience sharing and story collection about Fisting. Everyone who is interested is welcome to participate.\n\nThis event mainly collects the following content:\nHow to safely start fisting (beginner steps, preparation)\nCorrect methods, precautions, and practical tips for enema\nSafety techniques during fisting, lubricant choices, common problems and solutions\nPersonal real-life fisting stories (solo or with a partner), feelings, and insights\nToy recommendations, usage experiences, and maintenance tips\n\nWhether you’re a curious beginner or an experienced player, you’re welcome to submit and share. Stories can be long or short, and anonymous submissions are accepted.\n\nSafety First Statement:\nFisting is a high-intensity activity. Safety, gradual progression, plenty of lubrication, and mutual consent are extremely important. All sharing in this event is for reference and exchange only and does not constitute any medical advice. Please always act responsibly, make full preparations, and stop immediately if you feel any discomfort and consult a doctor.\n\nSubmission Methods:\nSend me a private message on my X (Twitter/X) account\nOr send me an email\n\nI will read all submissions carefully, respect your privacy, and anonymous posts are supported. Looking forward to everyone sharing their experiences and stories to help more people explore this kink safely and enjoyably~\nPlease submit directly via DM or email. Thank you!",
 		event_title: "List Star",
 		event_description:
 			"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
@@ -286,7 +385,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_ranking: "\u8868\u6f14\u8005\u5217\u8868",
 		nav_add: "\u65b0\u589e",
 		nav_star: "\u5730\u56fe",
-		nav_wiki: "Fisting Wiki",
+		nav_wiki: "\u6587\u7ae0",
 		nav_about: "\u5173\u4e8e",
 		dashboard_visit_select: "\u8bf7\u5148\u5728\u5730\u56fe\u4e0a\u9009\u62e9\u8868\u6f14\u8005",
 		dashboard_visit_named: "\u8bbf\u95ee{name}",
@@ -308,6 +407,11 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
 		campaign_title: "活动",
+		author_call_title: "文章征稿",
+		author_call_page_title: "文章征稿",
+		author_call_back_home: "返回首页",
+		author_call_intro:
+			"Fisting故事征集 & 分享长期活动开启！\n大家好，我准备长期发起一个关于Fisting的经验分享和故事征集活动，欢迎所有感兴趣的朋友参与。\n\n本次活动主要征集以下内容：\n如何安全开始玩Fisting（新手入门步骤、准备工作）\n灌肠（enema）的正确方法、注意事项和实用经验\nFisting过程中的安全技巧、润滑选择、常见问题及解决办法\n自己真实玩Fisting（solo 或和伴侣）的个人故事、感受和心得\n玩具推荐、使用心得、保养经验等\n\n无论你是刚有兴趣的新手，还是已经有经验的老手，都欢迎投稿分享。故事长短不限，可以匿名投稿。\n\n安全第一声明：\nFisting属于高强度玩法，安全、渐进、充足润滑和双方自愿非常重要。本活动所有分享仅供参考交流，不构成任何医疗建议。请大家实际操作时量力而行，做好充分准备，如有不适立即停止并咨询医生。\n\n投稿方式：\n私信我的 X（Twitter/X）账号\n或发送邮件给我\n\n所有投稿我都会认真阅读，尊重隐私，可匿名发布。期待大家把自己的经验和故事分享出来，一起帮助更多人安全、有趣地探索这个玩法～\n投稿请直接私信或发邮件，谢谢！",
 		event_title: "List Star",
 		event_description:
 			"List Star 拳星计划启动！为期一个月，我们将在网站和X上免费推广优秀 Fisting 爱好者！成为 List Star 可获得 \n1. 官方List排名置顶\n2. 一张专属海报\n3. 官方X平台宣传\n\n如何参与？\n私信 @fistingguide，发送：1张你的照片，1张或1条玩法视频/照片以及简短自我介绍",
@@ -373,7 +477,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_ranking: "\u8868\u6f14\u8005\u6e05\u55ae",
 		nav_add: "\u65b0\u589e",
 		nav_star: "\u5730\u5716",
-		nav_wiki: "Fisting Wiki",
+		nav_wiki: "\u6587\u7ae0",
 		nav_about: "\u95dc\u65bc",
 		dashboard_visit_select: "\u8acb\u5148\u5728\u5730\u5716\u4e0a\u9078\u64c7\u8868\u6f14\u8005",
 		dashboard_visit_named: "\u8a2a\u554f{name}",
@@ -396,6 +500,11 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
 		campaign_title: "活動",
+		author_call_title: "文章徵稿",
+		author_call_page_title: "文章徵稿",
+		author_call_back_home: "返回首頁",
+		author_call_intro:
+			"Fisting故事徵集 & 分享長期活動開啟！\n大家好，我準備長期發起一個關於Fisting的經驗分享和故事徵集活動，歡迎所有感興趣的朋友參與。\n\n本次活動主要徵集以下內容：\n如何安全開始玩Fisting（新手入門步驟、準備工作）\n灌腸（enema）的正確方法、注意事項和實用經驗\nFisting過程中的安全技巧、潤滑選擇、常見問題及解決辦法\n自己真實玩Fisting（solo 或和伴侶）的個人故事、感受和心得\n玩具推薦、使用心得、保養經驗等\n\n無論你是剛有興趣的新手，還是已經有經驗的老手，都歡迎投稿分享。故事長短不限，可以匿名投稿。\n\n安全第一聲明：\nFisting屬於高強度玩法，安全、漸進、充足潤滑和雙方自願非常重要。本活動所有分享僅供參考交流，不構成任何醫療建議。請大家實際操作時量力而行，做好充分準備，如有不適立即停止並諮詢醫生。\n\n投稿方式：\n私訊我的 X（Twitter/X）帳號\n或發送郵件給我\n\n所有投稿我都會認真閱讀，尊重隱私，可匿名發布。期待大家把自己的經驗和故事分享出來，一起幫助更多人安全、有趣地探索這個玩法～\n投稿請直接私訊或發郵件，謝謝！",
 		event_title: "List Star",
 		event_description:
 			"List Star 拳星計畫啟動！為期一個月，我們將在網站和X上免費推廣優秀 Fisting 愛好者！成為 List Star 可獲得 \n1. 官方List排名置頂\n2. 一張專屬海報\n3. 官方X平台宣傳\n\n如何參與？\n私訊 @fistingguide，發送：1張你的照片，1張或1條玩法影片/照片以及簡短自我介紹",
@@ -461,7 +570,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_ranking: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u4e00\u89a7",
 		nav_add: "\u65b0\u898f\u8ffd\u52a0",
 		nav_star: "\u30de\u30c3\u30d7",
-		nav_wiki: "Fisting Wiki",
+		nav_wiki: "\u8a18\u4e8b",
 		nav_about: "\u6982\u8981",
 		dashboard_visit_select: "\u5730\u56f3\u4e0a\u3067\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044",
 		dashboard_visit_named: "{name}\u3078\u79fb\u52d5",
@@ -484,6 +593,11 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"\u3053\u3093\u306b\u3061\u306f\u3002\u79c1\u306f fisting \u611b\u597d\u5bb6\u3067\u3001\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3084\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u3059\u3070\u3084\u304f\u898b\u3064\u3051\u3089\u308c\u308b\u3088\u3046\u306b\u3001\u30b7\u30f3\u30d7\u30eb\u306a\u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3\u30b5\u30a4\u30c8\u3092\u4f5c\u308a\u307e\u3057\u305f\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u3001\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3092\u63a2\u3057\u3084\u3059\u304f\u3057\u3001\u65b0\u3057\u3044\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u898b\u3064\u3051\u3001\u540c\u3058\u8208\u5473\u3092\u6301\u3064\u4eba\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3059\u3002\u3054\u610f\u898b\u30fb\u3054\u611f\u60f3\u30fb\u6539\u5584\u306e\u305f\u3081\u306e\u30b3\u30e9\u30dc\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u304a\u6c17\u8efd\u306b\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002X: @fistingguide \u307e\u305f\u306f\u30e1\u30fc\u30eb: fistingguide@proton.me \u3067\u9023\u7d61\u53ef\u80fd\u3067\u3059\u3002\u30b5\u30a4\u30c8\u306b\u63b2\u8f09\u3055\u308c\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044\u3002\u4e00\u89a7\u304b\u3089\u524a\u9664\u3057\u307e\u3059\u3002\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002\u3053\u306e\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u304c\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u6210\u9577\u306b\u5f79\u7acb\u3064\u3053\u3068\u3092\u9858\u3063\u3066\u3044\u307e\u3059\u3002",
 		campaign_title: "キャンペーン",
+		author_call_title: "記事募集",
+		author_call_page_title: "記事募集",
+		author_call_back_home: "ホームに戻る",
+		author_call_intro:
+			"Fisting体験談募集＆シェア長期企画開始！\n皆さんこんにちは、Fistingについての経験共有と体験談募集を長期で開催する企画を始めます。興味のある方はぜひご参加ください。\n\n主に募集する内容：\nFistingを安全に始める方法（初心者向け手順、準備）\n浣腸（enema）の正しいやり方、注意点、実践的な経験\nFisting中の安全テクニック、潤滑剤の選び方、よくあるトラブルと解決法\n自分で実際にFistingをしたリアル体験談（ソロまたはパートナーと）、感想、心得\nおすすめのトイ、使用感、保養方法など\n\n初心者で興味がある方から、経験豊富な方まで、どなたでも大歓迎です。体験談は長くても短くてもOK、匿名投稿も可能です。\n\n安全第一のお願い：\nFistingは高強度のプレイです。安全、徐々に進めること、十分な潤滑、相互の同意が非常に重要です。この企画での全ての共有は参考・交流目的のみであり、医療的なアドバイスではありません。実際に行う際は無理をせず、十分に準備をし、違和感を感じたらすぐに中止して医師に相談してください。\n\n投稿方法：\n私のX（Twitter/X）アカウントにダイレクトメッセージ（DM）で送信\nまたはメールで送る\n\n全ての投稿を丁寧に拝見し、プライバシーを尊重します。匿名での掲載も対応可能です。皆さんの経験やストーリーを共有していただき、より多くの人が安全に楽しくこのプレイを探求できるようにしていきましょう～\n投稿はDMまたはメールでお願いします。よろしくお願いします！",
 		event_title: "List Star",
 		event_description:
 			"List Star \u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u958b\u59cb\uff01\u671f\u9593\u306f1\u304b\u6708\u3002\u30b5\u30a4\u30c8\u3068X\u3067\u512a\u79c0\u306aFisting\u611b\u597d\u5bb6\u3092\u7121\u6599\u3067\u7d39\u4ecb\u3057\u307e\u3059\uff01List Star \u306b\u306a\u308b\u3068\n1. \u516c\u5f0fList\u30e9\u30f3\u30ad\u30f3\u30b0\u306e\u4e0a\u4f4d\u63b2\u8f09\n2. \u5c02\u7528\u30dd\u30b9\u30bf\u30fc1\u679a\n3. \u516c\u5f0fX\u30a2\u30ab\u30a6\u30f3\u30c8\u3067\u306e\u5ba3\u4f1d\n\n\u53c2\u52a0\u65b9\u6cd5\uff1f\n@fistingguide \u3078DM\u3057\u3001\u9001\u4ed8\uff1a\u3042\u306a\u305f\u306e\u5199\u771f1\u679a\u3001\u30d7\u30ec\u30a4\u52d5\u753b/\u5199\u771f1\u70b9\u3001\u77ed\u3044\u81ea\u5df1\u7d39\u4ecb\u3002",
@@ -549,7 +663,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_ranking: "\ud37c\ud3ec\uba38 \ubaa9\ub85d",
 		nav_add: "\ucd94\uac00",
 		nav_star: "\uc9c0\ub3c4",
-		nav_wiki: "Fisting Wiki",
+		nav_wiki: "\uac8c\uc2dc\uae00",
 		nav_about: "\uc18c\uac1c",
 		dashboard_visit_select: "\uc9c0\ub3c4\uc5d0\uc11c \ud37c\ud3ec\uba38\ub97c \uba3c\uc800 \uc120\ud0dd\ud574 \uc8fc\uc138\uc694",
 		dashboard_visit_named: "{name}\ub85c \uc774\ub3d9",
@@ -572,6 +686,11 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"\uc548\ub155\ud558\uc138\uc694. \uc800\ub294 fisting \uc560\ud638\uac00\uc774\uba70, \ucee4\ubba4\ub2c8\ud2f0\uc5d0\uc11c \ud06c\ub9ac\uc5d0\uc774\ud130\uc640 \uacc4\uc815\uc744 \ube60\ub974\uac8c \ucc3e\uc744 \uc218 \uc788\ub3c4\ub85d \ub2e8\uc21c\ud55c \ub124\ube44\uac8c\uc774\uc158 \uc6f9\uc0ac\uc774\ud2b8\ub97c \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\uc758 \ubaa9\ud45c\ub294 \ud06c\ub9ac\uc5d0\uc774\ud130\ub97c \ub354 \uc27d\uac8c \ucc3e\uace0, \uc0c8\ub85c\uc6b4 \ucf58\ud150\uce20\ub97c \ud0d0\uc0c9\ud558\uba70, \uac19\uc740 \uad00\uc2ec\uc0ac\ub97c \uac00\uc9c4 \uc0ac\ub78c\ub4e4\uacfc \uc5f0\uacb0\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc81c\uc548, \ud53c\ub4dc\ubc31, \ud639\uc740 \ud504\ub85c\uc81d\ud2b8 \uac1c\uc120\uc744 \ud568\uaed8\ud558\uace0 \uc2f6\uc73c\uc2dc\uba74 \ud3b8\ud558\uac8c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. X \uacc4\uc815 @fistingguide \ub610\ub294 \uc774\uba54\uc77c fistingguide@proton.me \ub85c \uc5f0\ub77d\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc6f9\uc0ac\uc774\ud2b8\uc5d0 \ub178\ucd9c\ub418\uace0 \uc2f6\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc54c\ub824 \uc8fc\uc138\uc694. \ub9ac\uc2a4\ud305\uc744 \uc81c\uac70\ud574 \ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4. \uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774 \ud504\ub85c\uc81d\ud2b8\uac00 \ucee4\ubba4\ub2c8\ud2f0 \uc131\uc7a5\uc5d0 \ub3c4\uc6c0\uc774 \ub418\uae30\ub97c \ubc14\ub78d\ub2c8\ub2e4.",
 		campaign_title: "캠페인",
+		author_call_title: "원고 모집",
+		author_call_page_title: "원고 모집",
+		author_call_back_home: "홈으로 돌아가기",
+		author_call_intro:
+			"Fisting 이야기 수집 및 공유 장기 이벤트 시작!\n안녕하세요. 저는 Fisting에 대한 경험 공유와 이야기 모집을 위한 장기 이벤트를 시작합니다. 관심 있는 모든 분들의 참여를 환영합니다.\n\n주요 모집 내용:\n안전하게 시작하는 방법(입문 단계, 준비)\nenema의 올바른 방법, 주의사항, 실전 팁\n플레이 중 안전 테크닉, 윤활제 선택, 자주 발생하는 문제와 해결법\n실제 fisting 경험담(솔로 또는 파트너와 함께), 느낌과 인사이트\n토이 추천, 사용 후기, 관리 팁\n\n입문자든 숙련자든 누구나 자유롭게 참여할 수 있습니다. 글 길이는 제한 없고, 익명 제출도 가능합니다.\n\n안전 우선 안내:\nFisting은 고강도 플레이입니다. 안전, 점진적 진행, 충분한 윤활, 상호 동의가 매우 중요합니다. 본 이벤트의 모든 내용은 참고 및 교류 목적이며 의료 조언이 아닙니다. 실제 진행 시 무리하지 말고 충분히 준비하며, 불편함이 있으면 즉시 중단하고 의사와 상담하세요.\n\n제출 방법:\nX(Twitter/X) 계정으로 DM 보내기\n또는 이메일 보내기\n\n모든 제출물은 신중히 읽고 개인정보를 존중하겠습니다. 익명 게시도 지원합니다. 더 많은 분들이 안전하고 즐겁게 탐색할 수 있도록 여러분의 경험과 이야기를 기다립니다~\nDM 또는 이메일로 바로 보내주세요. 감사합니다!",
 		event_title: "List Star",
 		event_description:
 			"List Star \ud504\ub85c\uc81d\ud2b8 \uc2dc\uc791! \ud55c \ub2ec \ub3d9\uc548 \uc6f9\uc0ac\uc774\ud2b8\uc640 X\uc5d0\uc11c \uc6b0\uc218\ud55c Fisting \uc560\ud638\uac00\ub97c \ubb34\ub8cc\ub85c \ud64d\ubcf4\ud569\ub2c8\ub2e4! List Star\uac00 \ub418\uba74\n1. \uacf5\uc2dd List \ub7ad\ud0b9 \uc0c1\ub2e8 \uace0\uc815\n2. \uc804\uc6a9 \ud3ec\uc2a4\ud130 1\uc7a5\n3. \uacf5\uc2dd X \uacc4\uc815 \ud64d\ubcf4\n\n\ucc38\uc5ec \ubc29\ubc95?\n@fistingguide\uc5d0\uac8c DM\uc73c\ub85c \ubcf4\ub0b4\uc8fc\uc138\uc694: \ubcf8\uc778 \uc0ac\uc9c4 1\uc7a5, \ud50c\ub808\uc774 \uc601\uc0c1/\uc0ac\uc9c4 1\uac1c, \uac04\ub2e8\ud55c \uc790\uae30\uc18c\uac1c.",
@@ -637,7 +756,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		nav_ranking: "Lista de artistas",
 		nav_add: "Agregar",
 		nav_star: "Mapa",
-		nav_wiki: "Fisting Wiki",
+		nav_wiki: "Artículos",
 		nav_about: "Acerca de",
 		dashboard_visit_select: "Primero selecciona un artista en el mapa",
 		dashboard_visit_named: "Visitar a {name}",
@@ -660,6 +779,11 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"Hola, soy un entusiasta del fisting y hace poco cree un sitio de navegacion simple para ayudar a descubrir rapidamente creadores y cuentas de la comunidad. El objetivo de este sitio es facilitar encontrar creadores, explorar contenido nuevo y conectar con otras personas que comparten los mismos intereses. Si tienes sugerencias, comentarios o quieres colaborar para mejorar el proyecto, no dudes en escribirme. Puedes contactarme en X: @fistingguide o por correo: fistingguide@proton.me. Si prefieres no aparecer en el sitio web, avisame y eliminare tu listado. Gracias, y espero que este proyecto ayude a que la comunidad siga creciendo.",
 		campaign_title: "Campaña",
+		author_call_title: "Convocatoria de Artículos",
+		author_call_page_title: "Convocatoria de Artículos",
+		author_call_back_home: "Volver al inicio",
+		author_call_intro:
+			"¡Lanzamiento del evento a largo plazo de recopilación y compartición de historias de Fisting!\nHola a todos. Estoy iniciando un evento a largo plazo para compartir experiencias y recopilar historias sobre Fisting. Cualquier persona interesada es bienvenida.\n\nContenido principal que buscamos:\nCómo empezar de forma segura (pasos para principiantes y preparación)\nMétodos correctos de enema, precauciones y consejos prácticos\nTécnicas de seguridad durante la práctica, elección de lubricantes, problemas comunes y soluciones\nHistorias reales de fisting (solo o con pareja), sensaciones y aprendizajes\nRecomendaciones de juguetes, experiencia de uso y mantenimiento\n\nTanto si eres principiante como si tienes experiencia, puedes enviar tu aporte. Las historias pueden ser largas o cortas y se aceptan envíos anónimos.\n\nDeclaración de seguridad:\nEl fisting es una práctica de alta intensidad. La seguridad, la progresión gradual, una lubricación abundante y el consentimiento mutuo son fundamentales. Todo lo compartido en este evento es solo para referencia e intercambio y no constituye consejo médico. Actúa con responsabilidad, prepárate bien y detente de inmediato si sientes cualquier molestia, consultando a un médico.\n\nMétodos de envío:\nEnvíame un mensaje privado por X (Twitter/X)\nO envíame un correo electrónico\n\nLeeré todos los envíos con atención, respetaré tu privacidad y se admiten publicaciones anónimas. Espero sus experiencias e historias para ayudar a más personas a explorar este kink de forma segura y disfrutable~\nEnvía directamente por DM o por correo. ¡Gracias!",
 		event_title: "List Star",
 		event_description:
 			"El proyecto List Star esta en marcha. Durante un mes, promocionaremos gratis a destacados entusiastas del Fisting en la web y en X. Si eres List Star, obtendras:\n1. Posicion destacada en el ranking oficial List\n2. Un poster exclusivo\n3. Promocion en la cuenta oficial de X\n\nComo participar?\nEnvia DM a @fistingguide con: 1 foto tuya, 1 video/foto de tu estilo de juego y una breve presentacion.",
@@ -1440,8 +1564,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				letter-spacing: 0.02em;
 				color: #FFFFFF;
 				text-align: center;
-				justify-self: center;
-				grid-column: 1 / 2;
+			}
+			.event-promo-item {
+				display: grid;
+				gap: 8px;
+				align-content: start;
 			}
 			.event-promo-banner {
 				position: relative;
@@ -1818,12 +1945,22 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			<section class="event-promo" aria-label="list star promotion">
 				<h2 class="event-promo-campaign" data-i18n="campaign_title">Campaign</h2>
 				<div class="event-promo-media-grid">
-					<div class="event-promo-banner">
-						<a class="event-promo-banner-link" href="/list-star" target="_self" aria-label="Open List Star Campaign">
-							<img class="event-promo-banner-img" src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
-						</a>
+					<div class="event-promo-item">
+						<div class="event-promo-banner">
+							<a class="event-promo-banner-link" href="/list-star" target="_self" aria-label="Open List Star Campaign">
+								<img class="event-promo-banner-img" src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+							</a>
+						</div>
+						<h3 class="event-promo-title" data-i18n="event_title">List Star</h3>
 					</div>
-					<h3 class="event-promo-title" data-i18n="event_title">List Star</h3>
+					<div class="event-promo-item">
+						<div class="event-promo-banner">
+							<a class="event-promo-banner-link" href="/author-call" target="_self" aria-label="Open Author Call">
+								<img class="event-promo-banner-img" src="/assets/mobile-carousel/author.png" alt="Author Call Banner" loading="lazy" fetchpriority="low" decoding="async" />
+							</a>
+						</div>
+						<h3 class="event-promo-title" data-i18n="author_call_title">文章征稿</h3>
+					</div>
 				</div>
 			</section>
 			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
@@ -4750,18 +4887,6 @@ export function renderListStarPage(): string {
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
-			.mobile-nav-row { display: none; width: 100%; }
-			.mobile-nav {
-				width: 100%;
-				height: 42px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 12px;
-				font: inherit;
-			}
-			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			.campaign-label {
 				margin: 0 0 12px;
 				font-size: 25px;
@@ -4771,13 +4896,24 @@ export function renderListStarPage(): string {
 			.poster-box {
 				border-radius: 10px;
 				overflow: hidden;
-				margin-bottom: 12px;
+				margin-bottom: 0;
 			}
 			.poster-box img {
 				display: block;
 				width: 100%;
 				height: auto;
 				object-fit: contain;
+			}
+			.feature-layout {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 16px;
+				align-items: start;
+			}
+			.feature-content {
+				display: grid;
+				gap: 10px;
+				align-content: start;
 			}
 			.event-title {
 				margin: 0 0 10px;
@@ -4908,6 +5044,7 @@ export function renderListStarPage(): string {
 				}
 				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
 				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
+				.feature-layout { grid-template-columns: 1fr; gap: 10px; }
 				.campaign-label,
 				.event-title { font-size: 14px; }
 				.event-desc { font-size: 12px; }
@@ -4955,17 +5092,21 @@ export function renderListStarPage(): string {
 
 			<section class="card">
 				<h2 class="campaign-label" data-i18n="campaign_title">Campaign</h2>
-				<div class="poster-box">
-					<img src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
-				</div>
-				<h3 class="event-title" data-i18n="event_title">List Star</h3>
-				<p class="event-desc" data-i18n="event_description">List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive
+				<div class="feature-layout">
+					<div class="poster-box">
+						<img src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+					</div>
+					<div class="feature-content">
+						<h3 class="event-title" data-i18n="event_title">List Star</h3>
+						<p class="event-desc" data-i18n="event_description">List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive
 1. Official List top placement
 2. One exclusive poster
 3. Promotion on the official X account
 
 How to join?
 DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.</p>
+					</div>
+				</div>
 			</section>
 		</div>
 
@@ -5016,6 +5157,416 @@ DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a 
 				document.documentElement.classList.add('mobile-select-ready');
 				document.addEventListener('click', function (event) {
 					if (!event.target.closest('#listStarPageNavCustom')) closeMenu();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeMenu();
+				});
+			})();
+		</script>
+		<script>
+			(function () {
+				const key = 'age_verified_18_v1';
+				const overlay = document.getElementById('ageGate');
+				const yesBtn = document.getElementById('ageYes');
+				const noBtn = document.getElementById('ageNo');
+				if (!overlay || !yesBtn || !noBtn) return;
+				const verified = localStorage.getItem(key) === 'yes';
+				if (!verified) overlay.style.display = 'flex';
+				yesBtn.addEventListener('click', function () {
+					localStorage.setItem(key, 'yes');
+					overlay.style.display = 'none';
+				});
+				noBtn.addEventListener('click', function () {
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
+				});
+			})();
+		</script>
+	</body>
+</html>
+`;
+}
+
+export function renderAuthorCallPage(): string {
+	return `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Call For Authors</title>
+		<style>
+			:root {
+				--bg: #000000;
+				--card: #16181C;
+				--line: #2F3336;
+				--text: #E7E9EA;
+				--muted: #71767B;
+				--primary: #1D9BF0;
+			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				padding: 20px;
+			}
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 14px; }
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 16px;
+				box-shadow: 0 8px 20px rgba(15, 20, 25, 0.08);
+			}
+			.head {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 10px;
+			}
+			.head-title {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				gap: 10px;
+			}
+			.lang-switch {
+				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
+			}
+			.head h1 { margin: 0; }
+			.top-nav {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				text-decoration: none;
+				flex-wrap: nowrap;
+				gap: 12px;
+				justify-content: flex-end;
+			}
+			.nav-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
+				text-decoration: none;
+				background: #71767B;
+				color: #FFFFFF;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
+				white-space: nowrap;
+			}
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
+			.campaign-label {
+				margin: 0 0 12px;
+				font-size: 25px;
+				font-weight: 700;
+				color: #FFFFFF;
+			}
+			.poster-box {
+				border-radius: 10px;
+				overflow: hidden;
+				margin-bottom: 0;
+			}
+			.poster-box img {
+				display: block;
+				width: 100%;
+				height: auto;
+				object-fit: contain;
+			}
+			.feature-layout {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 16px;
+				align-items: start;
+			}
+			.feature-content {
+				display: grid;
+				gap: 10px;
+				align-content: start;
+			}
+			.event-title {
+				margin: 0 0 10px;
+				font-size: 25px;
+				font-weight: 700;
+				color: #FFFFFF;
+			}
+			.intro {
+				margin: 0;
+				white-space: pre-line;
+				line-height: 1.5;
+				font-size: 20px;
+				color: var(--muted);
+			}
+			.age-gate-overlay {
+				position: fixed;
+				inset: 0;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				background: rgba(15, 20, 25, 0.72);
+				z-index: 9999;
+				padding: 16px;
+			}
+			.age-gate-box {
+				background: #16181C;
+				border-radius: 14px;
+				padding: 18px;
+				max-width: 420px;
+				width: 100%;
+				text-align: center;
+				border: 1px solid var(--line);
+			}
+			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+			.age-btn {
+				border: none;
+				border-radius: 10px;
+				padding: 9px 14px;
+				cursor: pointer;
+				font: inherit;
+				color: #FFFFFF;
+			}
+			.age-btn.yes { background: var(--primary); }
+			.age-btn.no { background: #71767B; }
+			@media (max-width: 700px) {
+				body { font-size: 14px; }
+				.head h1 { font-size: 20px; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head-card {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.top-nav { display: none; }
+				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
+				.lang-switch {
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
+				}
+				html.mobile-select-ready .mobile-nav { display: none; }
+				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars { display: inline-grid; gap: 4px; }
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					right: 0;
+					min-width: 168px;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 40;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
+				.feature-layout { grid-template-columns: 1fr; gap: 10px; }
+				.campaign-label,
+				.event-title { font-size: 14px; }
+				.intro { font-size: 12px; }
+			}
+		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
+	</head>
+	<body>
+		<div class="age-gate-overlay" id="ageGate">
+			<div class="age-gate-box">
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<div class="age-gate-actions">
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
+				</div>
+			</div>
+		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
+
+		<div class="wrap">
+			<section class="card head head-card">
+				<div class="head-title">
+					<h1 data-i18n="author_call_page_title">文章征稿</h1>
+					${renderLanguageSwitcher("authorCallLangSwitch")}
+					<div class="mobile-nav-row">
+						<select id="authorCallPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<option value="/" selected data-i18n="nav_ranking">Performers List</option>
+							<option value="/admin" data-i18n="nav_add">Add new</option>
+							<option value="/dashboard" data-i18n="nav_star">Map</option>
+							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
+							<option value="/about" data-i18n="nav_about">About</option>
+						</select>
+						<div id="authorCallPageNavCustom" class="mobile-select-enhanced"></div>
+					</div>
+				</div>
+				<nav class="top-nav">
+					<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
+					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
+					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
+					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
+				</nav>
+			</section>
+
+			<section class="card">
+				<h2 class="campaign-label" data-i18n="campaign_title">Campaign</h2>
+				<div class="feature-layout">
+					<div class="poster-box">
+						<img class="poster" src="/assets/mobile-carousel/author.png" alt="文章征稿" loading="eager" fetchpriority="high" decoding="async" />
+					</div>
+					<div class="feature-content">
+						<h3 class="event-title" data-i18n="author_call_title">文章征稿</h3>
+						<div class="intro" data-i18n="author_call_intro">Fisting故事征集 & 分享长期活动开启！
+大家好，我准备长期发起一个关于Fisting的经验分享和故事征集活动，欢迎所有感兴趣的朋友参与。
+
+本次活动主要征集以下内容：
+如何安全开始玩Fisting（新手入门步骤、准备工作）
+灌肠（enema）的正确方法、注意事项和实用经验
+Fisting过程中的安全技巧、润滑选择、常见问题及解决办法
+自己真实玩Fisting（solo 或和伴侣）的个人故事、感受和心得
+玩具推荐、使用心得、保养经验等
+
+无论你是刚有兴趣的新手，还是已经有经验的老手，都欢迎投稿分享。故事长短不限，可以匿名投稿。
+
+安全第一声明：
+Fisting属于高强度玩法，安全、渐进、充足润滑和双方自愿非常重要。本活动所有分享仅供参考交流，不构成任何医疗建议。请大家实际操作时量力而行，做好充分准备，如有不适立即停止并咨询医生。
+
+投稿方式：
+私信我的 X（Twitter/X）账号
+或发送邮件给我
+
+所有投稿我都会认真阅读，尊重隐私，可匿名发布。期待大家把自己的经验和故事分享出来，一起帮助更多人安全、有趣地探索这个玩法～
+投稿请直接私信或发邮件，谢谢！</div>
+					</div>
+				</div>
+			</section>
+		</div>
+		${renderI18nScript("author_call_page_title")}
+		<script>
+			(function () {
+				const select = document.getElementById('authorCallPageNav');
+				const mount = document.getElementById('authorCallPageNavCustom');
+				if (!select || !mount) return;
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+				function closeMenu() { mount.classList.remove('open'); }
+				function render() {
+					const options = Array.from(select.options || []);
+					const selectedValue = String(select.value || '');
+					mount.innerHTML =
+						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
+						'<div class="mobile-select-menu" role="listbox">' +
+							options.map(function (opt) {
+								const value = String(opt.value || '');
+								const selectedClass = value === selectedValue ? ' is-selected' : '';
+								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+							}).join('') +
+						'</div>';
+					const trigger = mount.querySelector('.mobile-select-trigger');
+					const menu = mount.querySelector('.mobile-select-menu');
+					if (!trigger || !menu) return;
+					trigger.addEventListener('click', function (event) {
+						event.preventDefault();
+						mount.classList.toggle('open');
+					});
+					menu.addEventListener('click', function (event) {
+						const btn = event.target.closest('.mobile-select-option');
+						if (!btn) return;
+						const nextValue = btn.getAttribute('data-value') || '';
+						if (nextValue) window.location.href = nextValue;
+						closeMenu();
+					});
+				}
+				select.addEventListener('change', render);
+				render();
+				document.documentElement.classList.add('mobile-select-ready');
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('#authorCallPageNavCustom')) closeMenu();
 				});
 				document.addEventListener('keydown', function (event) {
 					if (event.key === 'Escape') closeMenu();
@@ -5205,6 +5756,28 @@ export function renderWikiPage(): string {
 				-webkit-box-orient: vertical;
 			}
 			.post-meta { font-size: 12px; color: var(--muted); }
+			.post-author-row {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				margin-bottom: 4px;
+			}
+			.post-author-avatar {
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 1px solid var(--line);
+				background: #0F1419;
+				flex: 0 0 auto;
+			}
+			.post-author-avatar.placeholder {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 10px;
+				color: var(--muted);
+			}
 			.post-body {
 				font-size: 14px;
 				line-height: 1.6;
@@ -5281,7 +5854,6 @@ export function renderWikiPage(): string {
 					box-shadow: none;
 				}
 				.top-nav { display: none; }
-				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
 				.head { align-items: center; }
 				.lang-switch {
 					height: 34px;
@@ -5299,57 +5871,6 @@ export function renderWikiPage(): string {
 					background-repeat: no-repeat;
 					background-position: right 2px center;
 				}
-				html.mobile-select-ready .mobile-nav { display: none; }
-				html.mobile-select-ready .mobile-select-enhanced { display: block; }
-				.mobile-nav-row .mobile-select-trigger {
-					width: 34px;
-					height: 34px;
-					padding: 0;
-					border: 0;
-					background: transparent;
-					display: inline-flex;
-					align-items: center;
-					justify-content: center;
-					cursor: pointer;
-				}
-				.mobile-nav-row .mobile-select-trigger .nav-bars {
-					display: inline-grid;
-					gap: 4px;
-				}
-				.mobile-nav-row .mobile-select-trigger .nav-bars span {
-					display: block;
-					width: 16px;
-					height: 1.5px;
-					background: #8B98A5;
-					border-radius: 99px;
-				}
-				.mobile-nav-row .mobile-select-menu {
-					display: none;
-					position: absolute;
-					top: calc(100% + 6px);
-					right: 0;
-					min-width: 168px;
-					background: #000000;
-					border: 1px solid var(--line);
-					border-radius: 10px;
-					overflow: hidden;
-					z-index: 40;
-				}
-				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
-				.mobile-nav-row .mobile-select-option {
-					width: 100%;
-					border: 0;
-					border-bottom: 1px solid #20252B;
-					background: #000000;
-					color: #8B98A5;
-					font: inherit;
-					font-size: 13px;
-					text-align: left;
-					padding: 9px 12px;
-					cursor: pointer;
-				}
-				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
-				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
 				.blog-grid { grid-template-columns: 1fr; }
 				.post-card {
 					padding: 10px 0;
@@ -5384,16 +5905,6 @@ export function renderWikiPage(): string {
 							<h1 data-i18n="heading_wiki">Fisting Wiki</h1>
 						</div>
 						${renderLanguageSwitcher("wikiLangSwitch")}
-						<div class="mobile-nav-row">
-							<select id="wikiPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-								<option value="/" data-i18n="nav_ranking">Performers List</option>
-								<option value="/admin" data-i18n="nav_add">Add new</option>
-								<option value="/dashboard" data-i18n="nav_star">Map</option>
-								<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
-								<option value="/about" data-i18n="nav_about">About</option>
-							</select>
-							<div id="wikiPageNavCustom" class="mobile-select-enhanced"></div>
-						</div>
 					</div>
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
@@ -5421,17 +5932,7 @@ export function renderWikiPage(): string {
 		${renderI18nScript("page_title_wiki")}
 		<script>
 			let currentRows = [];
-			let editingId = null;
-
 			const els = {
-				form: document.getElementById('wikiForm'),
-				articleId: document.getElementById('articleId'),
-				author: document.getElementById('author'),
-				title: document.getElementById('title'),
-				content: document.getElementById('content'),
-				submitBtn: document.getElementById('submitBtn'),
-				deleteBtn: document.getElementById('deleteBtn'),
-				resetBtn: document.getElementById('resetBtn'),
 				rows: document.getElementById('rows'),
 				status: document.getElementById('status')
 			};
@@ -5449,26 +5950,6 @@ export function renderWikiPage(): string {
 				els.status.textContent = text;
 			}
 
-			function resetForm() {
-				editingId = null;
-				els.articleId.value = '';
-				els.author.value = 'fistingguide';
-				els.title.value = '';
-				els.content.value = 'for test';
-				els.submitBtn.textContent = 'Create';
-				els.deleteBtn.disabled = true;
-			}
-
-			function fillForm(row) {
-				editingId = row.id;
-				els.articleId.value = String(row.id);
-				els.author.value = row.author || 'fistingguide';
-				els.title.value = row.title || '';
-				els.content.value = row.content || '';
-				els.submitBtn.textContent = 'Save Changes';
-				els.deleteBtn.disabled = false;
-			}
-
 			function renderRows() {
 				if (!currentRows.length) {
 					els.rows.innerHTML = '<div class="empty">No articles yet.</div>';
@@ -5476,16 +5957,19 @@ export function renderWikiPage(): string {
 				}
 
 				els.rows.innerHTML = currentRows.map(function (row) {
+					const authorName = esc(row.author || 'fistingguide');
+					const authorHandle = esc(row.author_handle || '');
+					const authorAvatar = esc(row.author_avatar || '');
+					const avatarEl = authorAvatar
+						? '<img class="post-author-avatar" src="' + authorAvatar + '" alt="' + authorName + '" loading="lazy" referrerpolicy="no-referrer" />'
+						: '<span class="post-author-avatar placeholder">A</span>';
+					const handleText = authorHandle ? (' ' + authorHandle) : '';
 					return '<article class="post-card">' +
 						'<a class="post-link" href="/wiki/article/' + row.id + '">' +
 							'<h3 class="post-title">' + esc(row.title) + '</h3>' +
-							'<div class="post-meta">By ' + esc(row.author || 'fistingguide') + ' 闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱?ID #' + row.id + ' 闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱?Updated ' + esc(row.updated_at || row.created_at || '') + '</div>' +
+							'<div class="post-author-row">' + avatarEl + '<div class="post-meta">By ' + authorName + handleText + '</div></div>' +
 							'<div class="post-body">' + esc(row.content || '') + '</div>' +
 						'</a>' +
-						'<div class="post-actions">' +
-							'<button data-action="edit" data-id="' + row.id + '">Edit</button>' +
-							'<button class="danger" data-action="delete" data-id="' + row.id + '">Delete</button>' +
-						'</div>' +
 					'</article>';
 				}).join('');
 			}
@@ -5499,164 +5983,8 @@ export function renderWikiPage(): string {
 				setStatus('Total ' + currentRows.length + ' articles');
 			}
 
-			async function submitForm(event) {
-				event.preventDefault();
-				const title = els.title.value.trim();
-				if (!title) {
-					setStatus('Title is required');
-					return;
-				}
-				const author = els.author.value.trim() || 'fistingguide';
-
-				const payload = {
-					author: author,
-					title: title,
-					content: (els.content.value || 'for test')
-				};
-				const method = editingId ? 'PUT' : 'POST';
-				const url = editingId ? '/api/wiki/' + editingId : '/api/wiki';
-
-				const res = await fetch(url, {
-					method: method,
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify(payload)
-				});
-				if (!res.ok) {
-					setStatus('Save failed');
-					return;
-				}
-
-				window.alert(editingId ? 'Article updated successfully.' : 'Article created successfully.');
-				resetForm();
-				await loadRows();
-			}
-
-			async function deleteCurrent() {
-				if (!editingId) return;
-				if (!confirm('Delete article #' + editingId + '?')) return;
-				const deletePassword = window.prompt('Enter delete password to continue:');
-				if (!deletePassword) {
-					setStatus('Delete cancelled: password is required.');
-					return;
-				}
-
-				const res = await fetch('/api/wiki/' + editingId, {
-					method: 'DELETE',
-					headers: { 'x-delete-password': deletePassword }
-				});
-				if (!res.ok) {
-					const msg = await res.text();
-					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						window.alert('密码输入错误');
-						return;
-					}
-					setStatus(msg ? 'Delete failed: ' + msg : 'Delete failed');
-					return;
-				}
-
-				window.alert('Article deleted successfully.');
-				resetForm();
-				await loadRows();
-			}
-
-			async function deleteById(id) {
-				if (!confirm('Delete article #' + id + '?')) return;
-				const deletePassword = window.prompt('Enter delete password to continue:');
-				if (!deletePassword) {
-					setStatus('Delete cancelled: password is required.');
-					return;
-				}
-				const res = await fetch('/api/wiki/' + id, {
-					method: 'DELETE',
-					headers: { 'x-delete-password': deletePassword }
-				});
-				if (!res.ok) {
-					const msg = await res.text();
-					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						window.alert('密码输入错误');
-						return;
-					}
-					setStatus(msg ? 'Delete failed: ' + msg : 'Delete failed');
-					return;
-				}
-				window.alert('Article deleted successfully.');
-				if (editingId === id) {
-					resetForm();
-				}
-				await loadRows();
-			}
-
-			els.form.addEventListener('submit', submitForm);
-			els.deleteBtn.addEventListener('click', deleteCurrent);
-			els.resetBtn.addEventListener('click', resetForm);
-			els.rows.addEventListener('click', function (event) {
-				const target = event.target;
-				if (!(target instanceof HTMLElement)) return;
-				const action = target.dataset.action;
-				const id = Number(target.dataset.id || '0');
-				if (!id || !action) return;
-				const row = currentRows.find(function (item) { return item.id === id; });
-				if (!row) return;
-				if (action === 'edit') fillForm(row);
-				if (action === 'delete') deleteById(id);
-			});
-
-			resetForm();
 			loadRows();
 		</script>
-		<script>
-			(function () {
-				const select = document.getElementById('wikiPageNav');
-				const mount = document.getElementById('wikiPageNavCustom');
-				if (!select || !mount) return;
-				function esc(v) {
-					return String(v || '')
-						.replace(/&/g, '&amp;')
-						.replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;')
-						.replace(/"/g, '&quot;')
-						.replace(/'/g, '&#39;');
-				}
-				function closeMenu() { mount.classList.remove('open'); }
-				function render() {
-					const options = Array.from(select.options || []);
-					const selectedValue = String(select.value || '');
-					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
-						'<div class="mobile-select-menu" role="listbox">' +
-							options.map(function (opt) {
-								const value = String(opt.value || '');
-								const selectedClass = value === selectedValue ? ' is-selected' : '';
-								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
-							}).join('') +
-						'</div>';
-					const trigger = mount.querySelector('.mobile-select-trigger');
-					const menu = mount.querySelector('.mobile-select-menu');
-					if (!trigger || !menu) return;
-					trigger.addEventListener('click', function (event) {
-						event.preventDefault();
-						mount.classList.toggle('open');
-					});
-					menu.addEventListener('click', function (event) {
-						const btn = event.target.closest('.mobile-select-option');
-						if (!btn) return;
-						const nextValue = btn.getAttribute('data-value') || '';
-						if (nextValue) window.location.href = nextValue;
-						closeMenu();
-					});
-				}
-				select.addEventListener('change', render);
-				render();
-				document.documentElement.classList.add('mobile-select-ready');
-				document.addEventListener('click', function (event) {
-					if (!event.target.closest('#wikiPageNavCustom')) closeMenu();
-				});
-				document.addEventListener('keydown', function (event) {
-					if (event.key === 'Escape') closeMenu();
-				});
-			})();
-		</script>
-
 		<script>
 			(function () {
 				const key = 'age_verified_18_v1';
@@ -5688,9 +6016,62 @@ export function renderWikiPage(): string {
 
 export function renderWikiArticlePage(article: WikiArticleRecord): string {
 	const title = escapeHtml(article.title || "Untitled");
-	const content = escapeHtml(article.content || "");
+	const rawContent = String(article.content || "");
 	const updated = escapeHtml(article.updated_at || article.created_at || "");
 	const author = escapeHtml(article.author || "fistingguide");
+	const rawAuthorHandle = String(article.author_handle || "").trim();
+	const normalizedHandle = rawAuthorHandle
+		? (rawAuthorHandle.startsWith("@") ? rawAuthorHandle : `@${rawAuthorHandle}`)
+		: "";
+	const resolvedAuthorUrl = String(article.author_url || "").trim() || (normalizedHandle ? `https://x.com/${normalizedHandle.replace(/^@/, "")}` : "");
+	const authorHandle = escapeHtml(normalizedHandle);
+	const authorUrl = escapeHtml(resolvedAuthorUrl);
+	const authorAvatar = escapeHtml(String(article.author_avatar || "").trim());
+	const introMatch = rawContent.match(/作者简介(?:是)?[:：]\s*([\s\S]*?)(?:\n{2,}|$)/);
+	const authorIntro = escapeHtml((introMatch?.[1] || "").trim());
+	const markdownContent = rawContent.replace(/作者简介(?:是)?[:：]\s*([\s\S]*?)(?:\n{2,}|$)/, "").trim();
+	const contentHtml = renderMarkdown(markdownContent);
+	const authorHandleHtml = authorHandle
+		? (authorUrl
+			? ` <a href="${authorUrl}" target="_blank" rel="noopener noreferrer">${authorHandle}</a>`
+			: ` ${authorHandle}`)
+		: "";
+	const authorBannerInner = `
+		<svg class="author-banner-svg" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true">
+			<defs>
+				<linearGradient id="authorBannerBg" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stop-color="#0B0E12" />
+					<stop offset="55%" stop-color="#10151C" />
+					<stop offset="100%" stop-color="#151A22" />
+				</linearGradient>
+				<linearGradient id="authorBannerAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stop-color="#7e0202" />
+					<stop offset="100%" stop-color="#320101" />
+				</linearGradient>
+			</defs>
+			<rect x="0" y="0" width="1200" height="220" fill="url(#authorBannerBg)" />
+			<path d="M0,188 L560,122 L1200,152 L1200,220 L0,220 Z" fill="rgba(255,255,255,0.03)" />
+			<path d="M0,204 L430,152 L1200,176 L1200,220 L0,220 Z" fill="rgba(126,2,2,0.20)" />
+			<rect x="0" y="0" width="8" height="220" fill="url(#authorBannerAccent)" />
+		</svg>
+		<div class="author-banner-content">
+			${authorAvatar
+				? `<img class="author-banner-avatar" src="${authorAvatar}" alt="${author}" loading="lazy" referrerpolicy="no-referrer" />`
+				: `<span class="author-banner-avatar author-banner-avatar-placeholder">A</span>`}
+			<div class="author-banner-text">
+				<div class="author-banner-name">${author}</div>
+				<div class="author-banner-handle">${authorHandle || "@fistingguide"}</div>
+			</div>
+			<span class="author-banner-xmark" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="currentColor">
+					<path d="M18.9 2H22l-6.77 7.74L23 22h-6.09l-4.78-6.26L6.65 22H3.5l7.23-8.27L1 2h6.25l4.32 5.69L18.9 2zm-1.07 18h1.69L6.33 3.9H4.5L17.83 20z"></path>
+				</svg>
+			</span>
+		</div>
+	`;
+	const authorBannerHtml = authorUrl
+		? `<a class="author-banner" href="${authorUrl}" target="_blank" rel="noopener noreferrer">${authorBannerInner}</a>`
+		: `<div class="author-banner">${authorBannerInner}</div>`;
 	return `
 <!DOCTYPE html>
 <html lang="en">
@@ -5726,54 +6107,117 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				padding: 16px;
 				box-shadow: 0 8px 20px rgba(15, 20, 25, 0.08);
 			}
-			.head { display: grid; gap: 12px; }
-			.top-nav { display: flex; flex-wrap: nowrap; gap: 12px; justify-content: flex-end; }
-			.nav-btn {
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-				flex: 0 0 auto;
-				text-decoration: none;
-				background: #71767B;
-				color: #FFFFFF;
-				padding: 12px 24px;
-				border-radius: 18px;
-				font-size: 16px;
-				font-weight: 600;
-				white-space: nowrap;
-			}
-			.nav-btn.primary { background: var(--primary); }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
-			.mobile-nav-row { display: none; width: 100%; }
-			.mobile-nav {
-				width: 100%;
-				height: 42px;
-				border: 1px solid var(--line);
-				border-radius: 10px;
-				background: #0F1419;
-				color: var(--text);
-				padding: 0 12px;
-				font: inherit;
-			}
 			.article {
-				max-width: 760px;
-				margin: 0 auto;
 				display: grid;
 				gap: 14px;
 			}
-			.article-title-row {
+			.article h1 { margin: 0; font-size: 25px; line-height: 1.2; color: #FFFFFF; }
+			.meta { color: var(--muted); font-size: 16px; }
+			.meta a {
+				color: inherit;
+				text-decoration: none;
+			}
+			.meta a:hover { text-decoration: underline; }
+			.author-banner {
+				position: relative;
+				display: block;
+				overflow: hidden;
+				padding: 0;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: #0F1419;
+				text-decoration: none;
+				color: var(--text);
+			}
+			.author-banner:hover { border-color: var(--primary); }
+			.author-banner-svg {
+				display: block;
+				width: 100%;
+				height: 110px;
+			}
+			.author-banner-content {
+				position: absolute;
+				inset: 0;
 				display: flex;
 				align-items: center;
-				justify-content: space-between;
-				gap: 12px;
+				gap: 14px;
+				padding: 0 16px;
 			}
-			.article h1 { margin: 0; font-size: 44px; line-height: 1.15; }
-			.meta { color: var(--muted); font-size: 14px; }
-			.article-body {
-				white-space: pre-wrap;
-				line-height: 1.9;
+			.author-banner-avatar {
+				width: 68px;
+				height: 68px;
+				border-radius: 50%;
+				object-fit: cover;
+				flex: 0 0 auto;
+				background: #111;
+			}
+			.author-banner-avatar-placeholder {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--muted);
+			}
+			.author-banner-text { display: grid; gap: 5px; }
+			.author-banner-name { font-size: 24px; color: #FFFFFF; line-height: 1.05; }
+			.author-banner-handle {
 				font-size: 18px;
+				color: #A7B1BC;
+				letter-spacing: 0.03em;
+				line-height: 1.1;
+			}
+			.author-banner-xmark {
+				margin-left: auto;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 28px;
+				height: 28px;
+				color: #CED6DD;
+				opacity: 0.9;
+			}
+			.author-banner-xmark svg { width: 20px; height: 20px; }
+			.author-intro {
+				white-space: pre-line;
+				line-height: 1.5;
+				font-size: 20px;
 				color: #E7E9EA;
+				padding: 12px;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: #0F1419;
+			}
+			.article-body {
+				line-height: 1.65;
+				font-size: 20px;
+				color: var(--muted);
+			}
+			.article-body h2,
+			.article-body h3,
+			.article-body h4,
+			.article-body h5,
+			.article-body h6 {
+				margin: 14px 0 8px;
+				color: var(--muted);
+				line-height: 1.25;
+			}
+			.article-body p { margin: 0 0 10px; }
+			.article-body ol {
+				margin: 0 0 10px 22px;
+				padding: 0;
+			}
+			.article-body li { margin: 0 0 6px; }
+			.article-body a {
+				color: #9CCAFF;
+				text-decoration: underline;
+				text-underline-offset: 2px;
+			}
+			.article-body code {
+				background: rgba(255, 255, 255, 0.08);
+				border: 1px solid var(--line);
+				border-radius: 6px;
+				padding: 0 6px;
+				color: #F3F7FB;
+				font-size: 0.92em;
 			}
 			.age-gate-overlay {
 				position: fixed;
@@ -5816,26 +6260,26 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 					background: transparent;
 					box-shadow: none;
 				}
-				.top-nav { display: none; }
-				.mobile-nav-row { display: block; }
-				.lang-switch {
-					height: 34px;
-					font-size: 13px;
-					background-color: #000000;
-					border: 0;
-					border-bottom: 1px solid var(--line);
-					border-radius: 0;
-					color: #8B98A5;
-					appearance: none;
-					-webkit-appearance: none;
-					-moz-appearance: none;
-					padding: 0 24px 0 0;
-					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-					background-repeat: no-repeat;
-					background-position: right 2px center;
-				}
-				.article h1 { font-size: 30px; }
-				.article-body { font-size: 16px; }
+				.article h1 { font-size: 14px; }
+				.meta { font-size: 12px; }
+				.author-banner { border-radius: 10px; }
+				.author-banner-svg { height: 90px; }
+				.author-banner-content { padding: 0 10px; gap: 10px; }
+				.author-banner-avatar { width: 52px; height: 52px; }
+				.author-banner-name { font-size: 17px; }
+				.author-banner-handle { font-size: 14px; }
+				.author-banner-xmark { width: 22px; height: 22px; }
+				.author-banner-xmark svg { width: 16px; height: 16px; }
+				.author-intro { font-size: 12px; padding: 10px; border-radius: 10px; }
+				.article-body { font-size: 12px; }
+				.article-body h2,
+				.article-body h3,
+				.article-body h4,
+				.article-body h5,
+				.article-body h6 { margin: 10px 0 6px; }
+				.article-body p,
+				.article-body ol,
+				.article-body li { margin-bottom: 8px; }
 			}
 		</style>
 		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
@@ -5854,31 +6298,12 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 
 		<div class="wrap">
-			<section class="card head">
-				<nav class="top-nav">
-					<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
-					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
-					<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
-					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
-				</nav>
-				<div class="mobile-nav-row">
-					<select class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-						<option value="/" data-i18n="nav_ranking">Performers List</option>
-						<option value="/admin" data-i18n="nav_add">Add new</option>
-						<option value="/dashboard" data-i18n="nav_star">Map</option>
-						<option value="/wiki" selected data-i18n="nav_wiki">Fisting Wiki</option>
-						<option value="/about" data-i18n="nav_about">About</option>
-					</select>
-				</div>
-			</section>
 			<section class="card article">
-				<div class="article-title-row">
-					<h1>${title}</h1>
-					${renderLanguageSwitcher("wikiArticleLangSwitch")}
-				</div>
-				<div class="meta"><span data-i18n="article_by">By</span> ${author} | <span data-i18n="article_updated">Updated</span> ${updated}</div>
-				<div class="article-body">${content}</div>
+				<h1>${title}</h1>
+				${authorBannerHtml}
+				<div class="meta"><span data-i18n="article_by">By</span> ${author}${authorHandleHtml} | <span data-i18n="article_updated">Updated</span> ${updated}</div>
+				${authorIntro ? `<div class="author-intro">${authorIntro}</div>` : ""}
+				<div class="article-body">${contentHtml}</div>
 			</section>
 		</div>
 
@@ -5906,6 +6331,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 </html>
 `;
 }
+
 
 
 

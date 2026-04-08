@@ -1,6 +1,7 @@
 import {
 	renderAdminPage,
 	renderAboutPage,
+	renderAuthorCallPage,
 	renderDashboardPage,
 	renderLeaderboardPage,
 	renderListStarPage,
@@ -74,6 +75,82 @@ type SeoOptions = {
 
 type SeoPageKey = "ranking" | "admin" | "dashboard" | "about" | "wiki";
 type SeoLocalePack = Record<SeoPageKey, { title: string; description: string }>;
+
+const FEATURED_WIKI_ARTICLE_ID = 900001;
+const FEATURED_WIKI_ARTICLE: WikiArticleRecord & {
+	author_avatar?: string;
+	author_handle?: string;
+	author_url?: string;
+	is_fixed?: boolean;
+} = {
+	id: FEATURED_WIKI_ARTICLE_ID,
+	title: "拳交问题解答",
+	content: `1.如何正确灌肠：
+首先，酒店的淋浴头不推荐。淋浴头很脏而且金属头容易划破脆弱的肠道，建议用专用的灌肠喷头接到淋浴头上再进行灌肠。其次，我们要明确的是，并不是灌的越深越干净，初学者及不挑战深拳的不建议灌深，把二道口以下灌干净就好了。下面是推荐的灌肠过程：（1）脱掉裤子，排空粪便后，洗干净肛周。
+（2）在肛门周围用润滑油或者石蜡油润滑，把灌肠管轻轻插入肛门2-3cm，慢慢打开水龙头，用接近体温的温水进行灌肠。
+（3）感到肚子微微有点涨后，关闭水龙头，憋住3-5分钟，轻柔肚子，让水和粪便充分融合，再排出水和粪便。
+（4）重复以上步骤直至无粪便排出，排出的水为清澈。
+2.拳交推荐的润滑油：
+推荐魔术粉，淘宝店铺有卖。推荐玩的前一天配置好，静置一晚能溶解更充分。用热水冲泡，按照2个瓶盖的粉配1瓶500ml水来配比，一定要充分大力混匀，没有白色粉末结晶后，静置一晚待气泡排出后可以使用。不建议任何带有舒缓，薄荷添加等的润滑液，使用这些润滑液会刺激肛门和肠道，导致“辣屁股”。不建议使用带有麻醉性质的舒缓膏。痛是人体重要的防御感觉，拳交过程中感到痛应根据情况充分润滑扩张，或者停止拳交。不顾及痛感暴力继续的，很可能受伤流血，甚至肛裂。
+其他的食品级的起酥油，黑魂，云泥沙的也可以尝试。
+3.玩拳后会变松吗，老了会收不回去被护工打吗
+人的肛门受括约肌支配，成年人在未接受专业训练的情况下，肛门直径可以达到4.5cm，能进入4根手指，在进行专业训练扩肛后，局部括约肌可以达到10cm左右，一般小手拳攻的手直径在6.5cm-7cm，所以在充分扩张润滑后，进入一只手是不会损伤括约肌的。但是，括约肌就像一根橡皮筋，如果暴力进入，很容易把橡皮筋撑坏，导致肛裂，血流成河。正常玩拳不用担心，不玩的时候多做提肛训练，是不会导致肛门变松的。
+4.玩拳应该准备什么
+防水护理垫：避免油弄脏床单，方便清洁。
+合适尺寸的手套：这个因人而异，有些拳受会觉得手套会有异物感。但是拳前无论是否佩戴手套，指甲一定要剪短并且用锉刀修整平滑，用手指对着自己大腿划，以没有任何尖锐感为主。个人习惯佩戴手套，用小一码的手套使其和手更加贴合，也可以保证自己手上小的倒刺或指甲不划伤拳受肛门，更安全。
+灌肠：充分的肠道准备，干净的肠道是对彼此的尊重。粪便也会在后续拳交过程中产生很强的异物感，而且容易划伤肠道。
+粘稠的润滑油：拳的过程中肠道会分泌肠液冲淡润滑油，推荐使用稍粘的润滑油。过稀的润滑油起不到润滑效果，容易受伤。
+辅助用品（用来放松身体的）：按拳受个人体验选择。
+适宜的室温、柔和的灯光：适宜温暖的房间温度和灯光可以让拳受身体更容易放松下来，使拳交过程更顺利。
+尺寸合适的假阳具：可以作为扩张过程中的辅助。
+充分的前戏：拳交是个互动的过程，要在前面充分建立起拳攻拳受间的信任，同时通过前戏增加情趣，让拳受更好的放松下来。
+体位：扩开过程中，推荐胸膝位，就是在拳片中经常看到的跪着拳。双腿跪在床边，尽可能把屁股抬高，头贴到床上，手自然下垂。这个体位更容易使肛门放松。
+5.拳会传染艾滋等传染病吗
+不会。艾滋病毒在油里无法存活。
+那么另外的传染病比如尖锐湿疣，HPV病毒是有可能通过性接触传播的，包括但不限于性交，肛交和口交。在拳交过程中，无法避免会有肠道细小黏膜的破损，如果再加上拳攻手上有破损，是有几率感染上的，也提醒大家注意个人防护安全。
+
+作者简介是：玩拳十年的小手拳攻，也是一个刚毕业的医生。爱好rubber乳胶，喜欢穿着胶拳逼，另外还玩穿刺，深喉，喜欢玩有趣的，欢迎私信约拳。`,
+	author: "皮卡丘",
+	created_at: "2026-04-08T00:00:00.000Z",
+	updated_at: "2026-04-08T00:00:00.000Z",
+	author_avatar: "https://pbs.twimg.com/profile_images/1550105430507995138/nf8qq7c8_400x400.jpg",
+	author_handle: "@fisterloving",
+	author_url: "https://x.com/fisterloving",
+	is_fixed: true,
+};
+
+FEATURED_WIKI_ARTICLE.title = "拳交问题解答";
+FEATURED_WIKI_ARTICLE.author = "皮卡丘";
+FEATURED_WIKI_ARTICLE.content = `# 如何正确灌肠：
+首先，酒店的淋浴头不推荐。淋浴头很脏而且金属头容易划破脆弱的肠道，建议用专用的灌肠喷头接到淋浴头上再进行灌肠。其次，我们要明确的是，并不是灌的越深越干净，初学者及不挑战深拳的不建议灌深，把二道口以下灌干净就好了。下面是推荐的灌肠过程：
+1. 脱掉裤子，排空粪便后，洗干净肛周。
+2. 在肛门周围用润滑油或者石蜡油润滑，把灌肠管轻轻插入肛门2-3cm，慢慢打开水龙头，用接近体温的温水进行灌肠。
+3. 感到肚子微微有点涨后，关闭水龙头，憋住3-5分钟，轻柔肚子，让水和粪便充分融合，再排出水和粪便。
+4. 重复以上步骤直至无粪便排出，排出的水为清澈。
+
+# 拳交推荐的润滑油：
+推荐魔术粉，淘宝店铺有卖。推荐玩的前一天配置好，静置一晚能溶解更充分。用热水冲泡，按照2个瓶盖的粉配1瓶500ml水来配比，一定要充分大力混匀，没有白色粉末结晶后，静置一晚待气泡排出后可以使用。不建议任何带有舒缓，薄荷添加等的润滑液，使用这些润滑液会刺激肛门和肠道，导致“辣屁股”。不建议使用带有麻醉性质的舒缓膏。痛是人体重要的防御感觉，拳交过程中感到痛应根据情况充分润滑扩张，或者停止拳交。不顾及痛感暴力继续的，很可能受伤流血，甚至肛裂。
+其他的食品级的起酥油，黑魂，云泥沙的也可以尝试。
+
+# 玩拳后会变松吗，老了会收不回去被护工打吗
+人的肛门受括约肌支配，成年人在未接受专业训练的情况下，肛门直径可以达到4.5cm，能进入4根手指，在进行专业训练扩肛后，局部括约肌可以达到10cm左右，一般小手拳攻的手直径在6.5cm-7cm，所以在充分扩张润滑后，进入一只手是不会损伤括约肌的。但是，括约肌就像一根橡皮筋，如果暴力进入，很容易把橡皮筋撑坏，导致肛裂，血流成河。正常玩拳不用担心，不玩的时候多做提肛训练，是不会导致肛门变松的。
+
+# 玩拳应该准备什么
+1. 防水护理垫：避免油弄脏床单，方便清洁。
+2. 合适尺寸的手套：这个因人而异，有些拳受会觉得手套会有异物感。但是拳前无论是否佩戴手套，指甲一定要剪短并且用锉刀修整平滑，用手指对着自己大腿划，以没有任何尖锐感为主。个人习惯佩戴手套，用小一码的手套使其和手更加贴合，也可以保证自己手上小的倒刺或指甲不划伤拳受肛门，更安全。
+3. 灌肠：充分的肠道准备，干净的肠道是对彼此的尊重。粪便也会在后续拳交过程中产生很强的异物感，而且容易划伤肠道。
+4. 粘稠的润滑油：拳的过程中肠道会分泌肠液冲淡润滑油，推荐使用稍粘的润滑油。过稀的润滑油起不到润滑效果，容易受伤。
+5. 辅助用品（用来放松身体的）：按拳受个人体验选择。
+6. 适宜的室温、柔和的灯光：适宜温暖的房间温度和灯光可以让拳受身体更容易放松下来，使拳交过程更顺利。
+7. 尺寸合适的假阳具：可以作为扩张过程中的辅助。
+8. 充分的前戏：拳交是个互动的过程，要在前面充分建立起拳攻拳受间的信任，同时通过前戏增加情趣，让拳受更好的放松下来。
+9. 体位：扩开过程中，推荐胸膝位，就是在拳片中经常看到的跪着拳。双腿跪在床边，尽可能把屁股抬高，头贴到床上，手自然下垂。这个体位更容易使肛门放松。
+
+# 拳会传染艾滋等传染病吗
+不会。艾滋病毒在油里无法存活。
+那么另外的传染病比如尖锐湿疣，HPV病毒是有可能通过性接触传播的，包括但不限于性交，肛交和口交。在拳交过程中，无法避免会有肠道细小黏膜的破损，如果再加上拳攻手上有破损，是有几率感染上的，也提醒大家注意个人防护安全。
+
+作者简介是：玩拳十年的小手拳攻，也是一个刚毕业的医生。爱好rubber乳胶，喜欢穿着胶拳逼，另外还玩穿刺，深喉，喜欢玩有趣的，欢迎私信约拳。`;
 
 const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 	en: {
@@ -423,7 +500,7 @@ function buildSitemapXml(
 	origin: string,
 	wikiRows: Array<Pick<WikiArticleRecord, "id" | "updated_at" | "created_at">>,
 ): string {
-	const staticPages = ["/", "/list-star", "/about", "/dashboard", "/wiki"];
+	const staticPages = ["/", "/list-star", "/author-call", "/about", "/dashboard", "/wiki"];
 	const staticUrls = staticPages.map(
 		(pathname) =>
 			`  <url><loc>${escapeXml(new URL(pathname, origin).toString())}</loc><changefreq>daily</changefreq></url>`,
@@ -434,10 +511,14 @@ function buildSitemapXml(
 		const lastmod = lastmodRaw ? `<lastmod>${escapeXml(new Date(lastmodRaw).toISOString())}</lastmod>` : "";
 		return `  <url><loc>${escapeXml(loc)}</loc>${lastmod}<changefreq>weekly</changefreq></url>`;
 	});
+	const featuredWikiUrl = `  <url><loc>${escapeXml(
+		new URL(`/wiki/article/${FEATURED_WIKI_ARTICLE_ID}`, origin).toString(),
+	)}</loc><lastmod>${escapeXml(FEATURED_WIKI_ARTICLE.updated_at)}</lastmod><changefreq>weekly</changefreq></url>`;
 	return [
 		`<?xml version="1.0" encoding="UTF-8"?>`,
 		`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
 		...staticUrls,
+		featuredWikiUrl,
 		...wikiUrls,
 		`</urlset>`,
 	].join("\n");
@@ -1308,18 +1389,16 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 
 async function ensureWikiSeeded(db: D1Database): Promise<void> {
 	try {
+		await db
+			.prepare("DELETE FROM wiki_articles WHERE lower(title) IN ('for test 1', 'for test 2', 'for test 3')")
+			.run();
+
 		const row = await db.prepare("SELECT COUNT(*) AS total FROM wiki_articles").first<{ total: number | string }>();
 		const total = Number(row?.total ?? 0);
 		if (total > 0) {
 			return;
 		}
-
-		await db
-			.batch([
-				db.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)").bind("For Test 1", "for test", "fistingguide"),
-				db.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)").bind("For Test 2", "for test", "fistingguide"),
-				db.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)").bind("For Test 3", "for test", "fistingguide"),
-			]);
+		return;
 	} catch (error) {
 		console.warn("wiki seed skipped", error);
 	}
@@ -1622,6 +1701,7 @@ export default {
 			pathname === "/admin/delete" ||
 			pathname === "/dashboard" ||
 			pathname === "/list-star" ||
+			pathname === "/author-call" ||
 			pathname === "/about" ||
 			pathname === "/wiki" ||
 			pathname.startsWith("/api/profiles") ||
@@ -1731,6 +1811,16 @@ export default {
 			});
 		}
 
+		if (method === "GET" && pathname === "/author-call") {
+			return htmlResponse(renderAuthorCallPage(), origin, {
+				title: "文章征稿",
+				description: "文章征稿专题页面",
+				pathname: "/author-call",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+			});
+		}
+
 		if (method === "GET" && pathname === "/wiki") {
 			const seo = pageSeo(uiLang, "wiki");
 			return htmlResponse(renderWikiPage(), origin, {
@@ -1750,7 +1840,8 @@ export default {
 
 		if (method === "GET" && wikiArticlePageMatch) {
 			const id = Number(wikiArticlePageMatch[1]);
-			const row = await queryWikiArticleById(env.DB, id);
+			const row =
+				id === FEATURED_WIKI_ARTICLE_ID ? FEATURED_WIKI_ARTICLE : await queryWikiArticleById(env.DB, id);
 			if (!row) {
 				return new Response("Not Found", { status: 404 });
 			}
@@ -1847,7 +1938,9 @@ export default {
 
 		if (method === "GET" && pathname === "/api/wiki") {
 			const rows = await queryWikiArticles(env.DB);
-			return json({ results: rows });
+			const hasFeatured = rows.some((row) => Number(row.id) === FEATURED_WIKI_ARTICLE_ID);
+			const merged = hasFeatured ? rows : [FEATURED_WIKI_ARTICLE, ...rows];
+			return json({ results: merged });
 		}
 
 		if (method === "POST" && pathname === "/api/wiki") {
