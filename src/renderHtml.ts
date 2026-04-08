@@ -4887,6 +4887,18 @@ export function renderListStarPage(): string {
 			}
 			.nav-btn.primary { background: var(--primary); }
 			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 100%;
+			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			.campaign-label {
 				margin: 0 0 12px;
 				font-size: 25px;
