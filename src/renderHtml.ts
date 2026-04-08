@@ -1434,7 +1434,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.event-promo-title {
 				margin: 8px 0 0;
-				font-size: 25px;
+				font-size: 18px;
 				line-height: 1.2;
 				font-weight: 700;
 				letter-spacing: 0.02em;
@@ -1526,8 +1526,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				align-content: center;
 				gap: 8px;
 				border: 0;
-				border-radius: 10px;
-				overflow: hidden;
+				border-radius: 0;
+				overflow: visible;
 				background: transparent;
 				padding: 0;
 				text-decoration: none;
@@ -1693,7 +1693,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					font-size: 13px;
 				}
 				.event-promo-title {
-					font-size: 14px;
+					font-size: 9px;
 					margin: 8px 0 0;
 					color: var(--text);
 				}
