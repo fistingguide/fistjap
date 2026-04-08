@@ -308,7 +308,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
 		campaign_title: "活动",
-		event_title: "List Star 拳星计划",
+		event_title: "List Star",
 		event_description:
 			"List Star 拳星计划启动！为期一个月，我们将在网站和X上免费推广优秀 Fisting 爱好者！成为 List Star 可获得 \n1. 官方List排名置顶\n2. 一张专属海报\n3. 官方X平台宣传\n\n如何参与？\n私信 @fistingguide，发送：1张你的照片，1张或1条玩法视频/照片以及简短自我介绍",
 		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22",
@@ -396,7 +396,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
 		campaign_title: "活動",
-		event_title: "List Star 拳星計畫",
+		event_title: "List Star",
 		event_description:
 			"List Star 拳星計畫啟動！為期一個月，我們將在網站和X上免費推廣優秀 Fisting 愛好者！成為 List Star 可獲得 \n1. 官方List排名置頂\n2. 一張專屬海報\n3. 官方X平台宣傳\n\n如何參與？\n私訊 @fistingguide，發送：1張你的照片，1張或1條玩法影片/照片以及簡短自我介紹",
 		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b",
@@ -1483,6 +1483,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.discord-icon-wrap { background: #5865F2; }
 			.x-icon-wrap { background: #000000; }
+			.email-icon-wrap { background: #0F1419; }
 			.discord-promo-icon {
 				width: 36px;
 				height: 36px;
@@ -1540,7 +1541,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				margin: 0 auto;
 			}
 			.mobile-inline-carousel-label {
-				font-size: 23px;
+				font-size: 18px;
 				font-weight: 700;
 				color: #FFFFFF;
 				text-align: center;
@@ -1721,7 +1722,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					gap: 8px;
 				}
 				.mobile-inline-carousel-label {
-					font-size: 12px;
+					font-size: 9px;
 				}
 				.mobile-inline-carousel-title {
 					font-size: 14px;
@@ -1796,6 +1797,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<span class="social-link-icon-wrap x-icon-wrap" aria-hidden="true">
 						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
 							<path d="M18.9 2h3.7l-8.09 9.25L24 22h-7.52l-5.9-6.85L4.6 22H.9l8.65-9.89L0 2h7.72l5.33 6.2L18.9 2Zm-1.3 17.8h2.05L6.6 4.1H4.4l13.2 15.7Z"></path>
+						</svg>
+					</span>
+				</a>
+				<a class="social-link" href="mailto:fistingguide@proton.me" aria-label="Send email to fistingguide@proton.me">
+					<span class="social-link-icon-wrap email-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<rect x="2.5" y="5.5" width="19" height="13" rx="2.4" ry="2.4" fill="none" stroke="#FFFFFF" stroke-width="1.8"></rect>
+							<path d="M4 7.5 12 13l8-5.5" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
 						</svg>
 					</span>
 				</a>
