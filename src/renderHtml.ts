@@ -1426,6 +1426,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				overflow: hidden;
 				background: #0A0A0A;
 			}
+			.discord-promo-banner {
+				margin: 10px 0 0;
+			}
 			.event-promo-banner-link {
 				display: block;
 				width: 100%;
@@ -1640,6 +1643,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.event-promo-banner {
 					border-radius: 10px;
 				}
+				.discord-promo-banner {
+					margin: 8px 0 0;
+				}
 				.event-promo-desc {
 					font-size: 12px;
 					margin: 8px 0 0;
@@ -1718,6 +1724,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</header>
+			<div class="event-promo-banner discord-promo-banner">
+				<a class="event-promo-banner-link" href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" aria-label="Open Discord Banner Link">
+					<img class="event-promo-banner-img" src="/assets/mobile-carousel/discord.png" alt="Discord Banner" loading="eager" fetchpriority="high" decoding="async" />
+				</a>
+			</div>
 			<section class="event-promo" aria-label="event promotion">
 				<h2 class="event-promo-title" data-i18n="event_title">List Star</h2>
 				<div class="event-promo-banner">
