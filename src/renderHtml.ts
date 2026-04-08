@@ -59,7 +59,8 @@ const TH_MESSAGES: Record<string, string> = {
 	dashboard_visit_named: "ไปที่ {name}",
 	country_region: "ประเทศ(ภูมิภาค)",
 	all_option: "ทั้งหมด",
-	friendly_links: "ลิงก์เพื่อน",
+	friendly_links: "ความร่วมมือชุมชน",
+	partner_qutoys: "QUTOYS (ส่วนลด 10%)",
 	ranking_location_notice:
 		"1. เว็บไซต์นี้รวบรวมเฉพาะบัญชีผู้ชาย (รวมผู้ใช้ gay และผู้ชายรักต่างเพศที่สนใจการขยายทวารหนัก)\n2. เพื่อความยุติธรรม เว็บไซต์จะสลับบัญชีปักหมุดทุก 10 นาที เพื่อให้ทุกคนมีโอกาสถูกมองเห็นมากขึ้น\n3. ตำแหน่งทั้งหมดบนแผนที่เป็นเพียงตำแหน่งเชิงสาธิต อาจอ้างอิงข้อมูลสาธารณะคร่าว ๆ แต่ถูกทำให้คลุมเครือหรือสุ่มโดยเจตนา จึงไม่ตรงกับตำแหน่งจริงของบุคคล ใช้เพื่อแสดงการกระจายของชุมชนเท่านั้น หากไม่ต้องการให้ชื่อหรือหมุดปรากฏบนแผนที่ ติดต่อฉันได้ตลอดเวลา ฉันจะลบหรือแทนที่ด้วยตำแหน่งสุ่มทั้งหมด เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ที่อยู่จริงของบุคคล\n4. ทุกคนสามารถเพิ่มบัญชีของตัวเองและดูแผนที่ได้ บนมือถือให้กดปุ่มแฮมเบอร์เกอร์เพื่อดูการทำงานเพิ่มเติม\n5. หากมีข้อมูลใด ๆ กรุณาส่งข้อความส่วนตัวถึง @fistingguide",
 	spotlight_title: "ไฮไลต์หมุนเวียน",
@@ -74,6 +75,7 @@ const TH_MESSAGES: Record<string, string> = {
 	wiki_submit_hint: "ส่งบทความไปยัง fistingguide",
 	about_description:
 		"สวัสดี ฉันเป็นผู้ที่สนใจ fisting และเพิ่งสร้างเว็บไซต์นำทางแบบเรียบง่ายเพื่อช่วยให้ค้นหาครีเอเตอร์และบัญชีในชุมชนได้รวดเร็วขึ้น เป้าหมายของเว็บไซต์นี้คือช่วยให้ค้นพบครีเอเตอร์ สำรวจเนื้อหาใหม่ และเชื่อมต่อกับผู้ที่มีความสนใจเดียวกันได้ง่ายขึ้น หากคุณมีข้อเสนอแนะ คำติชม หรืออยากร่วมพัฒนาโครงการนี้ สามารถติดต่อฉันได้ที่ X: @fistingguide หรืออีเมล: fistingguide@proton.me หากคุณไม่ต้องการให้แสดงบนเว็บไซต์ แจ้งฉันได้และฉันจะลบรายการของคุณ ขอบคุณ และหวังว่าโครงการนี้จะช่วยให้ชุมชนเติบโต",
+	campaign_title: "แคมเปญ",
 	event_title: "List Star",
 	event_description:
 		"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
@@ -145,7 +147,8 @@ const VI_MESSAGES: Record<string, string> = {
 	dashboard_visit_named: "Visit {name}",
 	country_region: "quoc gia(vung)",
 	all_option: "Tat ca",
-	friendly_links: "Lien ket ban be",
+	friendly_links: "Hop tac cong dong",
+	partner_qutoys: "QUTOYS (giam 10%)",
 	ranking_location_notice:
 		"1. Website nay chi liet ke cac tai khoan nam (bao gom nguoi dung gay va nam thang quan tam den anal expansion).\n2. De dam bao cong bang, website se xoay tai khoan ghim moi 10 phut de moi nguoi deu co co hoi duoc nhieu nguoi thay hon.\n3. Tat ca vi tri tren ban do chi mang tinh minh hoa. Cac vi tri nay co the duoc danh dau dua tren thong tin cong khai o muc do tong quat, nhung da duoc lam mo hoac ngau nhien co chu dich, vi vay khong the hien vi tri chinh xac cua bat ky ai. Muc dich chi de hien thi phan bo tong quan cua cong dong. Neu ban khong muon ten hoac danh dau cua minh xuat hien tren ban do, hay lien he toi bat cu luc nao, toi se xoa hoac thay bang mot vi tri hoan toan ngau nhien. Website nay khong thu thap, luu tru hay cong khai dia chi cu the cua bat ky ca nhan nao.\n4. Moi nguoi deu co the them tai khoan cua minh va xem ban do. Tren dien thoai, hay bam nut hamburger de xem them thao tac.\n5. Moi thong tin vui long nhan tin @fistingguide.",
 	spotlight_title: "Ghim luan phien",
@@ -160,6 +163,7 @@ const VI_MESSAGES: Record<string, string> = {
 	wiki_submit_hint: "gui bai viet cho fistingguide",
 	about_description:
 		"Xin chao, toi la mot nguoi yeu thich fisting va da tao mot website dieu huong don gian de giup moi nguoi nhanh chong tim thay creator va tai khoan trong cong dong. Muc tieu cua trang la giup tim creator de hon, kham pha noi dung moi va ket noi voi nhung nguoi co cung so thich. Neu ban co goi y, phan hoi hoac muon hop tac cai thien du an, hay lien he toi tren X: @fistingguide hoac email: fistingguide@proton.me. Neu ban khong muon xuat hien tren website, hay bao toi va toi se go danh sach cua ban.",
+	campaign_title: "Chiến dịch",
 	event_title: "List Star",
 	event_description:
 		"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
@@ -200,7 +204,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "Visit {name}",
 		country_region: "country(region)",
 		all_option: "All",
-		friendly_links: "Friendly Links",
+		friendly_links: "Community Partners",
+		partner_qutoys: "QUTOYS (10% OFF)",
 		ranking_location_notice:
 			"1. This website only lists male accounts (including gay users and straight men interested in anal expansion).\n2. To keep things fair, the site rotates the pinned spotlight account every 10 minutes, so everyone gets a chance to be seen.\n3. All map locations on this site are illustrative markers. They may be roughly based on public info, but are intentionally blurred or randomized, so they do not match any person's exact location and are only used to show the community's general distribution. If you do not want your name or marker shown, contact me anytime and I will remove it or replace it with a fully random location. This site does not collect, store, or publish anyone's specific address information.\n4. Everyone can add their own account and view the map. On mobile, tap the hamburger button to see more actions.\n5. For any information, please DM @fistingguide.",
 		spotlight_title: "Rotating Spotlight",
@@ -215,6 +220,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "submit an article to fistingguide",
 		about_description:
 			"Hello, I am a fisting enthusiast and I recently built a simple navigation website to help people quickly discover creators and accounts in the community. The goal of this site is to make it easier for people to find creators, explore new content, and connect with others who share the same interests. If you have any suggestions, feedback, or would like to collaborate on improving the project, feel free to reach out. You can contact me on X: @fistingguide or by email: fistingguide@proton.me. If you prefer not to appear on the website, just let me know and I will remove your listing. Thank you, and I hope this project can help the community grow.",
+		campaign_title: "Campaign",
 		event_title: "List Star",
 		event_description:
 			"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nDM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.",
@@ -286,7 +292,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "\u8bbf\u95ee{name}",
 		country_region: "\u56fd\u5bb6(\u5730\u533a)",
 		all_option: "\u5168\u90e8",
-		friendly_links: "\u53cb\u60c5\u94fe\u63a5",
+		friendly_links: "\u793e\u533a\u5408\u4f5c",
+		partner_qutoys: "QUTOYS\uff0810%\u6298\u6263\uff09",
 		ranking_location_notice: RANKING_NOTICE_ZH_CN,
 		spotlight_title: "\u8f6e\u64ad\u7f6e\u9876",
 		spotlight_next_switch: "{time} \u540e\u5207\u6362",
@@ -300,6 +307,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u7231\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u4e2a\u7b80\u5355\u7684\u5bfc\u822a\u7f51\u7ad9\uff0c\u5e2e\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u53d1\u73b0\u793e\u533a\u4e2d\u7684\u521b\u4f5c\u8005\u548c\u8d26\u53f7\u3002\u8fd9\u4e2a\u7f51\u7ad9\u7684\u76ee\u6807\u662f\u8ba9\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u521b\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5185\u5bb9\uff0c\u5e76\u4e0e\u6709\u76f8\u540c\u5174\u8da3\u7684\u4eba\u5efa\u7acb\u8054\u7cfb\u3002\u5982\u679c\u4f60\u6709\u5efa\u8bae\u3001\u53cd\u9988\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u8fdb\u8fd9\u4e2a\u9879\u76ee\uff0c\u6b22\u8fce\u8054\u7cfb\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u53d1\u90ae\u4ef6\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73b0\u5728\u7f51\u7ad9\u4e0a\uff0c\u8bf7\u544a\u8bc9\u6211\uff0c\u6211\u4f1a\u5220\u9664\u4f60\u7684\u6761\u76ee\u3002\u8c22\u8c22\uff0c\u5e0c\u671b\u8fd9\u4e2a\u9879\u76ee\u80fd\u5e2e\u52a9\u793e\u533a\u6210\u957f\u3002",
+		campaign_title: "活动",
 		event_title: "List Star 拳星计划",
 		event_description:
 			"List Star 拳星计划启动！为期一个月，我们将在网站和X上免费推广优秀 Fisting 爱好者！成为 List Star 可获得 \n1. 官方List排名置顶\n2. 一张专属海报\n3. 官方X平台宣传\n\n如何参与？\n私信 @fistingguide，发送：1张你的照片，1张或1条玩法视频/照片以及简短自我介绍",
@@ -371,7 +379,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "\u8a2a\u554f{name}",
 		country_region: "\u570b\u5bb6(\u5730\u5340)",
 		all_option: "\u5168\u90e8",
-		friendly_links: "\u53cb\u60c5\u9023\u7d50",
+		friendly_links: "\u793e\u7fa4\u5408\u4f5c",
+		partner_qutoys: "QUTOYS\uff0810%\u6298\u6263\uff09",
 		ranking_location_notice:
 			"1. 本網站僅收錄男性帳號（包含 gay 使用者，以及對肛門擴張感興趣的直男）。\n2. 為了維持公平性，網站每 10 分鐘輪換一次置頂帳號，確保每位使用者都有被更多人看到的機會。\n3. 本網站地圖上顯示的所有位置僅為示意標註。這些位置可能參考公開資訊進行大致標註，但已被刻意模糊化或隨機設定，因此不會對應任何人的精確位置，僅用於展示社群的大致分布情況。若你不希望自己的名稱或標註出現在地圖上，可以隨時聯絡我，我會將其刪除或替換為完全隨機的位置。本網站不會收集、儲存或公開任何個人的具體地址資訊。\n4. 每個人都可以新增自己的帳號並查看地圖，手機端請點擊漢堡按鈕查看更多操作。\n5. 任何資訊請私訊 @fistingguide。",
 		spotlight_title: "\u8f2a\u64ad\u7f6e\u9802",
@@ -386,6 +395,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "\u5411fistingguide\u6295\u7a3f\u6587\u7ae0",
 		about_description:
 			"\u4f60\u597d\uff0c\u6211\u662f\u4e00\u540d fisting \u611b\u597d\u8005\uff0c\u6700\u8fd1\u505a\u4e86\u4e00\u500b\u7c21\u55ae\u7684\u5c0e\u822a\u7db2\u7ad9\uff0c\u5e6b\u52a9\u5927\u5bb6\u66f4\u5feb\u5730\u767c\u73fe\u793e\u7fa4\u4e2d\u7684\u5275\u4f5c\u8005\u8207\u5e33\u865f\u3002\u9019\u500b\u7db2\u7ad9\u7684\u76ee\u6a19\u662f\u8b93\u5927\u5bb6\u66f4\u5bb9\u6613\u627e\u5230\u5275\u4f5c\u8005\uff0c\u63a2\u7d22\u65b0\u5167\u5bb9\uff0c\u4e26\u8207\u6709\u76f8\u540c\u8208\u8da3\u7684\u4eba\u9023\u7d50\u3002\u5982\u679c\u4f60\u6709\u5efa\u8b70\u3001\u56de\u994b\uff0c\u6216\u5e0c\u671b\u4e00\u8d77\u534f\u4f5c\u6539\u9032\u9019\u500b\u5c08\u6848\uff0c\u6b61\u8fce\u806f\u7d61\u6211\u3002\u4f60\u53ef\u4ee5\u5728 X \u627e\u5230\u6211\uff1a@fistingguide\uff0c\u6216\u5bc4\u4fe1\u5230\uff1afistingguide@proton.me\u3002\u5982\u679c\u4f60\u4e0d\u5e0c\u671b\u51fa\u73fe\u5728\u7db2\u7ad9\u4e0a\uff0c\u8acb\u544a\u8a34\u6211\uff0c\u6211\u6703\u79fb\u9664\u4f60\u7684\u689d\u76ee\u3002\u8b1d\u8b1d\uff0c\u5e0c\u671b\u9019\u500b\u5c08\u6848\u80fd\u5e6b\u52a9\u793e\u7fa4\u6210\u9577\u3002",
+		campaign_title: "活動",
 		event_title: "List Star 拳星計畫",
 		event_description:
 			"List Star 拳星計畫啟動！為期一個月，我們將在網站和X上免費推廣優秀 Fisting 愛好者！成為 List Star 可獲得 \n1. 官方List排名置頂\n2. 一張專屬海報\n3. 官方X平台宣傳\n\n如何參與？\n私訊 @fistingguide，發送：1張你的照片，1張或1條玩法影片/照片以及簡短自我介紹",
@@ -457,7 +467,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "{name}\u3078\u79fb\u52d5",
 		country_region: "\u56fd(\u5730\u57df)",
 		all_option: "\u3059\u3079\u3066",
-		friendly_links: "\u76f8\u4e92\u30ea\u30f3\u30af",
+		friendly_links: "\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u9023\u643a",
+		partner_qutoys: "QUTOYS\uff0810%\u5272\u5f15\uff09",
 		ranking_location_notice:
 			"1. このサイトでは男性アカウントのみ掲載します（gayユーザー、および肛門拡張に関心のあるストレート男性を含む）。\n2. 公平性のため、サイトの置頂アカウントは10分ごとにローテーションし、全員に見られる機会を作ります。\n3. サイトの地図上の位置はすべて説明用の表示です。公開情報を参考に大まかに示す場合がありますが、意図的にぼかしやランダム化を行っているため、個人の正確な位置には対応しません。コミュニティの大まかな分布表示のみを目的としています。名前やマーカーの表示を希望しない場合は、いつでも連絡してください。削除または完全ランダム位置への置換に対応します。サイトは個人の具体的住所情報を収集・保存・公開しません。\n4. 誰でも自分のアカウントを追加し、地図を閲覧できます。モバイルではハンバーガーボタンから追加操作を確認してください。\n5. 連絡は @fistingguide へDMしてください。",
 		spotlight_title: "\u30ed\u30fc\u30c6\u30fc\u30b7\u30e7\u30f3\u8868\u793a",
@@ -472,6 +483,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "fistingguide \u3078\u8a18\u4e8b\u3092\u6295\u7a3f",
 		about_description:
 			"\u3053\u3093\u306b\u3061\u306f\u3002\u79c1\u306f fisting \u611b\u597d\u5bb6\u3067\u3001\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3084\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u3059\u3070\u3084\u304f\u898b\u3064\u3051\u3089\u308c\u308b\u3088\u3046\u306b\u3001\u30b7\u30f3\u30d7\u30eb\u306a\u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3\u30b5\u30a4\u30c8\u3092\u4f5c\u308a\u307e\u3057\u305f\u3002\u3053\u306e\u30b5\u30a4\u30c8\u306e\u76ee\u7684\u306f\u3001\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u3092\u63a2\u3057\u3084\u3059\u304f\u3057\u3001\u65b0\u3057\u3044\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u898b\u3064\u3051\u3001\u540c\u3058\u8208\u5473\u3092\u6301\u3064\u4eba\u3068\u3064\u306a\u304c\u308b\u3053\u3068\u3067\u3059\u3002\u3054\u610f\u898b\u30fb\u3054\u611f\u60f3\u30fb\u6539\u5584\u306e\u305f\u3081\u306e\u30b3\u30e9\u30dc\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u304a\u6c17\u8efd\u306b\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002X: @fistingguide \u307e\u305f\u306f\u30e1\u30fc\u30eb: fistingguide@proton.me \u3067\u9023\u7d61\u53ef\u80fd\u3067\u3059\u3002\u30b5\u30a4\u30c8\u306b\u63b2\u8f09\u3055\u308c\u305f\u304f\u306a\u3044\u5834\u5408\u306f\u3001\u304a\u77e5\u3089\u305b\u304f\u3060\u3055\u3044\u3002\u4e00\u89a7\u304b\u3089\u524a\u9664\u3057\u307e\u3059\u3002\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002\u3053\u306e\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u304c\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u6210\u9577\u306b\u5f79\u7acb\u3064\u3053\u3068\u3092\u9858\u3063\u3066\u3044\u307e\u3059\u3002",
+		campaign_title: "キャンペーン",
 		event_title: "List Star",
 		event_description:
 			"List Star \u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u958b\u59cb\uff01\u671f\u9593\u306f1\u304b\u6708\u3002\u30b5\u30a4\u30c8\u3068X\u3067\u512a\u79c0\u306aFisting\u611b\u597d\u5bb6\u3092\u7121\u6599\u3067\u7d39\u4ecb\u3057\u307e\u3059\uff01List Star \u306b\u306a\u308b\u3068\n1. \u516c\u5f0fList\u30e9\u30f3\u30ad\u30f3\u30b0\u306e\u4e0a\u4f4d\u63b2\u8f09\n2. \u5c02\u7528\u30dd\u30b9\u30bf\u30fc1\u679a\n3. \u516c\u5f0fX\u30a2\u30ab\u30a6\u30f3\u30c8\u3067\u306e\u5ba3\u4f1d\n\n\u53c2\u52a0\u65b9\u6cd5\uff1f\n@fistingguide \u3078DM\u3057\u3001\u9001\u4ed8\uff1a\u3042\u306a\u305f\u306e\u5199\u771f1\u679a\u3001\u30d7\u30ec\u30a4\u52d5\u753b/\u5199\u771f1\u70b9\u3001\u77ed\u3044\u81ea\u5df1\u7d39\u4ecb\u3002",
@@ -543,7 +555,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "{name}\ub85c \uc774\ub3d9",
 		country_region: "\uad6d\uac00(\uc9c0\uc5ed)",
 		all_option: "\uc804\uccb4",
-		friendly_links: "\uce5c\uad6c \ub9c1\ud06c",
+		friendly_links: "\ucee4\ubba4\ub2c8\ud2f0 \ud611\uc5c5",
+		partner_qutoys: "QUTOYS (10% \ud560\uc778)",
 		ranking_location_notice:
 			"1. 이 사이트는 남성 계정만 수록합니다(gay 사용자 및 항문 확장에 관심 있는 이성애 남성 포함).\n2. 공정성을 위해 사이트는 10분마다 상단 고정 계정을 순환 노출하여 모든 사용자가 더 많이 보일 기회를 갖게 합니다.\n3. 지도에 표시되는 모든 위치는 안내용 표기입니다. 공개 정보를 참고해 대략적으로 표시될 수 있지만 의도적으로 흐리게 처리되거나 무작위 설정되므로 개인의 정확한 위치와 일치하지 않습니다. 커뮤니티의 대략적 분포 표시 목적입니다. 이름/표시를 원하지 않으면 언제든지 연락해 주세요. 삭제하거나 완전 무작위 위치로 대체합니다. 이 사이트는 개인의 구체적 주소 정보를 수집, 저장, 공개하지 않습니다.\n4. 누구나 자신의 계정을 추가하고 지도를 볼 수 있습니다. 모바일에서는 햄버거 버튼을 눌러 더 많은 기능을 확인하세요.\n5. 문의는 @fistingguide 로 DM 주세요.",
 		spotlight_title: "\uc21c\ud658 \uace0\uc815 \ub178\ucd9c",
@@ -558,6 +571,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "fistingguide\uc5d0 \uae00 \uae30\uace0",
 		about_description:
 			"\uc548\ub155\ud558\uc138\uc694. \uc800\ub294 fisting \uc560\ud638\uac00\uc774\uba70, \ucee4\ubba4\ub2c8\ud2f0\uc5d0\uc11c \ud06c\ub9ac\uc5d0\uc774\ud130\uc640 \uacc4\uc815\uc744 \ube60\ub974\uac8c \ucc3e\uc744 \uc218 \uc788\ub3c4\ub85d \ub2e8\uc21c\ud55c \ub124\ube44\uac8c\uc774\uc158 \uc6f9\uc0ac\uc774\ud2b8\ub97c \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4. \uc774 \uc0ac\uc774\ud2b8\uc758 \ubaa9\ud45c\ub294 \ud06c\ub9ac\uc5d0\uc774\ud130\ub97c \ub354 \uc27d\uac8c \ucc3e\uace0, \uc0c8\ub85c\uc6b4 \ucf58\ud150\uce20\ub97c \ud0d0\uc0c9\ud558\uba70, \uac19\uc740 \uad00\uc2ec\uc0ac\ub97c \uac00\uc9c4 \uc0ac\ub78c\ub4e4\uacfc \uc5f0\uacb0\ud558\ub294 \uac83\uc785\ub2c8\ub2e4. \uc81c\uc548, \ud53c\ub4dc\ubc31, \ud639\uc740 \ud504\ub85c\uc81d\ud2b8 \uac1c\uc120\uc744 \ud568\uaed8\ud558\uace0 \uc2f6\uc73c\uc2dc\uba74 \ud3b8\ud558\uac8c \uc5f0\ub77d\ud574 \uc8fc\uc138\uc694. X \uacc4\uc815 @fistingguide \ub610\ub294 \uc774\uba54\uc77c fistingguide@proton.me \ub85c \uc5f0\ub77d\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc6f9\uc0ac\uc774\ud2b8\uc5d0 \ub178\ucd9c\ub418\uace0 \uc2f6\uc9c0 \uc54a\uc73c\uc2dc\uba74 \uc54c\ub824 \uc8fc\uc138\uc694. \ub9ac\uc2a4\ud305\uc744 \uc81c\uac70\ud574 \ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4. \uac10\uc0ac\ud569\ub2c8\ub2e4. \uc774 \ud504\ub85c\uc81d\ud2b8\uac00 \ucee4\ubba4\ub2c8\ud2f0 \uc131\uc7a5\uc5d0 \ub3c4\uc6c0\uc774 \ub418\uae30\ub97c \ubc14\ub78d\ub2c8\ub2e4.",
+		campaign_title: "캠페인",
 		event_title: "List Star",
 		event_description:
 			"List Star \ud504\ub85c\uc81d\ud2b8 \uc2dc\uc791! \ud55c \ub2ec \ub3d9\uc548 \uc6f9\uc0ac\uc774\ud2b8\uc640 X\uc5d0\uc11c \uc6b0\uc218\ud55c Fisting \uc560\ud638\uac00\ub97c \ubb34\ub8cc\ub85c \ud64d\ubcf4\ud569\ub2c8\ub2e4! List Star\uac00 \ub418\uba74\n1. \uacf5\uc2dd List \ub7ad\ud0b9 \uc0c1\ub2e8 \uace0\uc815\n2. \uc804\uc6a9 \ud3ec\uc2a4\ud130 1\uc7a5\n3. \uacf5\uc2dd X \uacc4\uc815 \ud64d\ubcf4\n\n\ucc38\uc5ec \ubc29\ubc95?\n@fistingguide\uc5d0\uac8c DM\uc73c\ub85c \ubcf4\ub0b4\uc8fc\uc138\uc694: \ubcf8\uc778 \uc0ac\uc9c4 1\uc7a5, \ud50c\ub808\uc774 \uc601\uc0c1/\uc0ac\uc9c4 1\uac1c, \uac04\ub2e8\ud55c \uc790\uae30\uc18c\uac1c.",
@@ -629,7 +643,8 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		dashboard_visit_named: "Visitar a {name}",
 		country_region: "pais(region)",
 		all_option: "Todos",
-		friendly_links: "Enlaces Amigos",
+		friendly_links: "Colaboracion comunitaria",
+		partner_qutoys: "QUTOYS (10% de descuento)",
 		ranking_location_notice:
 			"1. Este sitio solo incluye cuentas masculinas (incluye usuarios gay y hombres heterosexuales interesados en la expansion anal).\n2. Para mantener la equidad, el sitio rota la cuenta fijada cada 10 minutos para que todos tengan oportunidad de ser vistos.\n3. Todas las ubicaciones del mapa son marcas ilustrativas. Pueden basarse de forma aproximada en informacion publica, pero se difuminan o aleatorizan de forma intencional, por lo que no corresponden a la ubicacion exacta de ninguna persona. Solo se usan para mostrar la distribucion general de la comunidad. Si no quieres que aparezcan tu nombre o marcador, contactame en cualquier momento y lo eliminare o lo reemplazare por una ubicacion totalmente aleatoria. Este sitio no recopila, almacena ni publica direcciones especificas de personas.\n4. Cualquiera puede agregar su propia cuenta y ver el mapa. En movil, pulsa el boton hamburguesa para ver mas acciones.\n5. Para cualquier informacion, envia DM a @fistingguide.",
 		spotlight_title: "Destacado Rotativo",
@@ -644,6 +659,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		wiki_submit_hint: "enviar un articulo a fistingguide",
 		about_description:
 			"Hola, soy un entusiasta del fisting y hace poco cree un sitio de navegacion simple para ayudar a descubrir rapidamente creadores y cuentas de la comunidad. El objetivo de este sitio es facilitar encontrar creadores, explorar contenido nuevo y conectar con otras personas que comparten los mismos intereses. Si tienes sugerencias, comentarios o quieres colaborar para mejorar el proyecto, no dudes en escribirme. Puedes contactarme en X: @fistingguide o por correo: fistingguide@proton.me. Si prefieres no aparecer en el sitio web, avisame y eliminare tu listado. Gracias, y espero que este proyecto ayude a que la comunidad siga creciendo.",
+		campaign_title: "Campaña",
 		event_title: "List Star",
 		event_description:
 			"El proyecto List Star esta en marcha. Durante un mes, promocionaremos gratis a destacados entusiastas del Fisting en la web y en X. Si eres List Star, obtendras:\n1. Posicion destacada en el ranking oficial List\n2. Un poster exclusivo\n3. Promocion en la cuenta oficial de X\n\nComo participar?\nEnvia DM a @fistingguide con: 1 foto tuya, 1 video/foto de tu estilo de juego y una breve presentacion.",
@@ -1055,6 +1071,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				--top: #1D9BF0;
 				--primary: #1D9BF0;
 			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
@@ -1174,9 +1193,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				white-space: nowrap;
 			}
 			.nav-btn.secondary { background: #71767B; }
-			.nav-btn.primary { background: #1D9BF0; }
+			.nav-btn.primary { background: var(--primary); }
 			.nav-btn:hover { filter: brightness(1.03); }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
 				width: 100%;
@@ -1393,28 +1412,36 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				border-radius: 12px;
 				background: #0F1419;
 				color: var(--muted);
-				font-size: 13px;
+				font-size: 20px;
 				line-height: 1.5;
 				white-space: pre-line;
 			}
 			.event-promo {
 				margin: 10px 0 0;
-				padding: 14px;
-				border: 1px solid var(--line);
-				border-radius: 12px;
-				background:
-					radial-gradient(circle at 14% 22%, rgba(255, 0, 0, 0.35), transparent 34%),
-					radial-gradient(circle at 88% 78%, rgba(255, 0, 0, 0.24), transparent 32%),
-					linear-gradient(135deg, #120000 0%, #260000 46%, #070707 100%);
+				padding: 10px 0;
+				border: 0;
+				border-radius: 0;
+				background: transparent;
 				overflow: hidden;
 			}
-			.event-promo-title {
-				margin: 0 0 10px;
-				font-size: 17px;
+			.event-promo-campaign {
+				margin: 0 0 8px;
+				font-size: 25px;
 				line-height: 1.2;
-				font-weight: 900;
-				letter-spacing: 0.04em;
-				color: #FFECEC;
+				font-weight: 700;
+				color: #FFFFFF;
+				letter-spacing: 0.02em;
+			}
+			.event-promo-title {
+				margin: 8px 0 0;
+				font-size: 25px;
+				line-height: 1.2;
+				font-weight: 700;
+				letter-spacing: 0.02em;
+				color: #FFFFFF;
+				text-align: center;
+				justify-self: center;
+				grid-column: 1 / 2;
 			}
 			.event-promo-banner {
 				position: relative;
@@ -1422,12 +1449,45 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				place-items: center;
 				width: 100%;
 				border-radius: 10px;
-				border: 1px solid rgba(255, 64, 64, 0.36);
+				border: 0;
 				overflow: hidden;
-				background: #0A0A0A;
+				background: transparent;
 			}
-			.discord-promo-banner {
+			.event-promo-media-grid {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 10px;
+			}
+			.social-links {
 				margin: 10px 0 0;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+			.social-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0;
+				padding: 8px 0;
+				color: #E7E9EA;
+				font-weight: 700;
+				text-decoration: none;
+			}
+			.social-link-icon-wrap {
+				width: 56px;
+				height: 56px;
+				display: grid;
+				place-items: center;
+				border-radius: 8px;
+				flex: 0 0 auto;
+			}
+			.discord-icon-wrap { background: #5865F2; }
+			.x-icon-wrap { background: #000000; }
+			.discord-promo-icon {
+				width: 36px;
+				height: 36px;
+				fill: #FFFFFF;
+				display: block;
 			}
 			.event-promo-banner-link {
 				display: block;
@@ -1440,58 +1500,51 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.event-promo-desc {
 				margin: 10px 0 0;
-				color: #FFD8D8;
-				font-size: 13px;
+				color: var(--muted);
+				font-size: 20px;
 				line-height: 1.5;
 				white-space: pre-line;
 			}
 			.mobile-inline-carousel {
-				display: none;
-				position: relative;
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 10px;
 				margin: 10px 0 0;
-				border-radius: 12px;
-				overflow: hidden;
-				border: 1px solid var(--line);
-				background: #0F1419;
 			}
 			.mobile-inline-carousel-title {
-				display: none;
-				font-size: 12px;
+				display: block;
+				font-size: 25px;
 				font-weight: 700;
-				color: var(--muted);
+				color: #FFFFFF;
 				margin: 8px 0 4px;
 				letter-spacing: 0.02em;
 			}
 			.mobile-inline-carousel-slide {
-				display: none;
-			}
-			.mobile-inline-carousel-slide.is-active {
-				display: block;
+				display: grid;
+				justify-items: center;
+				align-content: center;
+				gap: 8px;
+				border: 0;
+				border-radius: 10px;
+				overflow: hidden;
+				background: transparent;
+				padding: 0;
+				text-decoration: none;
 			}
 			.mobile-inline-carousel img {
 				display: block;
 				width: 100%;
-				aspect-ratio: 16 / 9;
-				object-fit: cover;
+				aspect-ratio: auto;
+				height: auto;
+				object-fit: contain;
+				margin: 0 auto;
 			}
-			.mobile-inline-carousel-dots {
-				position: absolute;
-				left: 0;
-				right: 0;
-				bottom: 8px;
-				display: flex;
-				justify-content: center;
-				gap: 6px;
-				pointer-events: none;
-			}
-			.mobile-inline-carousel-dots span {
-				width: 6px;
-				height: 6px;
-				border-radius: 50%;
-				background: rgba(255, 255, 255, 0.45);
-			}
-			.mobile-inline-carousel-dots span.is-active {
-				background: #FFFFFF;
+			.mobile-inline-carousel-label {
+				font-size: 23px;
+				font-weight: 700;
+				color: #FFFFFF;
+				text-align: center;
+				letter-spacing: 0.02em;
 			}
 			.list {
 				margin: 0;
@@ -1631,20 +1684,31 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.event-promo {
 					padding: 10px 0;
 					border: 0;
-					border-bottom: 1px solid var(--line);
 					border-radius: 0;
 					background: transparent;
 				}
+				.event-promo-campaign {
+					margin: 0 0 8px;
+					font-size: 13px;
+				}
 				.event-promo-title {
 					font-size: 14px;
-					margin: 0 0 8px;
+					margin: 8px 0 0;
 					color: var(--text);
 				}
 				.event-promo-banner {
 					border-radius: 10px;
 				}
-				.discord-promo-banner {
+				.event-promo-media-grid {
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+					gap: 8px;
+				}
+				.social-links {
 					margin: 8px 0 0;
+					gap: 10px;
+				}
+				.social-link {
+					padding: 6px 0;
 				}
 				.event-promo-desc {
 					font-size: 12px;
@@ -1652,19 +1716,15 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					color: var(--muted);
 				}
 				.mobile-inline-carousel {
-					display: block;
 					margin-top: 8px;
-					border: 0;
-					border-radius: 0;
-					background: transparent;
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+					gap: 8px;
+				}
+				.mobile-inline-carousel-label {
+					font-size: 12px;
 				}
 				.mobile-inline-carousel-title {
-					display: block;
-				}
-				.mobile-inline-carousel img {
-					aspect-ratio: auto;
-					height: auto;
-					object-fit: contain;
+					font-size: 14px;
 				}
 				.spotlight-label {
 					font-size: 10px;
@@ -1724,41 +1784,39 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</header>
-			<div class="event-promo-banner discord-promo-banner">
-				<a class="event-promo-banner-link" href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" aria-label="Open Discord Banner Link">
-					<img class="event-promo-banner-img" src="/assets/mobile-carousel/discord.png" alt="Discord Banner" loading="eager" fetchpriority="high" decoding="async" />
+			<div class="social-links" aria-label="Social Links">
+				<a class="social-link" href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" aria-label="Open Discord Link">
+					<span class="social-link-icon-wrap discord-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<path d="M20.3 4.37A17.6 17.6 0 0 0 15.9 3l-.22.45a16.4 16.4 0 0 1 4.12 1.35A13.6 13.6 0 0 0 12 2.4a13.6 13.6 0 0 0-7.8 2.4 16.4 16.4 0 0 1 4.12-1.35L8.1 3a17.6 17.6 0 0 0-4.4 1.37C1.2 8.1.5 11.74.84 15.34a17.8 17.8 0 0 0 5.36 2.67l1.16-1.58c-.62-.23-1.2-.52-1.74-.88.15.11.3.22.46.31 3.25 1.88 6.78 1.88 10.02 0 .16-.09.31-.2.46-.31-.54.36-1.12.65-1.74.88l1.16 1.58a17.8 17.8 0 0 0 5.36-2.67c.4-4.17-.68-7.78-3.05-10.97ZM9.6 13.83c-.92 0-1.67-.85-1.67-1.9 0-1.06.74-1.9 1.67-1.9.93 0 1.68.84 1.67 1.9 0 1.05-.75 1.9-1.67 1.9Zm4.8 0c-.92 0-1.67-.85-1.67-1.9 0-1.06.74-1.9 1.67-1.9.93 0 1.68.84 1.67 1.9 0 1.05-.75 1.9-1.67 1.9Z"></path>
+						</svg>
+					</span>
+				</a>
+				<a class="social-link" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Open FistingGuide on X">
+					<span class="social-link-icon-wrap x-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<path d="M18.9 2h3.7l-8.09 9.25L24 22h-7.52l-5.9-6.85L4.6 22H.9l8.65-9.89L0 2h7.72l5.33 6.2L18.9 2Zm-1.3 17.8h2.05L6.6 4.1H4.4l13.2 15.7Z"></path>
+						</svg>
+					</span>
 				</a>
 			</div>
-			<section class="event-promo" aria-label="event promotion">
-				<h2 class="event-promo-title" data-i18n="event_title">List Star</h2>
-				<div class="event-promo-banner">
-					<a class="event-promo-banner-link" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Open FistingGuide on X">
-						<img class="event-promo-banner-img" src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
-					</a>
-				</div>
-				<p class="event-promo-desc" data-i18n="event_description">List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive
-1. Official List top placement
-2. One exclusive poster
-3. Promotion on the official X account
-
-How to join?
-DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.</p>
-			</section>
-			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">友情链接</div>
-			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Mobile Carousel">
-				<a class="mobile-inline-carousel-slide is-active" href="https://x.com/kikuchi168" target="_self"><img src="/assets/mobile-carousel/1.png" alt="1" loading="eager" fetchpriority="high" decoding="async" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/assets/mobile-carousel/2.png" alt="2" loading="lazy" fetchpriority="low" decoding="async" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/3.png" alt="3" loading="lazy" fetchpriority="low" decoding="async" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/4.png" alt="4" loading="lazy" fetchpriority="low" decoding="async" /></a>
-				<a class="mobile-inline-carousel-slide" href="https://fistjap.fistingguide.workers.dev/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="5" loading="lazy" fetchpriority="low" decoding="async" /></a>
-				<div class="mobile-inline-carousel-dots" aria-hidden="true">
-					<span class="is-active"></span>
-					<span></span>
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
+			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
+			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Brand Links">
+				<a class="mobile-inline-carousel-slide" href="https://x.com/kikuchi168" target="_self"><img src="/assets/mobile-carousel/1.png" alt="KIKUCHI" loading="eager" fetchpriority="high" decoding="async" /><span class="mobile-inline-carousel-label">KIKUCHI</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/assets/mobile-carousel/2.png" alt="PLAYBEAR" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">PLAYBEAR</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://t.co/sSpFX1Z8kk" target="_self"><img src="/assets/mobile-carousel/3.png" alt="QUTOYS" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label" data-i18n="partner_qutoys">QUTOYS(10%折扣)</span></a>
 			</div>
+			<section class="event-promo" aria-label="list star promotion">
+				<h2 class="event-promo-campaign" data-i18n="campaign_title">Campaign</h2>
+				<div class="event-promo-media-grid">
+					<div class="event-promo-banner">
+						<a class="event-promo-banner-link" href="/list-star" target="_self" aria-label="Open List Star Campaign">
+							<img class="event-promo-banner-img" src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+						</a>
+					</div>
+					<h3 class="event-promo-title" data-i18n="event_title">List Star</h3>
+				</div>
+			</section>
 			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<ol class="list">
 				<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>
@@ -1778,8 +1836,6 @@ DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a 
 				let pinnedCountdownEl = null;
 				let pinnedNextSwitchAt = null;
 				let lastPinnedData = null;
-				const mobileInlineCarouselEl = document.getElementById('mobileInlineCarousel');
-				let mobileInlineCarouselTimer = null;
 
 				function esc(v) {
 					return String(v || '')
@@ -1908,71 +1964,6 @@ DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a 
 					pinnedCountdownEl.textContent = String(template).replace('{time}', timeText);
 				}
 
-				function startMobileInlineCarousel() {
-					if (!mobileInlineCarouselEl) return;
-					const slides = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-slide'));
-					const dots = Array.from(mobileInlineCarouselEl.querySelectorAll('.mobile-inline-carousel-dots span'));
-					if (slides.length <= 1) return;
-					const carouselStateKey = 'mobile_inline_carousel_state_v1';
-					const carouselIntervalMs = 5000;
-					const imgUrls = slides.map(function (slide) {
-						const img = slide.querySelector('img');
-						return img ? String(img.getAttribute('src') || '') : '';
-					}).filter(Boolean);
-					// Keep first paint fast, then warm the rest in background to avoid slow switch.
-					setTimeout(function () {
-						imgUrls.slice(1).forEach(function (url) {
-							const preloadImg = new Image();
-							preloadImg.decoding = 'async';
-							preloadImg.src = url;
-						});
-					}, 1200);
-					let index = 0;
-
-					function loadSavedState() {
-						try {
-							const raw = window.localStorage.getItem(carouselStateKey);
-							if (!raw) return;
-							const parsed = JSON.parse(raw);
-							const savedIndex = Number(parsed && parsed.index);
-							const savedAt = Number(parsed && parsed.updatedAt);
-							if (!Number.isFinite(savedIndex) || !Number.isFinite(savedAt)) return;
-							const elapsedSteps = Math.max(0, Math.floor((Date.now() - savedAt) / carouselIntervalMs));
-							index = (savedIndex + elapsedSteps) % slides.length;
-						} catch (_e) {}
-					}
-
-					function saveState() {
-						try {
-							window.localStorage.setItem(carouselStateKey, JSON.stringify({
-								index: index,
-								updatedAt: Date.now()
-							}));
-						} catch (_e) {}
-					}
-
-					function renderSlide() {
-						slides.forEach(function (slide, i) {
-							if (i === index) slide.classList.add('is-active');
-							else slide.classList.remove('is-active');
-						});
-						dots.forEach(function (dot, i) {
-							if (i === index) dot.classList.add('is-active');
-							else dot.classList.remove('is-active');
-						});
-					}
-
-					loadSavedState();
-					renderSlide();
-					saveState();
-					if (mobileInlineCarouselTimer) clearInterval(mobileInlineCarouselTimer);
-					mobileInlineCarouselTimer = setInterval(function () {
-						index = (index + 1) % slides.length;
-						renderSlide();
-						saveState();
-					}, carouselIntervalMs);
-				}
-
 				async function loadPinnedProfile() {
 					const res = await fetch('/api/profiles/pinned');
 					if (!res.ok) return;
@@ -2094,7 +2085,6 @@ DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a 
 				}
 				loadCountries();
 				loadPinnedProfile();
-				startMobileInlineCarousel();
 				setInterval(updatePinnedCountdown, 1000);
 				setInterval(loadPinnedProfile, 30000);
 
@@ -2155,6 +2145,9 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				--primary: #1D9BF0;
 				--danger: #F4212E;
 			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
@@ -2207,8 +2200,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				font-weight: 600;
 				white-space: nowrap;
 			}
-			.nav-btn.primary { background: #1D9BF0; }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
 			.lang-switch {
 				font: inherit;
 				border: 1px solid var(--line);
@@ -3537,6 +3530,9 @@ export function renderDashboardPage(): string {
 				--muted: #71767B;
 				--primary: #1D9BF0;
 			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
@@ -3599,8 +3595,8 @@ export function renderDashboardPage(): string {
 				font-weight: 600;
 				white-space: nowrap;
 			}
-			.nav-btn.primary { background: #1D9BF0; }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
 				width: 100%;
@@ -4303,6 +4299,9 @@ export function renderAboutPage(): string {
 				--muted: #71767B;
 				--primary: #1D9BF0;
 			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
@@ -4363,8 +4362,8 @@ export function renderAboutPage(): string {
 				font-weight: 600;
 				white-space: nowrap;
 			}
-			.nav-btn.primary { background: #1D9BF0; }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
 				width: 100%;
@@ -4660,6 +4659,384 @@ export function renderAboutPage(): string {
 `;
 }
 
+export function renderListStarPage(): string {
+	return `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>List Star</title>
+		<style>
+			:root {
+				--bg: #000000;
+				--card: #16181C;
+				--line: #2F3336;
+				--text: #E7E9EA;
+				--muted: #71767B;
+				--primary: #1D9BF0;
+			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				padding: 20px;
+			}
+			.wrap { width: 80vw; max-width: 80vw; margin: 0 auto; display: grid; gap: 14px; }
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 16px;
+				box-shadow: 0 8px 20px rgba(15, 20, 25, 0.08);
+			}
+			.head {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 10px;
+			}
+			.head-title {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				gap: 10px;
+			}
+			.lang-switch {
+				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 46px;
+				width: 200px;
+			}
+			.head h1 { margin: 0; }
+			.top-nav {
+				display: flex;
+				flex-wrap: nowrap;
+				gap: 12px;
+				justify-content: flex-end;
+			}
+			.nav-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
+				text-decoration: none;
+				background: #71767B;
+				color: #FFFFFF;
+				padding: 12px 24px;
+				border-radius: 18px;
+				font-size: 16px;
+				font-weight: 600;
+				white-space: nowrap;
+			}
+			.nav-btn.primary { background: var(--primary); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
+			.mobile-nav-row { display: none; width: 100%; }
+			.mobile-nav {
+				width: 100%;
+				height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: #0F1419;
+				color: var(--text);
+				padding: 0 12px;
+				font: inherit;
+			}
+			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
+			.campaign-label {
+				margin: 0 0 12px;
+				font-size: 25px;
+				font-weight: 700;
+				color: #FFFFFF;
+			}
+			.poster-box {
+				border-radius: 10px;
+				overflow: hidden;
+				margin-bottom: 12px;
+			}
+			.poster-box img {
+				display: block;
+				width: 100%;
+				height: auto;
+				object-fit: contain;
+			}
+			.event-title {
+				margin: 0 0 10px;
+				font-size: 25px;
+				font-weight: 700;
+				color: #FFFFFF;
+			}
+			.event-desc {
+				margin: 0;
+				color: var(--muted);
+				font-size: 20px;
+				line-height: 1.5;
+				white-space: pre-line;
+			}
+			.age-gate-overlay {
+				position: fixed;
+				inset: 0;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				background: rgba(15, 20, 25, 0.72);
+				z-index: 9999;
+				padding: 16px;
+			}
+			.age-gate-box {
+				background: #16181C;
+				border-radius: 14px;
+				padding: 18px;
+				max-width: 420px;
+				width: 100%;
+				text-align: center;
+				border: 1px solid var(--line);
+			}
+			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+			.age-btn {
+				border: none;
+				border-radius: 10px;
+				padding: 9px 14px;
+				cursor: pointer;
+				font: inherit;
+				color: #FFFFFF;
+			}
+			.age-btn.yes { background: var(--primary); }
+			.age-btn.no { background: #71767B; }
+			@media (max-width: 700px) {
+				body { font-size: 14px; }
+				.head h1 { font-size: 20px; }
+				.wrap { width: 100%; max-width: 100%; gap: 0; }
+				.card {
+					padding: 12px 0;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.head-card {
+					padding: 10px 0 12px;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: transparent;
+					box-shadow: none;
+				}
+				.top-nav { display: none; }
+				.mobile-nav-row { display: flex; width: auto; margin-left: auto; }
+				.lang-switch {
+					height: 34px;
+					font-size: 13px;
+					background-color: #000000;
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					color: #8B98A5;
+					appearance: none;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					padding: 0 24px 0 0;
+					background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238B98A5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+					background-repeat: no-repeat;
+					background-position: right 2px center;
+				}
+				html.mobile-select-ready .mobile-nav { display: none; }
+				html.mobile-select-ready .mobile-select-enhanced { display: block; }
+				.mobile-nav-row .mobile-select-trigger {
+					width: 34px;
+					height: 34px;
+					padding: 0;
+					border: 0;
+					background: transparent;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-trigger .nav-bars { display: inline-grid; gap: 4px; }
+				.mobile-nav-row .mobile-select-trigger .nav-bars span {
+					display: block;
+					width: 16px;
+					height: 1.5px;
+					background: #8B98A5;
+					border-radius: 99px;
+				}
+				.mobile-nav-row .mobile-select-menu {
+					display: none;
+					position: absolute;
+					top: calc(100% + 6px);
+					right: 0;
+					min-width: 168px;
+					background: #000000;
+					border: 1px solid var(--line);
+					border-radius: 10px;
+					overflow: hidden;
+					z-index: 40;
+				}
+				.mobile-nav-row .mobile-select-enhanced.open .mobile-select-menu { display: block; }
+				.mobile-nav-row .mobile-select-option {
+					width: 100%;
+					border: 0;
+					border-bottom: 1px solid #20252B;
+					background: #000000;
+					color: #8B98A5;
+					font: inherit;
+					font-size: 13px;
+					text-align: left;
+					padding: 9px 12px;
+					cursor: pointer;
+				}
+				.mobile-nav-row .mobile-select-option:last-child { border-bottom: 0; }
+				.mobile-nav-row .mobile-select-option.is-selected { color: #E7E9EA; }
+				.campaign-label,
+				.event-title { font-size: 14px; }
+				.event-desc { font-size: 12px; }
+			}
+		</style>
+		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
+	</head>
+	<body>
+		<div class="age-gate-overlay" id="ageGate">
+			<div class="age-gate-box">
+				<h2 data-i18n="age_title">Age Confirmation</h2>
+				<p data-i18n="age_desc">You must be 18+ to enter this site. Are you 18 years old or above?</p>
+				<div class="age-gate-actions">
+					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
+					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
+				</div>
+			</div>
+		</div>
+		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
+
+		<div class="wrap">
+			<section class="card head head-card">
+				<div class="head-title">
+					<h1 data-i18n="event_title">List Star</h1>
+					${renderLanguageSwitcher("listStarLangSwitch")}
+					<div class="mobile-nav-row">
+						<select id="listStarPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+							<option value="/" selected data-i18n="nav_ranking">Performers List</option>
+							<option value="/admin" data-i18n="nav_add">Add new</option>
+							<option value="/dashboard" data-i18n="nav_star">Map</option>
+							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
+							<option value="/about" data-i18n="nav_about">About</option>
+						</select>
+						<div id="listStarPageNavCustom" class="mobile-select-enhanced"></div>
+					</div>
+				</div>
+				<nav class="top-nav">
+					<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
+					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
+					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
+					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
+					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
+				</nav>
+			</section>
+
+			<section class="card">
+				<h2 class="campaign-label" data-i18n="campaign_title">Campaign</h2>
+				<div class="poster-box">
+					<img src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+				</div>
+				<h3 class="event-title" data-i18n="event_title">List Star</h3>
+				<p class="event-desc" data-i18n="event_description">List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive
+1. Official List top placement
+2. One exclusive poster
+3. Promotion on the official X account
+
+How to join?
+DM @fistingguide and send: 1 photo of yourself, 1 play-style video/photo, and a short self-introduction.</p>
+			</section>
+		</div>
+
+		${renderI18nScript("event_title")}
+		<script>
+			(function () {
+				const select = document.getElementById('listStarPageNav');
+				const mount = document.getElementById('listStarPageNavCustom');
+				if (!select || !mount) return;
+				function esc(v) {
+					return String(v || '')
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+				function closeMenu() { mount.classList.remove('open'); }
+				function render() {
+					const options = Array.from(select.options || []);
+					const selectedValue = String(select.value || '');
+					mount.innerHTML =
+						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
+						'<div class="mobile-select-menu" role="listbox">' +
+							options.map(function (opt) {
+								const value = String(opt.value || '');
+								const selectedClass = value === selectedValue ? ' is-selected' : '';
+								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
+							}).join('') +
+						'</div>';
+					const trigger = mount.querySelector('.mobile-select-trigger');
+					const menu = mount.querySelector('.mobile-select-menu');
+					if (!trigger || !menu) return;
+					trigger.addEventListener('click', function (event) {
+						event.preventDefault();
+						mount.classList.toggle('open');
+					});
+					menu.addEventListener('click', function (event) {
+						const btn = event.target.closest('.mobile-select-option');
+						if (!btn) return;
+						const nextValue = btn.getAttribute('data-value') || '';
+						if (nextValue) window.location.href = nextValue;
+						closeMenu();
+					});
+				}
+				select.addEventListener('change', render);
+				render();
+				document.documentElement.classList.add('mobile-select-ready');
+				document.addEventListener('click', function (event) {
+					if (!event.target.closest('#listStarPageNavCustom')) closeMenu();
+				});
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') closeMenu();
+				});
+			})();
+		</script>
+		<script>
+			(function () {
+				const key = 'age_verified_18_v1';
+				const overlay = document.getElementById('ageGate');
+				const yesBtn = document.getElementById('ageYes');
+				const noBtn = document.getElementById('ageNo');
+				if (!overlay || !yesBtn || !noBtn) return;
+				const verified = localStorage.getItem(key) === 'yes';
+				if (!verified) overlay.style.display = 'flex';
+				yesBtn.addEventListener('click', function () {
+					localStorage.setItem(key, 'yes');
+					overlay.style.display = 'none';
+				});
+				noBtn.addEventListener('click', function () {
+					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
+					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
+				});
+			})();
+		</script>
+	</body>
+</html>
+`;
+}
+
 export function renderWikiPage(): string {
 	return `
 <!DOCTYPE html>
@@ -4677,6 +5054,9 @@ export function renderWikiPage(): string {
 				--muted: #71767B;
 				--primary: #1D9BF0;
 				--danger: #F4212E;
+			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
 			}
 			* { box-sizing: border-box; }
 			body {
@@ -4735,7 +5115,7 @@ export function renderWikiPage(): string {
 				white-space: nowrap;
 			}
 			.nav-btn.primary { background: var(--primary); }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
 			.lang-switch {
 				font: inherit;
 				border: 1px solid var(--line);
@@ -5318,6 +5698,9 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				--muted: #71767B;
 				--primary: #1D9BF0;
 			}
+			@media (min-width: 721px) {
+				:root { --primary: #7e0202; }
+			}
 			* { box-sizing: border-box; }
 			body {
 				margin: 0;
@@ -5351,7 +5734,7 @@ export function renderWikiArticlePage(article: WikiArticleRecord): string {
 				white-space: nowrap;
 			}
 			.nav-btn.primary { background: var(--primary); }
-			.nav-btn.active { box-shadow: 0 6px 14px rgba(29, 155, 240, 0.28); }
+			.nav-btn.active { box-shadow: 0 6px 14px rgba(126, 2, 2, 0.28); }
 			.mobile-nav-row { display: none; width: 100%; }
 			.mobile-nav {
 				width: 100%;

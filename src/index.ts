@@ -3,6 +3,7 @@ import {
 	renderAboutPage,
 	renderDashboardPage,
 	renderLeaderboardPage,
+	renderListStarPage,
 	type ProfileRecord,
 	renderWikiArticlePage,
 	renderWikiPage,
@@ -375,6 +376,8 @@ function injectSeoTags(html: string, origin: string, seo: SeoOptions): string {
 					.join("\n\t\t")
 			: "";
 	const tags = `
+		<link rel="icon" type="image/png" href="/assets/mobile-carousel/logo.png" />
+		<link rel="shortcut icon" type="image/png" href="/assets/mobile-carousel/logo.png" />
 		<meta name="description" content="${escapeHtml(seo.description)}" />
 		<meta name="robots" content="${escapeHtml(robots)}" />
 		<link rel="canonical" href="${escapeHtml(canonical)}" />
@@ -420,7 +423,7 @@ function buildSitemapXml(
 	origin: string,
 	wikiRows: Array<Pick<WikiArticleRecord, "id" | "updated_at" | "created_at">>,
 ): string {
-	const staticPages = ["/", "/about", "/dashboard", "/wiki"];
+	const staticPages = ["/", "/list-star", "/about", "/dashboard", "/wiki"];
 	const staticUrls = staticPages.map(
 		(pathname) =>
 			`  <url><loc>${escapeXml(new URL(pathname, origin).toString())}</loc><changefreq>daily</changefreq></url>`,
@@ -1618,6 +1621,7 @@ export default {
 			pathname === "/admin/edit" ||
 			pathname === "/admin/delete" ||
 			pathname === "/dashboard" ||
+			pathname === "/list-star" ||
 			pathname === "/about" ||
 			pathname === "/wiki" ||
 			pathname.startsWith("/api/profiles") ||
@@ -1712,6 +1716,16 @@ export default {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/about",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+			});
+		}
+
+		if (method === "GET" && pathname === "/list-star") {
+			return htmlResponse(renderListStarPage(), origin, {
+				title: "List Star",
+				description: "List Star campaign details and how to join.",
+				pathname: "/list-star",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
 			});
