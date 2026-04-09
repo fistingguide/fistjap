@@ -1941,6 +1941,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<a class="mobile-inline-carousel-slide" href="https://x.com/kikuchi168" target="_self"><img src="/assets/mobile-carousel/1.png" alt="KIKUCHI" loading="eager" fetchpriority="high" decoding="async" /><span class="mobile-inline-carousel-label">KIKUCHI</span></a>
 				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/assets/mobile-carousel/2.png" alt="PLAYBEAR" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">PLAYBEAR</span></a>
 				<a class="mobile-inline-carousel-slide" href="https://t.co/sSpFX1Z8kk" target="_self"><img src="/assets/mobile-carousel/3.png" alt="QUTOYS" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label" data-i18n="partner_qutoys">QUTOYS(10%折扣)</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://www.amazon.com/dp/B0G6Y9HL5V" target="_self"><img src="/assets/mobile-carousel/4.png" alt="HungerFF" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">HungerFF</span></a>
 			</div>
 			<section class="event-promo" aria-label="list star promotion">
 				<h2 class="event-promo-campaign" data-i18n="campaign_title">Campaign</h2>
@@ -5962,6 +5963,20 @@ export function renderWikiPage(): string {
 				els.status.textContent = text;
 			}
 
+			function currentLang() {
+				const fromWindow = String(window.__uiLang || '').trim();
+				if (fromWindow) return fromWindow;
+				const fromUrl = new URL(window.location.href).searchParams.get('lang');
+				return String(fromUrl || 'en').trim() || 'en';
+			}
+
+			function withLang(path) {
+				const next = new URL(path, window.location.origin);
+				next.searchParams.set('lang', currentLang());
+				const query = next.searchParams.toString();
+				return next.pathname + (query ? ('?' + query) : '');
+			}
+
 			function renderRows() {
 				if (!currentRows.length) {
 					els.rows.innerHTML = '<div class="empty">No articles yet.</div>';
@@ -5972,12 +5987,13 @@ export function renderWikiPage(): string {
 					const authorName = esc(row.author || 'fistingguide');
 					const authorHandle = esc(row.author_handle || '');
 					const authorAvatar = esc(row.author_avatar || '');
+					const articleHref = withLang('/wiki/article/' + row.id);
 					const avatarEl = authorAvatar
 						? '<img class="post-author-avatar" src="' + authorAvatar + '" alt="' + authorName + '" loading="lazy" referrerpolicy="no-referrer" />'
 						: '<span class="post-author-avatar placeholder">A</span>';
 					const handleText = authorHandle ? (' ' + authorHandle) : '';
 					return '<article class="post-card">' +
-						'<a class="post-link" href="/wiki/article/' + row.id + '">' +
+						'<a class="post-link" href="' + esc(articleHref) + '">' +
 							'<h3 class="post-title">' + esc(row.title) + '</h3>' +
 							'<div class="post-author-row">' + avatarEl + '<div class="post-meta">By ' + authorName + handleText + '</div></div>' +
 							'<div class="post-body">' + esc(row.content || '') + '</div>' +
@@ -5988,7 +6004,7 @@ export function renderWikiPage(): string {
 
 			async function loadRows() {
 				setStatus('Loading...');
-				const res = await fetch('/api/wiki');
+				const res = await fetch(withLang('/api/wiki'));
 				const data = await res.json();
 				currentRows = Array.isArray(data.results) ? data.results : [];
 				renderRows();

@@ -152,6 +152,45 @@ FEATURED_WIKI_ARTICLE.content = `# 如何正确灌肠：
 
 作者简介是：玩拳十年的小手拳攻，也是一个刚毕业的医生。爱好rubber乳胶，喜欢穿着胶拳逼，另外还玩穿刺，深喉，喜欢玩有趣的，欢迎私信约拳。`;
 
+const LONG_GAME_WIKI_ARTICLE_ID = 900002;
+const LONG_GAME_WIKI_ARTICLE: WikiArticleRecord & {
+	author_avatar?: string;
+	author_handle?: string;
+	author_url?: string;
+	is_fixed?: boolean;
+} = {
+	id: LONG_GAME_WIKI_ARTICLE_ID,
+	title: "The Long Game",
+	content: `# The Long Game:
+What 20 Years of Fisting Taught Me About Safety, Patience, and Myself
+
+People ask me all the time how I got started. The honest answer is that I got started badly. No guidance, no community, no one telling me to slow down. I learned through trial and error, and some of those errors left marks.
+
+That's why I talk about this stuff now. On my podcast Brolapse, in interviews, in my book Deeper: An Anti-Memoir, and in every conversation I have with someone who's curious. Because the information I didn't have could have saved me a lot of pain, and not the fun kind.
+
+Here's what I wish someone had told me on day one: this is not a race. Fisting rewards patience more than any other sexual practice I know. Your body is not a problem to be solved. It's a partner in the experience, and it will tell you everything you need to know if you listen.
+
+Start with good lube, and lots of it. J-Lube, X-Lube, or a quality water-based gel. Silicone has its place, but for depth work, nothing beats a thick water-based formula you can reapply freely. Never use numbing agents. Pain is information. If something hurts, that's your body saying stop, reassess, add more lube, or try a different angle. Numbing that signal is how injuries happen.
+
+Preparation matters. A clean body is a confident body, and confidence is half the game. Take your time with your enema routine. Warm water, not hot. Go slow. Don't rush it because you're eager to get to the main event. The prep is part of the practice.
+
+And breathe. I cannot say this enough. Deep, steady breathing is the single most important technique in fisting. More than any trick with your hands, more than any toy progression, your breath is what opens you up. When you hold your breath, your body tenses. When you breathe, it yields.
+
+I've been doing this for over two decades. I've been on Howard Stern. I've been called names I wear with pride. I wrote an entire book about the life that this practice shaped. And after all of it, the advice I come back to every single time is the simplest: slow down, breathe, communicate, and respect the body you're in.
+
+Whether you're just starting out or you've been at this for years, the fundamentals never change. Safety is not the opposite of intensity. It's what makes real intensity possible.
+
+作者简介：Brolapse  • Legends of Fisting  • Sound Initiative
+Deeper  • Massive blooms  & pig-level ruin`,
+	author: "HungerFF",
+	created_at: "2026-04-09T00:00:00.000Z",
+	updated_at: "2026-04-09T00:00:00.000Z",
+	author_avatar: "https://pbs.twimg.com/profile_images/2019665387885834240/UqcDa_6b_400x400.jpg",
+	author_handle: "@HungerFF",
+	author_url: "https://x.com/HungerFF",
+	is_fixed: true,
+};
+
 const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 	en: {
 		ranking: {
@@ -514,11 +553,15 @@ function buildSitemapXml(
 	const featuredWikiUrl = `  <url><loc>${escapeXml(
 		new URL(`/wiki/article/${FEATURED_WIKI_ARTICLE_ID}`, origin).toString(),
 	)}</loc><lastmod>${escapeXml(FEATURED_WIKI_ARTICLE.updated_at)}</lastmod><changefreq>weekly</changefreq></url>`;
+	const longGameWikiUrl = `  <url><loc>${escapeXml(
+		new URL(`/wiki/article/${LONG_GAME_WIKI_ARTICLE_ID}`, origin).toString(),
+	)}</loc><lastmod>${escapeXml(LONG_GAME_WIKI_ARTICLE.updated_at)}</lastmod><changefreq>weekly</changefreq></url>`;
 	return [
 		`<?xml version="1.0" encoding="UTF-8"?>`,
 		`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
 		...staticUrls,
 		featuredWikiUrl,
+		longGameWikiUrl,
 		...wikiUrls,
 		`</urlset>`,
 	].join("\n");
@@ -1841,7 +1884,11 @@ export default {
 		if (method === "GET" && wikiArticlePageMatch) {
 			const id = Number(wikiArticlePageMatch[1]);
 			const row =
-				id === FEATURED_WIKI_ARTICLE_ID ? FEATURED_WIKI_ARTICLE : await queryWikiArticleById(env.DB, id);
+				id === FEATURED_WIKI_ARTICLE_ID
+					? FEATURED_WIKI_ARTICLE
+					: id === LONG_GAME_WIKI_ARTICLE_ID
+						? LONG_GAME_WIKI_ARTICLE
+						: await queryWikiArticleById(env.DB, id);
 			if (!row) {
 				return new Response("Not Found", { status: 404 });
 			}
@@ -1938,8 +1985,9 @@ export default {
 
 		if (method === "GET" && pathname === "/api/wiki") {
 			const rows = await queryWikiArticles(env.DB);
-			const hasFeatured = rows.some((row) => Number(row.id) === FEATURED_WIKI_ARTICLE_ID);
-			const merged = hasFeatured ? rows : [FEATURED_WIKI_ARTICLE, ...rows];
+			const fixedIds = new Set([FEATURED_WIKI_ARTICLE_ID, LONG_GAME_WIKI_ARTICLE_ID]);
+			const dbRows = rows.filter((row) => !fixedIds.has(Number(row.id)));
+			const merged = [FEATURED_WIKI_ARTICLE, LONG_GAME_WIKI_ARTICLE, ...dbRows];
 			return json({ results: merged });
 		}
 
