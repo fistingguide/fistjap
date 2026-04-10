@@ -1942,6 +1942,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/assets/mobile-carousel/2.png" alt="PLAYBEAR" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">PLAYBEAR</span></a>
 				<a class="mobile-inline-carousel-slide" href="https://t.co/sSpFX1Z8kk" target="_self"><img src="/assets/mobile-carousel/3.png" alt="QUTOYS" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label" data-i18n="partner_qutoys">QUTOYS(10%折扣)</span></a>
 				<a class="mobile-inline-carousel-slide" href="https://www.amazon.com/dp/B0G6Y9HL5V" target="_self"><img src="/assets/mobile-carousel/4.png" alt="HungerFF" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">HungerFF</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://www.ilovefist.com/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="ILOVEFIST" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">ILOVEFIST</span></a>
 			</div>
 			<section class="event-promo" aria-label="list star promotion">
 				<h2 class="event-promo-campaign" data-i18n="campaign_title">Campaign</h2>
