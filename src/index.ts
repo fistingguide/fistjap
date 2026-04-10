@@ -57,7 +57,7 @@ type WikiPayload = {
 	author?: unknown;
 };
 
-const SUPPORTED_UI_LANGS = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "th", "vi"] as const;
+const SUPPORTED_UI_LANGS = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "pt", "th", "vi"] as const;
 type UiLang = (typeof SUPPORTED_UI_LANGS)[number];
 
 type SeoOptions = {
@@ -325,6 +325,28 @@ const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 			description: "Wiki multilingüe con guías de reducción de riesgos y conocimiento comunitario para adultos.",
 		},
 	},
+	pt: {
+		ranking: {
+			title: "Ranking de Criadores",
+			description: "Diretorio e ranking global para perfis adultos, com navegacao multilingue e wiki da comunidade.",
+		},
+		admin: {
+			title: "Painel de Administracao",
+			description: "Painel administrativo para gerenciar perfis e conteudo da wiki.",
+		},
+		dashboard: {
+			title: "Mapa de Dados",
+			description: "Explore o mapa global de perfis da comunidade adulta.",
+		},
+		about: {
+			title: "Sobre",
+			description: "Informacoes sobre o projeto comunitario adulto multilingue e contato.",
+		},
+		wiki: {
+			title: "Fisting Wiki",
+			description: "Wiki multilingue com guias de reducao de riscos e conhecimento da comunidade adulta.",
+		},
+	},
 	th: {
 		ranking: {
 			title: "อันดับครีเอเตอร์",
@@ -442,6 +464,7 @@ function toOgLocale(lang: UiLang): string {
 		ja: "ja_JP",
 		ko: "ko_KR",
 		es: "es_ES",
+		pt: "pt_BR",
 		th: "th_TH",
 		vi: "vi_VN",
 	};
@@ -463,6 +486,7 @@ function articleFallbackDescription(lang: UiLang): string {
 		ja: "成人コミュニティ向けの Wiki 記事です。",
 		ko: "성인 커뮤니티 위키 문서입니다.",
 		es: "Artículo de la wiki de la comunidad adulta.",
+		pt: "Artigo da wiki da comunidade adulta.",
 		th: "บทความวิกิของชุมชนผู้ใหญ่",
 		vi: "Bài viết wiki của cộng đồng người lớn.",
 	};

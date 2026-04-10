@@ -117,9 +117,9 @@ function renderMarkdown(markdown: string): string {
 	return html.join("");
 }
 
-type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "th" | "vi";
+type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "pt" | "th" | "vi";
 
-const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "th", "vi"];
+const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "pt", "th", "vi"];
 const RANKING_NOTICE_ZH_CN =
 	"1. 本网站仅收录男性账号（包括 gay 用户以及对肛门扩张感兴趣的直男）。\n2. 为了保证公平性，网站每 10 分钟轮换一次置顶账号，以确保每位用户都有机会被更多人看到。\n3. 本网站地图上显示的所有位置仅为示意标注。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。若你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的位置。本网站不会收集、存储或公开任何个人的具体地址信息。\n4. 每个人可以添加自己的账号和查看地图，手机端请点击汉堡按键查看更多操作。\n5. 任何信息请私信 @fistingguide。";
 const TH_MESSAGES: Record<string, string> = {
@@ -274,6 +274,58 @@ const VI_MESSAGES: Record<string, string> = {
 	admin_delete_selected: "Da chon: {name} ({handle}) ID {id}",
 	admin_status_no_exact_match_mode: "Khong co handle trung khop chinh xac cho che do nay.",
 	admin_status_pick_existing_first: "Hay tim va chon mot nguoi bieu dien da ton tai truoc.",
+};
+
+const PT_MESSAGES: Record<string, string> = {
+	page_title_ranking: "Lista de Criadores",
+	page_title_admin: "Painel de Administracao",
+	page_title_dashboard: "Mapa",
+	page_title_about: "Sobre",
+	page_title_wiki: "Fisting Wiki",
+	page_title_wiki_article: "Fisting Wiki",
+	heading_ranking: "Lista de Criadores",
+	heading_add: "Adicionar",
+	heading_star: "Mapa",
+	heading_about: "Sobre",
+	heading_wiki: "Fisting Wiki",
+	nav_ranking: "Lista de Criadores",
+	nav_add: "Adicionar",
+	nav_star: "Mapa",
+	nav_wiki: "Artigos",
+	nav_about: "Sobre",
+	dashboard_visit_select: "Selecione um criador no mapa primeiro",
+	dashboard_visit_named: "Visitar {name}",
+	country_region: "pais(regiao)",
+	all_option: "Todos",
+	friendly_links: "Parcerias da comunidade",
+	partner_qutoys: "QUTOYS (10% OFF)",
+	spotlight_title: "Destaque Rotativo",
+	spotlight_next_switch: "Proxima troca em {time}",
+	age_title: "Confirmacao de idade",
+	age_desc: "Voce precisa ter 18+ para entrar neste site. Voce tem 18 anos ou mais?",
+	age_yes: "Sim, tenho 18+",
+	age_no: "Nao",
+	age_denied: "Acesso negado. Este site e apenas para adultos 18+.",
+	article_by: "Por",
+	article_updated: "Atualizado",
+	wiki_submit_hint: "enviar artigo para fistingguide",
+	campaign_title: "Campanha",
+	author_call_title: "Convocacao de Artigos",
+	author_call_page_title: "Convocacao de Artigos",
+	author_call_back_home: "Voltar ao inicio",
+	admin_search_placeholder: "Buscar por handle do X",
+	admin_search_hint: "Somente contas existentes para editar ou excluir",
+	admin_mode_title_home: "Escolher acao",
+	admin_mode_title_create: "Adicionar criador",
+	admin_mode_title_edit: "Editar criador",
+	admin_mode_title_delete: "Excluir criador",
+	admin_mode_btn_create: "Adicionar criador",
+	admin_mode_btn_edit: "Editar criador",
+	admin_mode_btn_delete: "Excluir criador",
+	admin_delete_hint: "Busque e selecione um criador existente primeiro.",
+	admin_delete_selected: "Selecionado: {name} ({handle}) ID {id}",
+	admin_status_no_exact_match_mode: "Nenhum handle exato para este modo.",
+	admin_status_pick_existing_first: "Busque e selecione um criador existente primeiro.",
 };
 
 const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
@@ -834,6 +886,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_alert_updated_success: "Perfil actualizado correctamente.",
 		admin_alert_created_success: "Perfil creado correctamente.",
 	},
+	pt: PT_MESSAGES,
 	th: TH_MESSAGES,
 	vi: VI_MESSAGES,
 };
@@ -846,6 +899,7 @@ function renderLanguageSwitcher(id: string): string {
 			<option value="ja">&#26085;&#26412;&#35486;</option>
 			<option value="ko">&#54620;&#44397;&#50612;</option>
 			<option value="es">Espa&#241;ol</option>
+			<option value="pt">Portugues</option>
 			<option value="th">ไทย</option>
 			<option value="vi">Tiếng Việt</option>
 		</select>
@@ -871,6 +925,7 @@ function renderI18nScript(pageTitleKey: string): string {
 					if (lower.startsWith("ja")) return "ja";
 					if (lower.startsWith("ko")) return "ko";
 					if (lower.startsWith("es")) return "es";
+					if (lower.startsWith("pt")) return "pt";
 					if (lower.startsWith("th")) return "th";
 					if (lower.startsWith("vi")) return "vi";
 					if (lower.startsWith("en")) return "en";
