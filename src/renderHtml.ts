@@ -1700,6 +1700,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				flex: 0 0 auto;
 			}
 			.discord-icon-wrap { background: #5865F2; }
+			.telegram-icon-wrap { background: #229ED9; }
 			.x-icon-wrap { background: #000000; }
 			.email-icon-wrap { background: #0F1419; }
 			.discord-promo-icon {
@@ -2012,6 +2013,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<span class="social-link-icon-wrap discord-icon-wrap" aria-hidden="true">
 						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
 							<path d="M20.3 4.37A17.6 17.6 0 0 0 15.9 3l-.22.45a16.4 16.4 0 0 1 4.12 1.35A13.6 13.6 0 0 0 12 2.4a13.6 13.6 0 0 0-7.8 2.4 16.4 16.4 0 0 1 4.12-1.35L8.1 3a17.6 17.6 0 0 0-4.4 1.37C1.2 8.1.5 11.74.84 15.34a17.8 17.8 0 0 0 5.36 2.67l1.16-1.58c-.62-.23-1.2-.52-1.74-.88.15.11.3.22.46.31 3.25 1.88 6.78 1.88 10.02 0 .16-.09.31-.2.46-.31-.54.36-1.12.65-1.74.88l1.16 1.58a17.8 17.8 0 0 0 5.36-2.67c.4-4.17-.68-7.78-3.05-10.97ZM9.6 13.83c-.92 0-1.67-.85-1.67-1.9 0-1.06.74-1.9 1.67-1.9.93 0 1.68.84 1.67 1.9 0 1.05-.75 1.9-1.67 1.9Zm4.8 0c-.92 0-1.67-.85-1.67-1.9 0-1.06.74-1.9 1.67-1.9.93 0 1.68.84 1.67 1.9 0 1.05-.75 1.9-1.67 1.9Z"></path>
+						</svg>
+					</span>
+				</a>
+				<a class="social-link" href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" aria-label="Open Telegram Bot">
+					<span class="social-link-icon-wrap telegram-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<path d="M21.05 3.17 2.95 10.02c-1.23.48-1.22 1.16-.22 1.47l4.64 1.45 1.79 5.57c.22.62.11.87.77.87.51 0 .74-.23 1.02-.5l2.23-2.17 4.64 3.42c.86.47 1.47.23 1.68-.8l3.08-14.53c.31-1.26-.48-1.83-1.53-1.35ZM8.1 12.6l10.77-6.8c.54-.33 1.04-.15.63.22l-8.95 8.08-.35 3.76-2.1-5.26Z" fill="#FFFFFF"></path>
 						</svg>
 					</span>
 				</a>
