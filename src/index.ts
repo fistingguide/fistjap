@@ -6,8 +6,6 @@ import {
 	renderLeaderboardPage,
 	renderListStarPage,
 	type ProfileRecord,
-	renderWikiArticlePage,
-	renderWikiPage,
 	type WikiArticleRecord,
 } from "./renderHtml";
 import { seedProfiles } from "./seedProfiles";
@@ -50,6 +48,7 @@ const DEFAULT_COUNTRY = "Japan";
 const DEFAULT_REGION = "Tokyo";
 const DEFAULT_DISTRICT = "Itabashi";
 const PINNED_ROTATION_SECONDS = 600;
+const BLOG_URL = "https://blog.fistingguide.workers.dev/";
 
 type WikiPayload = {
 	title?: unknown;
@@ -559,34 +558,16 @@ function buildRobotsTxt(origin: string): string {
 	].join("\n");
 }
 
-function buildSitemapXml(
-	origin: string,
-	wikiRows: Array<Pick<WikiArticleRecord, "id" | "updated_at" | "created_at">>,
-): string {
-	const staticPages = ["/", "/list-star", "/author-call", "/about", "/dashboard", "/wiki"];
+function buildSitemapXml(origin: string): string {
+	const staticPages = ["/", "/list-star", "/author-call", "/about", "/dashboard"];
 	const staticUrls = staticPages.map(
 		(pathname) =>
 			`  <url><loc>${escapeXml(new URL(pathname, origin).toString())}</loc><changefreq>daily</changefreq></url>`,
 	);
-	const wikiUrls = wikiRows.map((row) => {
-		const loc = new URL(`/wiki/article/${row.id}`, origin).toString();
-		const lastmodRaw = row.updated_at || row.created_at || "";
-		const lastmod = lastmodRaw ? `<lastmod>${escapeXml(new Date(lastmodRaw).toISOString())}</lastmod>` : "";
-		return `  <url><loc>${escapeXml(loc)}</loc>${lastmod}<changefreq>weekly</changefreq></url>`;
-	});
-	const featuredWikiUrl = `  <url><loc>${escapeXml(
-		new URL(`/wiki/article/${FEATURED_WIKI_ARTICLE_ID}`, origin).toString(),
-	)}</loc><lastmod>${escapeXml(FEATURED_WIKI_ARTICLE.updated_at)}</lastmod><changefreq>weekly</changefreq></url>`;
-	const longGameWikiUrl = `  <url><loc>${escapeXml(
-		new URL(`/wiki/article/${LONG_GAME_WIKI_ARTICLE_ID}`, origin).toString(),
-	)}</loc><lastmod>${escapeXml(LONG_GAME_WIKI_ARTICLE.updated_at)}</lastmod><changefreq>weekly</changefreq></url>`;
 	return [
 		`<?xml version="1.0" encoding="UTF-8"?>`,
 		`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
 		...staticUrls,
-		featuredWikiUrl,
-		longGameWikiUrl,
-		...wikiUrls,
 		`</urlset>`,
 	].join("\n");
 }
@@ -1735,8 +1716,6 @@ export default {
 		const uiLang = pickUiLang(url, request);
 		const method = request.method.toUpperCase();
 		const idMatch = pathname.match(/^\/api\/profiles\/(\d+)$/);
-		const wikiIdMatch = pathname.match(/^\/api\/wiki\/(\d+)$/);
-		const wikiArticlePageMatch = pathname.match(/^\/wiki\/article\/(\d+)$/);
 
 		if (method === "GET" && pathname === "/robots.txt") {
 			return new Response(buildRobotsTxt(origin), {
@@ -1747,17 +1726,25 @@ export default {
 		}
 
 		if (method === "GET" && pathname === "/sitemap.xml") {
-			let rows: WikiArticleRecord[] = [];
-			try {
-				rows = await queryWikiArticles(env.DB);
-			} catch {
-				rows = [];
-			}
-			return new Response(buildSitemapXml(origin, rows), {
+			return new Response(buildSitemapXml(origin), {
 				headers: {
 					"content-type": "application/xml; charset=UTF-8",
 				},
 			});
+		}
+
+		if (method === "GET" && (pathname === "/wiki" || pathname.startsWith("/wiki/article/"))) {
+			return Response.redirect(BLOG_URL, 301);
+		}
+
+		if (pathname === "/api/wiki" || pathname.startsWith("/api/wiki/")) {
+			return json(
+				{
+					error: "wiki api has been removed",
+					moved_to: BLOG_URL,
+				},
+				410,
+			);
 		}
 
 		if (
@@ -1770,12 +1757,9 @@ export default {
 			pathname === "/list-star" ||
 			pathname === "/author-call" ||
 			pathname === "/about" ||
-			pathname === "/wiki" ||
-			pathname.startsWith("/api/profiles") ||
-			pathname.startsWith("/api/wiki")
+			pathname.startsWith("/api/profiles")
 		) {
 			await ensureSeeded(env.DB);
-			await ensureWikiSeeded(env.DB);
 		}
 
 		if (method === "GET" && pathname === "/assets/leaflet.css") {
@@ -1888,61 +1872,6 @@ export default {
 			});
 		}
 
-		if (method === "GET" && pathname === "/wiki") {
-			const seo = pageSeo(uiLang, "wiki");
-			return htmlResponse(renderWikiPage(), origin, {
-				title: seo.title,
-				description: seo.description,
-				pathname: "/wiki",
-				locale: toOgLocale(uiLang),
-				siteName: "Fisting Guide",
-				jsonLd: {
-					"@context": "https://schema.org",
-					"@type": "WebSite",
-					name: "Fisting Wiki",
-					url: new URL("/wiki", origin).toString(),
-				},
-			});
-		}
-
-		if (method === "GET" && wikiArticlePageMatch) {
-			const id = Number(wikiArticlePageMatch[1]);
-			const row =
-				id === FEATURED_WIKI_ARTICLE_ID
-					? FEATURED_WIKI_ARTICLE
-					: id === LONG_GAME_WIKI_ARTICLE_ID
-						? LONG_GAME_WIKI_ARTICLE
-						: await queryWikiArticleById(env.DB, id);
-			if (!row) {
-				return new Response("Not Found", { status: 404 });
-			}
-			const articleTitle = toText(row.title, "Fisting Wiki Article");
-			const articleDescription =
-				normalizeTextSnippet(toText(row.content), 160) || articleFallbackDescription(uiLang);
-			return htmlResponse(renderWikiArticlePage(row), origin, {
-				title: `${articleTitle} - Fisting Wiki`,
-				description: articleDescription,
-				pathname: `/wiki/article/${id}`,
-				locale: toOgLocale(uiLang),
-				siteName: "Fisting Guide",
-				articlePublishedTime: row.created_at || undefined,
-				articleModifiedTime: row.updated_at || row.created_at || undefined,
-				articleAuthor: toText(row.author, "fistingguide"),
-				jsonLd: {
-					"@context": "https://schema.org",
-					"@type": "Article",
-					headline: articleTitle,
-					author: {
-						"@type": "Person",
-						name: toText(row.author, "fistingguide"),
-					},
-					datePublished: row.created_at,
-					dateModified: row.updated_at || row.created_at,
-					mainEntityOfPage: new URL(`/wiki/article/${id}`, origin).toString(),
-				},
-			});
-		}
-
 		if (method === "GET" && pathname === "/api/profiles") {
 			const keyword = url.searchParams.get("keyword")?.trim() ?? "";
 			const country = url.searchParams.get("country")?.trim() ?? "";
@@ -2005,36 +1934,6 @@ export default {
 				return json({ ok: false, error: result.error || "send failed" }, 502);
 			}
 			return json({ ok: true, to: (env.ADMIN_NOTIFICATION_EMAIL || "fistingguide@proton.me").trim() });
-		}
-
-		if (method === "GET" && pathname === "/api/wiki") {
-			const rows = await queryWikiArticles(env.DB);
-			const fixedIds = new Set([FEATURED_WIKI_ARTICLE_ID, LONG_GAME_WIKI_ARTICLE_ID]);
-			const dbRows = rows.filter((row) => !fixedIds.has(Number(row.id)));
-			const merged = [FEATURED_WIKI_ARTICLE, LONG_GAME_WIKI_ARTICLE, ...dbRows];
-			return json({ results: merged });
-		}
-
-		if (method === "POST" && pathname === "/api/wiki") {
-			let payload: WikiPayload;
-			try {
-				payload = (await request.json()) as WikiPayload;
-			} catch {
-				return badRequest("invalid json");
-			}
-
-			let input: { title: string; content: string; author: string };
-			try {
-				input = normalizeWikiPayload(payload);
-			} catch (error) {
-				return badRequest((error as Error).message);
-			}
-
-			await env.DB
-				.prepare("INSERT INTO wiki_articles (title, content, author) VALUES (?, ?, ?)")
-				.bind(input.title, input.content, input.author)
-				.run();
-			return json({ ok: true }, 201);
 		}
 
 		if (method === "POST" && pathname === "/api/profiles") {
@@ -2178,54 +2077,7 @@ export default {
 			}
 		}
 
-		if (wikiIdMatch) {
-			const id = Number(wikiIdMatch[1]);
-
-			if (method === "GET") {
-				const row = await queryWikiArticleById(env.DB, id);
-				if (!row) {
-					return json({ error: "not found" }, 404);
-				}
-				return json({ result: row });
-			}
-
-			if (method === "PUT" || method === "PATCH") {
-				let payload: WikiPayload;
-				try {
-					payload = (await request.json()) as WikiPayload;
-				} catch {
-					return badRequest("invalid json");
-				}
-
-				let input: { title: string; content: string; author: string };
-				try {
-					input = normalizeWikiPayload(payload);
-				} catch (error) {
-					return badRequest((error as Error).message);
-				}
-
-				const result = await env.DB
-					.prepare("UPDATE wiki_articles SET title = ?, content = ?, author = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
-					.bind(input.title, input.content, input.author, id)
-					.run();
-				if ((result.meta.changes ?? 0) === 0) {
-					return json({ error: "not found" }, 404);
-				}
-				return json({ ok: true });
-			}
-
-			if (method === "DELETE") {
-				const authError = verifyDeletePassword(request, env);
-				if (authError) return authError;
-
-				const result = await env.DB.prepare("DELETE FROM wiki_articles WHERE id = ?").bind(id).run();
-				if ((result.meta.changes ?? 0) === 0) {
-					return json({ error: "not found" }, 404);
-				}
-				return json({ ok: true });
-			}
-		}
-
 		return new Response("Not Found", { status: 404 });
 	},
 } satisfies ExportedHandler<RuntimeEnv>;
+
