@@ -1667,16 +1667,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				margin: 8px 0 0;
 			}
 			.community-article-link {
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-				padding: 10px 16px;
+				display: inline-block;
+				width: 100%;
 				border-radius: 10px;
-				background: #7e0202;
-				color: #FFFFFF;
-				font-weight: 700;
+				overflow: hidden;
 				text-decoration: none;
-				line-height: 1;
+				line-height: 0;
+			}
+			.community-article-image {
+				display: block;
+				width: 100%;
+				height: auto;
 			}
 			.community-article-link:hover {
 				filter: brightness(1.08);
@@ -1929,8 +1930,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					margin: 6px 0 0;
 				}
 				.community-article-link {
-					padding: 8px 12px;
-					font-size: 12px;
+					width: 100%;
 				}
 				.social-link {
 					padding: 6px 0;
@@ -2032,7 +2032,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				</a>
 			</div>
 			<div class="community-article-link-wrap">
-				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" data-i18n="view_articles">View Articles</a>
+				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="View Articles">
+					<img class="community-article-image" src="/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
+				</a>
 			</div>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Brand Links">
