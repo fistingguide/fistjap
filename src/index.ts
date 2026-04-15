@@ -585,13 +585,18 @@ function toFollowers(value: unknown): number {
 	return Math.floor(parsed);
 }
 
-function json(data: unknown, status = 200): Response {
+function json(data: unknown, status = 200, extraHeaders?: HeadersInit): Response {
+	const headers = new Headers({
+		"content-type": "application/json; charset=UTF-8",
+		"x-robots-tag": "noindex, nofollow",
+	});
+	if (extraHeaders) {
+		const append = new Headers(extraHeaders);
+		append.forEach((value, key) => headers.set(key, value));
+	}
 	return new Response(JSON.stringify(data), {
 		status,
-		headers: {
-			"content-type": "application/json; charset=UTF-8",
-			"x-robots-tag": "noindex, nofollow",
-		},
+		headers,
 	});
 }
 
@@ -617,6 +622,7 @@ const reverseGeoCache = new Map<string, GeoSuggestion | null>();
 const pointGeoCache = new Map<string, { lat: number; lon: number } | null>();
 const countryIso3Cache = new Map<string, string | null>();
 const geoBoundaryLayerCache = new Map<string, BoundaryFeature[] | null>();
+let seedProfilesPromise: Promise<void> | null = null;
 
 function reverseCacheKey(lat: number, lng: number): string {
 	return `${lat.toFixed(4)}|${lng.toFixed(4)}`;
@@ -1436,6 +1442,16 @@ async function ensureSeeded(db: D1Database): Promise<void> {
 	}
 }
 
+function ensureSeededOnce(db: D1Database): Promise<void> {
+	if (!seedProfilesPromise) {
+		seedProfilesPromise = ensureSeeded(db).catch((error) => {
+			seedProfilesPromise = null;
+			throw error;
+		});
+	}
+	return seedProfilesPromise;
+}
+
 async function ensureWikiSeeded(db: D1Database): Promise<void> {
 	try {
 		await db
@@ -1461,6 +1477,24 @@ async function queryProfiles(
 		handle?: string;
 	},
 ): Promise<ProfileRecord[]> {
+	const { whereClause, binds } = buildProfileFilters(params);
+	const sql = `
+		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
+			province AS region, city AS district, created_at
+		FROM profiles
+		${whereClause}
+		ORDER BY followers_count DESC, id ASC
+	`;
+	const stmt = binds.length > 0 ? db.prepare(sql).bind(...binds) : db.prepare(sql);
+	const { results } = await stmt.all<ProfileRecord>();
+	return results ?? [];
+}
+
+function buildProfileFilters(params: {
+	keyword?: string;
+	country?: string;
+	handle?: string;
+}): { whereClause: string; binds: string[] } {
 	const conditions: string[] = [];
 	const binds: string[] = [];
 	const keyword = params.keyword?.trim() ?? "";
@@ -1484,16 +1518,7 @@ async function queryProfiles(
 	}
 
 	const whereClause = conditions.length > 0 ? ` WHERE ${conditions.join(" AND ")}` : "";
-	const sql = `
-		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
-			province AS region, city AS district, created_at
-		FROM profiles
-		${whereClause}
-		ORDER BY followers_count DESC, id ASC
-	`;
-	const stmt = binds.length > 0 ? db.prepare(sql).bind(...binds) : db.prepare(sql);
-	const { results } = await stmt.all<ProfileRecord>();
-	return results ?? [];
+	return { whereClause, binds };
 }
 
 async function queryCountries(db: D1Database): Promise<string[]> {
@@ -1501,7 +1526,7 @@ async function queryCountries(db: D1Database): Promise<string[]> {
 		.prepare(
 			`SELECT DISTINCT country
 			 FROM profiles
-			 WHERE country IS NOT NULL AND TRIM(country) <> ''
+			 WHERE country IS NOT NULL AND country <> ''
 			 ORDER BY country ASC`,
 		)
 		.all<{ country: string }>();
@@ -1621,17 +1646,30 @@ async function queryPinnedProfile(
 		country?: string;
 	},
 ): Promise<{ result: ProfileRecord | null; poolSize: number; slot: number | null; nextSwitchAt: string | null }> {
-	const country = params.country?.trim() ?? "";
-	const rows = await queryProfiles(db, { country });
-	const poolSize = rows.length;
+	const { whereClause, binds } = buildProfileFilters({ country: params.country });
+	const countSql = `SELECT COUNT(*) AS total FROM profiles${whereClause}`;
+	const countStmt = binds.length > 0 ? db.prepare(countSql).bind(...binds) : db.prepare(countSql);
+	const row = await countStmt.first<{ total: number | string }>();
+	const poolSize = Number(row?.total ?? 0);
 	if (poolSize === 0) {
 		return { result: null, poolSize: 0, slot: null, nextSwitchAt: null };
 	}
 
 	const nowUnixSeconds = Math.floor(Date.now() / 1000);
 	const { slot, index, nextSwitchAt } = computePinnedIndex(poolSize, nowUnixSeconds);
+	const pickSql = `
+		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
+			province AS region, city AS district, created_at
+		FROM profiles
+		${whereClause}
+		ORDER BY followers_count DESC, id ASC
+		LIMIT 1 OFFSET ?
+	`;
+	const pickStmt =
+		binds.length > 0 ? db.prepare(pickSql).bind(...binds, index) : db.prepare(pickSql).bind(index);
+	const selected = await pickStmt.first<ProfileRecord>();
 	return {
-		result: rows[index] ?? null,
+		result: selected ?? null,
 		poolSize,
 		slot,
 		nextSwitchAt,
@@ -1761,7 +1799,7 @@ export default {
 			pathname === "/about" ||
 			pathname.startsWith("/api/profiles")
 		) {
-			await ensureSeeded(env.DB);
+			await ensureSeededOnce(env.DB);
 		}
 
 		if (method === "GET" && pathname === "/assets/leaflet.css") {
@@ -1883,14 +1921,40 @@ export default {
 		}
 
 		if (method === "GET" && pathname === "/api/profiles/pinned") {
+			const cacheKey = new Request(url.toString(), request);
+			const cached = await caches.default.match(cacheKey);
+			if (cached) {
+				return cached;
+			}
 			const country = url.searchParams.get("country")?.trim() ?? "";
 			const pinned = await queryPinnedProfile(env.DB, { country });
-			return json(pinned);
+			const response = json(pinned, 200, {
+				"cache-control": "public, max-age=30, s-maxage=30",
+				"cdn-cache-control": "public, max-age=30",
+				vary: "accept-encoding",
+			});
+			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
+			return response;
 		}
 
 		if (method === "GET" && pathname === "/api/countries") {
+			const cacheKey = new Request(url.toString(), request);
+			const cached = await caches.default.match(cacheKey);
+			if (cached) {
+				return cached;
+			}
 			const countries = await queryCountries(env.DB);
-			return json({ results: countries });
+			const response = json(
+				{ results: countries },
+				200,
+				{
+					"cache-control": "public, max-age=30, s-maxage=30",
+					"cdn-cache-control": "public, max-age=30",
+					vary: "accept-encoding",
+				},
+			);
+			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
+			return response;
 		}
 
 		if (method === "GET" && pathname === "/api/geo/suggest") {
