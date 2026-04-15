@@ -144,13 +144,17 @@ async function handleCallback(callbackQuery) {
 async function handleMessage(message) {
 	const chatId = message?.chat?.id;
 	const text = String(message?.text || "").trim();
+	const command = text.split(/\s+/)[0].toLowerCase();
+	const isStartCmd = command === "/start" || command.startsWith("/start@");
+	const isHelpCmd = command === "/help" || command.startsWith("/help@");
+	const isQueryCmd = command === "/query" || command.startsWith("/query@");
 	if (!chatId || !text) return;
 
-	if (text === "/start" || text === "/help") {
+	if (isStartCmd || isHelpCmd) {
 		await handleStart(chatId);
 		return;
 	}
-	if (text === "/query") {
+	if (isQueryCmd) {
 		await handleQuery(chatId);
 		return;
 	}
