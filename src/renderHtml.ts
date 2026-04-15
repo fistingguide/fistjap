@@ -2048,14 +2048,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				</a>
 			</div>
 			<div class="community-article-link-wrap">
+				<a class="community-article-link" href="/admin" target="_self" aria-label="Open Add Edit Delete">
+					<img class="community-article-image" src="/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
+				</a>
 				<a class="community-article-link" href="/dashboard" target="_self" aria-label="Open Member Map">
 					<img class="community-article-image" src="/assets/mobile-carousel/member_map.png" alt="Member Map" loading="lazy" decoding="async" />
 				</a>
 				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="View Articles">
 					<img class="community-article-image" src="/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
-				</a>
-				<a class="community-article-link" href="/admin" target="_self" aria-label="Open Add Edit Delete">
-					<img class="community-article-image" src="/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
 				</a>
 			</div>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
