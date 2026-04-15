@@ -1665,19 +1665,29 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.community-article-link-wrap {
 				margin: 8px 0 0;
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 10px;
 			}
 			.community-article-link {
-				display: inline-block;
-				width: 100%;
-				border-radius: 10px;
-				overflow: hidden;
+				display: grid;
+				justify-items: center;
+				align-content: center;
+				gap: 8px;
+				border: 0;
+				border-radius: 0;
+				overflow: visible;
+				background: transparent;
+				padding: 0;
 				text-decoration: none;
-				line-height: 0;
+				line-height: normal;
 			}
 			.community-article-image {
 				display: block;
 				width: 100%;
 				height: auto;
+				object-fit: contain;
+				margin: 0 auto;
 			}
 			.community-article-link:hover {
 				filter: brightness(1.08);
@@ -1929,6 +1939,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				}
 				.community-article-link-wrap {
 					margin: 6px 0 0;
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+					gap: 8px;
 				}
 				.community-article-link {
 					width: 100%;
@@ -1983,8 +1995,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							<div class="mobile-nav-row">
 								<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 									<option value="/" selected data-i18n="nav_ranking">Performers List</option>
-									<option value="/admin" data-i18n="nav_add">Add new</option>
-									<option value="/dashboard" data-i18n="nav_star">Map</option>
 									<option value="/about" data-i18n="nav_about">About</option>
 								</select>
 								<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
@@ -2001,8 +2011,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							</div>
 						<nav class="top-nav">
 							<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
-							<a class="nav-btn secondary" href="/admin" data-i18n="nav_add">Add new</a>
-							<a class="nav-btn secondary" href="/dashboard" data-i18n="nav_star">Map</a>
 							<a class="nav-btn secondary" href="/about" data-i18n="nav_about">About</a>
 						</nav>
 					</div>
@@ -2040,8 +2048,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				</a>
 			</div>
 			<div class="community-article-link-wrap">
+				<a class="community-article-link" href="/dashboard" target="_self" aria-label="Open Member Map">
+					<img class="community-article-image" src="/assets/mobile-carousel/member_map.png" alt="Member Map" loading="lazy" decoding="async" />
+				</a>
 				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="View Articles">
 					<img class="community-article-image" src="/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
+				</a>
+				<a class="community-article-link" href="/admin" target="_self" aria-label="Open Add Edit Delete">
+					<img class="community-article-image" src="/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
 				</a>
 			</div>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
