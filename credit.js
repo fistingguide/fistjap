@@ -108,6 +108,14 @@ function formatRow(row) {
 
 async function handleStart(chatId) {
 	chatModes.delete(chatId);
+	await tg("sendMessage", {
+		chat_id: chatId,
+		text: "发送 /query 开始查询。",
+	});
+}
+
+async function handleQuery(chatId) {
+	chatModes.delete(chatId);
 	await sendModeButtons(chatId);
 }
 
@@ -142,10 +150,14 @@ async function handleMessage(message) {
 		await handleStart(chatId);
 		return;
 	}
+	if (text === "/query") {
+		await handleQuery(chatId);
+		return;
+	}
 
 	const mode = chatModes.get(chatId);
 	if (!mode) {
-		await tg("sendMessage", { chat_id: chatId, text: "请先发送 /start 并点击查询方式。" });
+		await tg("sendMessage", { chat_id: chatId, text: "请先发送 /query 并点击查询方式。" });
 		return;
 	}
 
