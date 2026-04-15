@@ -3539,13 +3539,13 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					return;
 				}
 
-				const query = '?keyword=' + encodeURIComponent(keyword);
+				const query = '?keyword=' + encodeURIComponent(keyword) + '&limit=20';
 				const res = await fetch('/api/profiles' + query);
 				const data = await res.json();
 				const rows = Array.isArray(data.results) ? data.results : [];
 				currentRows = rows.filter(function (row) {
 					return String(row.handle || '').toLowerCase().includes(keyword.toLowerCase());
-				}).slice(0, 20);
+				});
 				renderSuggestions(currentRows);
 				setStatus(fmt(t('admin_status_matched_handles', 'Matched {count} handles'), { count: currentRows.length }));
 				selectByHandle(keyword);
@@ -3659,7 +3659,16 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				});
 			}
 			els.searchBtn.addEventListener('click', loadSuggestions);
-			els.handleSearch.addEventListener('input', loadSuggestions);
+			let handleSearchDebounceTimer = null;
+			els.handleSearch.addEventListener('input', function () {
+				if (handleSearchDebounceTimer) {
+					clearTimeout(handleSearchDebounceTimer);
+				}
+				handleSearchDebounceTimer = setTimeout(function () {
+					handleSearchDebounceTimer = null;
+					loadSuggestions();
+				}, 300);
+			});
 			els.handleSearch.addEventListener('change', function () {
 				selectByHandle(els.handleSearch.value.trim());
 			});

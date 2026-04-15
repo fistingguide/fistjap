@@ -1475,17 +1475,24 @@ async function queryProfiles(
 		keyword?: string;
 		country?: string;
 		handle?: string;
+		limit?: number;
+		offset?: number;
 	},
 ): Promise<ProfileRecord[]> {
 	const { whereClause, binds } = buildProfileFilters(params);
+	const pageSql =
+		typeof params.limit === "number" ? "\n\t\tLIMIT ?\n\t\tOFFSET ?" : "";
 	const sql = `
 		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
 			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY followers_count DESC, id ASC
+		${pageSql}
 	`;
-	const stmt = binds.length > 0 ? db.prepare(sql).bind(...binds) : db.prepare(sql);
+	const bindValues =
+		typeof params.limit === "number" ? [...binds, params.limit, params.offset ?? 0] : binds;
+	const stmt = bindValues.length > 0 ? db.prepare(sql).bind(...bindValues) : db.prepare(sql);
 	const { results } = await stmt.all<ProfileRecord>();
 	return results ?? [];
 }
@@ -1494,9 +1501,9 @@ function buildProfileFilters(params: {
 	keyword?: string;
 	country?: string;
 	handle?: string;
-}): { whereClause: string; binds: string[] } {
+}): { whereClause: string; binds: unknown[] } {
 	const conditions: string[] = [];
-	const binds: string[] = [];
+	const binds: unknown[] = [];
 	const keyword = params.keyword?.trim() ?? "";
 	const country = params.country?.trim() ?? "";
 	const handle = params.handle?.trim() ?? "";
@@ -1913,11 +1920,45 @@ export default {
 		}
 
 		if (method === "GET" && pathname === "/api/profiles") {
+			const cacheKey = new Request(url.toString(), request);
+			const cached = await caches.default.match(cacheKey);
+			if (cached) {
+				return cached;
+			}
 			const keyword = url.searchParams.get("keyword")?.trim() ?? "";
 			const country = url.searchParams.get("country")?.trim() ?? "";
 			const handle = url.searchParams.get("handle")?.trim() ?? "";
-			const rows = await queryProfiles(env.DB, { keyword, country, handle });
-			return json({ results: rows });
+			const limitRaw = (url.searchParams.get("limit") || "").trim();
+			const offsetRaw = (url.searchParams.get("offset") || "").trim();
+			const parsedLimit = Number(limitRaw);
+			const parsedOffset = Number(offsetRaw);
+			const limit =
+				limitRaw && Number.isFinite(parsedLimit) && parsedLimit > 0
+					? Math.min(200, Math.floor(parsedLimit))
+					: undefined;
+			const offset =
+				typeof limit === "number" && Number.isFinite(parsedOffset) && parsedOffset >= 0
+					? Math.floor(parsedOffset)
+					: 0;
+			const rows = await queryProfiles(env.DB, { keyword, country, handle, limit, offset });
+			const payload =
+				typeof limit === "number"
+					? {
+							results: rows,
+							pagination: {
+								limit,
+								offset,
+								hasMore: rows.length === limit,
+							},
+						}
+					: { results: rows };
+			const response = json(payload, 200, {
+				"cache-control": "public, max-age=15, s-maxage=15",
+				"cdn-cache-control": "public, max-age=15",
+				vary: "accept-encoding",
+			});
+			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
+			return response;
 		}
 
 		if (method === "GET" && pathname === "/api/profiles/pinned") {
