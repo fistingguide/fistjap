@@ -2,6 +2,7 @@
 	id: number;
 	name: string;
 	handle: string;
+	telegram?: string;
 	bio: string;
 	profile_url: string;
 	avatar: string;
@@ -2938,6 +2939,10 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 						</div>
 					</div>
 					<div class="field full">
+						<label for="telegram">Telegram</label>
+						<input id="telegram" placeholder="@username" />
+					</div>
+					<div class="field full">
 						<label for="bio" data-i18n="admin_label_bio">Bio</label>
 						<textarea id="bio" placeholder="Bio" data-i18n-placeholder="admin_ph_bio"></textarea>
 					</div>
@@ -2996,6 +3001,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				id: document.getElementById('id'),
 				name: document.getElementById('name'),
 				handle: document.getElementById('handle'),
+				telegram: document.getElementById('telegram'),
 				bio: document.getElementById('bio'),
 				profileUrl: document.getElementById('profileUrl'),
 				avatar: document.getElementById('avatar'),
@@ -3461,6 +3467,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.id.value = '';
 				els.name.value = '';
 				els.handle.value = '';
+				els.telegram.value = '';
 				els.bio.value = '';
 				els.profileUrl.value = '';
 				els.avatar.value = '';
@@ -3482,6 +3489,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.id.value = String(row.id);
 				els.name.value = row.name || '';
 				els.handle.value = row.handle || '';
+				els.telegram.value = row.telegram || '';
 				els.bio.value = row.bio || '';
 				els.profileUrl.value = row.profile_url || '';
 				els.avatar.value = row.avatar || '';
@@ -3548,6 +3556,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				return {
 					name: els.name.value,
 					handle: els.handle.value,
+					telegram: els.telegram.value,
 					bio: els.bio.value,
 					profileUrl: els.profileUrl.value,
 					avatar: els.avatar.value,

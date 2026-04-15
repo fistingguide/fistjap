@@ -32,6 +32,7 @@ type GeoSuggestion = {
 type ProfilePayload = {
 	name?: unknown;
 	handle?: unknown;
+	telegram?: unknown;
 	bio?: unknown;
 	profileUrl?: unknown;
 	avatar?: unknown;
@@ -1484,7 +1485,7 @@ async function queryProfiles(
 
 	const whereClause = conditions.length > 0 ? ` WHERE ${conditions.join(" AND ")}` : "";
 	const sql = `
-		SELECT id, name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country,
+		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
 			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}
@@ -1689,6 +1690,7 @@ function normalizePayload(payload: ProfilePayload) {
 	return {
 		name: toText(payload.name),
 		handle,
+		telegram: toText(payload.telegram),
 		bio: toText(payload.bio),
 		profileUrl: toText(payload.profileUrl),
 		avatar: toText(payload.avatar),
@@ -1955,12 +1957,13 @@ export default {
 			try {
 				await env.DB.prepare(
 					`INSERT INTO profiles (
-						name, handle, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
-					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+						name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
+					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				)
 					.bind(
 						input.name,
 						input.handle,
+						input.telegram,
 						input.bio,
 						input.profileUrl,
 						input.avatar,
@@ -2012,12 +2015,13 @@ export default {
 				try {
 					const result = await env.DB.prepare(
 						`UPDATE profiles
-						 SET name = ?, handle = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?
+						 SET name = ?, handle = ?, telegram = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?
 						 WHERE id = ?`,
 					)
 						.bind(
 							input.name,
 							input.handle,
+							input.telegram,
 							input.bio,
 							input.profileUrl,
 							input.avatar,

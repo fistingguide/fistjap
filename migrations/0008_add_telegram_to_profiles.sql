@@ -1,0 +1,1 @@
+ALTER TABLE profiles ADD COLUMN telegram TEXT NOT NULL DEFAULT '';
