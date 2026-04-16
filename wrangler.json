@@ -13,6 +13,11 @@
 			"database_name": "japs"
 		}
 	],
+	"triggers": {
+		"crons": [
+			"0 16 * * *"
+		]
+	},
 	"observability": {
 		"enabled": true
 	}

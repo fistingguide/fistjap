@@ -1726,6 +1726,58 @@ async function sendTestNotification(env: RuntimeEnv, triggerIp: string): Promise
 	}
 }
 
+async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
+	const tableInfo = await db.prepare("PRAGMA table_info(profiles)").all<{ name?: string }>();
+	const columns = new Set(
+		(tableInfo.results || [])
+			.map((row) => String(row.name || "").trim())
+			.filter((name) => name.length > 0),
+	);
+	const followersColumn = columns.has("followers_cnt") ? "followers_cnt" : "followers_count";
+	const requiredColumns = [
+		followersColumn,
+		"tg_msg_cnt",
+		"tg_photo_cnt",
+		"tg_video_cnt",
+		"list_star_event_cnt",
+		"super_credit",
+		"total_credit",
+		"rank",
+	];
+	const missing = requiredColumns.filter((col) => !columns.has(col));
+	if (missing.length > 0) {
+		throw new Error(`Missing required columns on profiles: ${missing.join(", ")}`);
+	}
+
+	await db
+		.prepare(
+			`UPDATE profiles
+			 SET total_credit =
+				(COALESCE(${followersColumn}, 0) / 10.0) +
+				(COALESCE(tg_msg_cnt, 0) * 1.0) +
+				(COALESCE(tg_photo_cnt, 0) * 2.0) +
+				(COALESCE(tg_video_cnt, 0) * 10.0) +
+				COALESCE(list_star_event_cnt, 0) +
+				COALESCE(super_credit, 0)`,
+		)
+		.run();
+
+	await db
+		.prepare(
+			`WITH ranked AS (
+				SELECT id, ROW_NUMBER() OVER (ORDER BY total_credit DESC, id ASC) AS next_rank
+				FROM profiles
+			)
+			UPDATE profiles
+			SET rank = (
+				SELECT ranked.next_rank
+				FROM ranked
+				WHERE ranked.id = profiles.id
+			)`,
+		)
+		.run();
+}
+
 function normalizePayload(payload: ProfilePayload) {
 	const handle = toText(payload.handle);
 	if (!handle) {
@@ -2187,6 +2239,15 @@ export default {
 		}
 
 		return new Response("Not Found", { status: 404 });
+	},
+	async scheduled(controller: ScheduledController, env: RuntimeEnv): Promise<void> {
+		try {
+			await recomputeProfilesCreditAndRank(env.DB);
+			console.log(`[cron] rank recalculated (${controller.cron})`);
+		} catch (error) {
+			console.error("[cron] rank recalculation failed", error);
+			throw error;
+		}
 	},
 } satisfies ExportedHandler<RuntimeEnv>;
 
