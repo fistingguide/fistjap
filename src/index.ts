@@ -1483,7 +1483,7 @@ async function queryProfiles(
 	const pageSql =
 		typeof params.limit === "number" ? "\n\t\tLIMIT ?\n\t\tOFFSET ?" : "";
 	const sql = `
-		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
+		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, total_credit, country,
 			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}
@@ -1665,7 +1665,7 @@ async function queryPinnedProfile(
 	const nowUnixSeconds = Math.floor(Date.now() / 1000);
 	const { slot, index, nextSwitchAt } = computePinnedIndex(poolSize, nowUnixSeconds);
 	const pickSql = `
-		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country,
+		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, total_credit, country,
 			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}

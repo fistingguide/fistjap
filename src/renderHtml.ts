@@ -8,6 +8,7 @@
 	avatar: string;
 	sexual_orientation: string;
 	followers_count: number;
+	total_credit?: number;
 	country: string;
 	region: string;
 	district: string;
@@ -36,6 +37,12 @@ function escapeHtml(value: string): string {
 		.replaceAll(">", "&gt;")
 		.replaceAll('"', "&quot;")
 		.replaceAll("'", "&#39;");
+}
+
+function formatCredit(value: unknown): string {
+	const numeric = Number(value ?? 0);
+	if (!Number.isFinite(numeric)) return "0";
+	return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\.0$/, "");
 }
 
 function sanitizeMarkdownUrl(url: string): string {
@@ -1218,6 +1225,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 			const safeRegion = escapeHtml((row.region || row.province) || "Tokyo");
 			const safeCountry = escapeHtml(row.country || "Japan");
 			const safeDistrict = escapeHtml((row.district || row.city) || "Itabashi");
+			const credit = formatCredit(row.total_credit);
 			const avatarEl = safeAvatar
 				? `<img class="avatar" src="${safeAvatar}" alt="${safeName}" referrerpolicy="no-referrer" loading="lazy" />`
 				: `<div class="avatar placeholder">N/A</div>`;
@@ -1229,7 +1237,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 							<div class="rank ${rankClass}">#${rank}</div>
 							<div class="badges">
 								<div class="badge">Orientation ${safeOrientation}</div>
-								<div class="badge">Fans ${row.followers_count}</div>
+								<div class="badge">Credit ${credit}</div>
 							</div>
 						</div>
 						<div class="identity">
@@ -2126,6 +2134,12 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					return fallback || '';
 				}
 
+				function formatCredit(value) {
+					const numeric = Number(value || 0);
+					if (!Number.isFinite(numeric)) return '0';
+					return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\\.0$/, '');
+				}
+
 				function renderRows(rows) {
 					if (!listEl) return;
 					const pinnedPlaceholder = '<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>';
@@ -2143,6 +2157,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						const safeRegion = esc((row.region || row.province) || 'Tokyo');
 						const safeCountry = esc(row.country || 'Japan');
 						const safeDistrict = esc((row.district || row.city) || 'Itabashi');
+						const credit = formatCredit(row.total_credit);
 						const avatarEl = safeAvatar
 							? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
 							: '<div class="avatar placeholder">N/A</div>';
@@ -2150,10 +2165,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							'<li class="leaderboard-item">' +
 								'<a class="card-link" href="' + safeUrl + '" target="_self" aria-label="Open ' + safeName + ' on X">' +
 									'<div class="card-top">' +
-										'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
+									'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
 										'<div class="badges">' +
 											'<div class="badge">Orientation ' + safeOrientation + '</div>' +
-											'<div class="badge">Fans ' + row.followers_count + '</div>' +
+											'<div class="badge">Credit ' + credit + '</div>' +
 										'</div>' +
 									'</div>' +
 									'<div class="identity">' +
@@ -2196,7 +2211,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const safeCountry = esc(row.country || 'Japan');
 					const safeDistrict = esc((row.district || row.city) || 'Itabashi');
 					const safeOrientation = esc(row.sexual_orientation || 'Gay');
-					const fans = Number(row.followers_count || 0);
+					const credit = formatCredit(row.total_credit);
 					const avatarEl = safeAvatar
 						? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
 						: '<div class="avatar placeholder">N/A</div>';
@@ -2206,7 +2221,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 								'<div class="rank top-rank">' + esc(t('spotlight_title', 'Rotating Spotlight')) + '</div>' +
 								'<div class="badges">' +
 									'<div class="badge">Orientation ' + safeOrientation + '</div>' +
-									'<div class="badge">Fans ' + fans + '</div>' +
+									'<div class="badge">Credit ' + credit + '</div>' +
 								'</div>' +
 							'</div>' +
 							'<div class="identity">' +
