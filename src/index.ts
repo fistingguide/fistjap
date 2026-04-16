@@ -1487,7 +1487,7 @@ async function queryProfiles(
 			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}
-		ORDER BY followers_count DESC, id ASC
+		ORDER BY total_credit DESC, id ASC
 		${pageSql}
 	`;
 	const bindValues =
@@ -1669,7 +1669,7 @@ async function queryPinnedProfile(
 			province AS region, city AS district, created_at
 		FROM profiles
 		${whereClause}
-		ORDER BY followers_count DESC, id ASC
+		ORDER BY total_credit DESC, id ASC
 		LIMIT 1 OFFSET ?
 	`;
 	const pickStmt =
