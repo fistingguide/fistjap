@@ -1,10 +1,4 @@
 -- Migration number: 0011    2026-04-16T00:10:00.000Z
-ALTER TABLE profiles ADD COLUMN tg_msg_cnt INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE profiles ADD COLUMN tg_photo_cnt INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE profiles ADD COLUMN tg_video_cnt INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE profiles ADD COLUMN list_star_event_cnt INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE profiles ADD COLUMN total_credit REAL NOT NULL DEFAULT 0;
-
 UPDATE profiles
 SET total_credit =
 	(COALESCE(followers_count, 0) / 10.0) +
