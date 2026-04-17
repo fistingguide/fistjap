@@ -38,6 +38,10 @@ type ProfilePayload = {
 	avatar?: unknown;
 	sexualOrientation?: unknown;
 	followersCount?: unknown;
+	lat?: unknown;
+	lng?: unknown;
+	geoLat?: unknown;
+	geoLng?: unknown;
 	country?: unknown;
 	region?: unknown;
 	district?: unknown;
@@ -583,6 +587,12 @@ function toFollowers(value: unknown): number {
 		return 20;
 	}
 	return Math.floor(parsed);
+}
+
+function toCoordinate(value: unknown): number | null {
+	const parsed = Number(value);
+	if (!Number.isFinite(parsed)) return null;
+	return parsed;
 }
 
 function json(data: unknown, status = 200, extraHeaders?: HeadersInit): Response {
@@ -1418,6 +1428,22 @@ async function queryGeoReverseFallback(lat: number, lng: number): Promise<GeoSug
 	}
 }
 
+async function resolveLocationByPoint(
+	lat: number,
+	lng: number,
+): Promise<{ country: string; region: string; district: string }> {
+	const primary = await queryGeoReverse(lat, lng);
+	const fallback = primary ?? (await queryGeoReverseFallback(lat, lng));
+	if (!fallback) {
+		throw new Error("failed to resolve country/region/district from coordinates");
+	}
+	return {
+		country: String(fallback.country || DEFAULT_COUNTRY).trim() || DEFAULT_COUNTRY,
+		region: String(fallback.region || DEFAULT_REGION).trim() || DEFAULT_REGION,
+		district: String(fallback.district || DEFAULT_DISTRICT).trim() || DEFAULT_DISTRICT,
+	};
+}
+
 async function ensureSeeded(db: D1Database): Promise<void> {
 	const row = await db.prepare("SELECT COUNT(*) AS total FROM profiles").first<{ total: number | string }>();
 	const total = Number(row?.total ?? 0);
@@ -1484,7 +1510,7 @@ async function queryProfiles(
 		typeof params.limit === "number" ? "\n\t\tLIMIT ?\n\t\tOFFSET ?" : "";
 	const sql = `
 		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, total_credit, country,
-			province AS region, city AS district, created_at
+			province AS region, city AS district, geo_lat, geo_lng, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY total_credit DESC, id ASC
@@ -1666,7 +1692,7 @@ async function queryPinnedProfile(
 	const { slot, index, nextSwitchAt } = computePinnedIndex(poolSize, nowUnixSeconds);
 	const pickSql = `
 		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, total_credit, country,
-			province AS region, city AS district, created_at
+			province AS region, city AS district, geo_lat, geo_lng, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY total_credit DESC, id ASC
@@ -1783,6 +1809,11 @@ function normalizePayload(payload: ProfilePayload) {
 	if (!handle) {
 		throw new Error("handle is required");
 	}
+	const lat = toCoordinate(payload.lat ?? payload.geoLat);
+	const lng = toCoordinate(payload.lng ?? payload.geoLng);
+	if (lat === null || lng === null) {
+		throw new Error("lat and lng are required numbers");
+	}
 
 	return {
 		name: toText(payload.name),
@@ -1793,9 +1824,8 @@ function normalizePayload(payload: ProfilePayload) {
 		avatar: toText(payload.avatar),
 		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
 		followersCount: toFollowers(payload.followersCount),
-		country: toText(payload.country, DEFAULT_COUNTRY) || DEFAULT_COUNTRY,
-		region: toText(payload.region, toText(payload.province, DEFAULT_REGION)) || DEFAULT_REGION,
-		district: toText(payload.district, toText(payload.city, DEFAULT_DISTRICT)) || DEFAULT_DISTRICT,
+		lat,
+		lng,
 	};
 }
 
@@ -2110,12 +2140,18 @@ export default {
 			} catch (error) {
 				return badRequest((error as Error).message);
 			}
+			let location;
+			try {
+				location = await resolveLocationByPoint(input.lat, input.lng);
+			} catch (error) {
+				return badRequest((error as Error).message);
+			}
 
 			try {
 				await env.DB.prepare(
 					`INSERT INTO profiles (
-						name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city
-					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+						name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city, geo_lat, geo_lng
+					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				)
 					.bind(
 						input.name,
@@ -2126,9 +2162,11 @@ export default {
 						input.avatar,
 						input.sexualOrientation,
 						input.followersCount,
-						input.country,
-						input.region,
-						input.district,
+						location.country,
+						location.region,
+						location.district,
+						input.lat,
+						input.lng,
 					)
 					.run();
 			} catch (error) {
@@ -2137,7 +2175,7 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, followers_count
+					`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, geo_lat, geo_lng, followers_count
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
@@ -2168,11 +2206,17 @@ export default {
 				} catch (error) {
 					return badRequest((error as Error).message);
 				}
+				let location;
+				try {
+					location = await resolveLocationByPoint(input.lat, input.lng);
+				} catch (error) {
+					return badRequest((error as Error).message);
+				}
 
 				try {
 					const result = await env.DB.prepare(
 						`UPDATE profiles
-						 SET name = ?, handle = ?, telegram = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?
+						 SET name = ?, handle = ?, telegram = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?, geo_lat = ?, geo_lng = ?
 						 WHERE id = ?`,
 					)
 						.bind(
@@ -2184,9 +2228,11 @@ export default {
 							input.avatar,
 							input.sexualOrientation,
 							input.followersCount,
-							input.country,
-							input.region,
-							input.district,
+							location.country,
+							location.region,
+							location.district,
+							input.lat,
+							input.lng,
 							id,
 						)
 						.run();
@@ -2200,7 +2246,7 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, followers_count
+						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, geo_lat, geo_lng, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -2220,7 +2266,7 @@ export default {
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				const deletedRow = await env.DB
 					.prepare(
-						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, followers_count
+						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, geo_lat, geo_lng, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)

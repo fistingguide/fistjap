@@ -12,6 +12,8 @@
 	country: string;
 	region: string;
 	district: string;
+	geo_lat?: number;
+	geo_lng?: number;
 	province?: string;
 	city?: string;
 	created_at: string;
@@ -2988,6 +2990,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let locationDebounce = null;
 			let locationMap = null;
 			let locationMarker = null;
+			let selectedLat = 35.7512;
+			let selectedLng = 139.7093;
 			let reverseRequestSeq = 0;
 			const MODE_CREATE = 'create';
 			const MODE_EDIT = 'edit';
@@ -3121,6 +3125,14 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function setStatus(text) {
 				els.status.textContent = text;
+			}
+
+			function setSelectedPoint(lat, lng) {
+				const nLat = Number(lat);
+				const nLng = Number(lng);
+				if (!Number.isFinite(nLat) || !Number.isFinite(nLng)) return;
+				selectedLat = nLat;
+				selectedLng = nLng;
 			}
 
 			function showSuccessDialog(message) {
@@ -3344,6 +3356,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function applyLocationChoice(item) {
 				if (!item) return;
+				setSelectedPoint(item.lat, item.lng);
 				const nextCountry = String(item.country || '').trim() || 'Unknown';
 				const nextDistrictRaw = String(item.district || '').trim();
 				const inferredDistrict = inferDistrictFromLabel(item.label, nextCountry);
@@ -3492,6 +3505,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.country.value = 'Japan';
 				els.region.value = 'Tokyo';
 				els.district.value = 'Itabashi';
+				setSelectedPoint(35.7512, 139.7093);
 				els.locationSearch.value = 'Itabashi, Tokyo, Japan';
 				els.locationSelected.textContent = selectedText('Itabashi', 'Tokyo', 'Japan');
 				renderLocationPreview(35.7512, 139.7093);
@@ -3516,7 +3530,16 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.district.value = (row.district || row.city) || 'Itabashi';
 				els.locationSearch.value = [els.district.value, els.region.value, els.country.value].filter(Boolean).join(', ');
 				els.locationSelected.textContent = selectedText(els.district.value, els.region.value, els.country.value);
-				refreshLocationPreviewByValue();
+				const rowLat = Number(row.geo_lat);
+				const rowLng = Number(row.geo_lng);
+				if (Number.isFinite(rowLat) && Number.isFinite(rowLng)) {
+					setSelectedPoint(rowLat, rowLng);
+					renderLocationPreview(rowLat, rowLng);
+				} else {
+					selectedLat = NaN;
+					selectedLng = NaN;
+					refreshLocationPreviewByValue();
+				}
 				updateAvatarPreview();
 				setEditingState(true);
 				updateDeleteTarget();
@@ -3578,9 +3601,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					avatar: els.avatar.value,
 					sexualOrientation: els.orientation.value,
 					followersCount: Number(els.followers.value || '0'),
-					region: els.region.value || 'Tokyo',
-					country: els.country.value || 'Japan',
-					district: els.district.value || 'Itabashi'
+					lat: selectedLat,
+					lng: selectedLng
 				};
 			}
 
@@ -3597,6 +3619,10 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				}
 
 				const payload = collectPayload();
+				if (!Number.isFinite(Number(payload.lat)) || !Number.isFinite(Number(payload.lng))) {
+					setStatus('Please select a valid location point on the map');
+					return;
+				}
 				const isUpdate = currentMode === MODE_EDIT;
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
@@ -4240,11 +4266,6 @@ export function renderDashboardPage(): string {
 			const countryFilterEl = document.getElementById('countryFilter');
 			const rowsEl = document.getElementById('rows');
 			const visitPerformerBtn = document.getElementById('visitPerformerBtn');
-			const GEO_CACHE_STORAGE_KEY = 'dashboard_geo_cache_v1';
-			const GEO_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-			const GEO_MAX_CACHE_ENTRIES = 3000;
-			const GEO_CONCURRENCY = 8;
-			const geoCache = new Map();
 			const map = L.map('map').setView([35.6812, 139.7671], 5);
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				maxZoom: 18,
@@ -4284,54 +4305,6 @@ export function renderDashboardPage(): string {
 				visitPerformerBtn.disabled = !String(selectedPerformer.profile_url || '').trim();
 				visitPerformerBtn.textContent = text;
 			}
-			function makeGeoKey(district, region, country) {
-				return (String(district || '') + '|' + String(region || '') + '|' + String(country || '')).toLowerCase();
-			}
-
-			function loadGeoCacheFromStorage() {
-				try {
-					const raw = localStorage.getItem(GEO_CACHE_STORAGE_KEY);
-					if (!raw) return;
-					const parsed = JSON.parse(raw);
-					if (!Array.isArray(parsed)) return;
-					const now = Date.now();
-					for (const entry of parsed) {
-						if (!entry || typeof entry !== 'object') continue;
-						const key = String(entry.key || '').trim();
-						const lat = Number(entry.lat);
-						const lon = Number(entry.lon);
-						const ts = Number(entry.ts);
-						if (!key) continue;
-						if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-						if (!Number.isFinite(ts)) continue;
-						if (now - ts > GEO_CACHE_TTL_MS) continue;
-						geoCache.set(key, { lat: lat, lon: lon, ts: ts });
-					}
-				} catch {
-					// ignore invalid local cache
-				}
-			}
-
-			function persistGeoCacheToStorage() {
-				try {
-					const now = Date.now();
-					const items = [];
-					for (const [key, value] of geoCache.entries()) {
-						const lat = Number(value && value.lat);
-						const lon = Number(value && value.lon);
-						const ts = Number(value && value.ts);
-						if (!Number.isFinite(lat) || !Number.isFinite(lon) || !Number.isFinite(ts)) continue;
-						if (now - ts > GEO_CACHE_TTL_MS) continue;
-						items.push({ key: key, lat: lat, lon: lon, ts: ts });
-					}
-					items.sort(function (a, b) { return b.ts - a.ts; });
-					const trimmed = items.slice(0, GEO_MAX_CACHE_ENTRIES);
-					localStorage.setItem(GEO_CACHE_STORAGE_KEY, JSON.stringify(trimmed));
-				} catch {
-					// storage can fail in private mode/quota limits
-				}
-			}
-
 			async function loadCountries() {
 				const res = await fetch('/api/countries');
 				const data = await res.json();
@@ -4361,82 +4334,23 @@ export function renderDashboardPage(): string {
 				}).join('');
 			}
 
-			async function geocode(district, region, country) {
-				const key = makeGeoKey(district, region, country);
-				const now = Date.now();
-				const cached = geoCache.get(key);
-				if (cached && Number.isFinite(Number(cached.lat)) && Number.isFinite(Number(cached.lon)) && Number.isFinite(Number(cached.ts))) {
-					if (now - Number(cached.ts) <= GEO_CACHE_TTL_MS) {
-						return { lat: Number(cached.lat), lon: Number(cached.lon) };
-					}
-				}
-				const q = encodeURIComponent([district, region, country].filter(Boolean).join(', '));
-				try {
-					const res = await fetch('/api/geo/point?q=' + q);
-					const data = await res.json();
-					const point = data && data.point ? data.point : null;
-					const normalized = point && Number.isFinite(Number(point.lat)) && Number.isFinite(Number(point.lon))
-						? { lat: Number(point.lat), lon: Number(point.lon) }
-						: null;
-					if (normalized) {
-						geoCache.set(key, { lat: normalized.lat, lon: normalized.lon, ts: now });
-					}
-					return normalized;
-				} catch {
-					return null;
-				}
-			}
-
 			async function drawMap(rows) {
 				markerLayer.clearLayers();
 				setVisitButtonState(null);
 				if (!rows.length) {
+					setStatus('');
 					return;
 				}
 
-				const uniqueLocations = new Map();
-				for (const row of rows) {
-					const district = (row.district || row.city) || 'Itabashi';
-					const region = (row.region || row.province) || 'Tokyo';
-					const country = row.country || 'Japan';
-					const key = makeGeoKey(district, region, country);
-					if (!uniqueLocations.has(key)) {
-						uniqueLocations.set(key, { district: district, region: region, country: country });
-					}
-				}
-
-				const tasks = Array.from(uniqueLocations.entries());
-				let cursor = 0;
-				const workerCount = Math.min(GEO_CONCURRENCY, tasks.length);
-				if (tasks.length) {
-					setStatus('Resolving map locations... (' + tasks.length + ')');
-				}
-				await Promise.all(Array.from({ length: workerCount }, async function () {
-					while (cursor < tasks.length) {
-						const current = cursor;
-						cursor += 1;
-						const pair = tasks[current];
-						if (!pair) continue;
-						const key = pair[0];
-						const location = pair[1];
-						const point = await geocode(location.district, location.region, location.country);
-						if (point) {
-							geoCache.set(key, { lat: Number(point.lat), lon: Number(point.lon), ts: Date.now() });
-						}
-					}
-				}));
-				persistGeoCacheToStorage();
-
 				const bounds = [];
 				const pointUsage = new Map();
+				let missingCoordinates = 0;
 				for (const row of rows) {
 					const district = (row.district || row.city) || 'Itabashi';
 					const region = (row.region || row.province) || 'Tokyo';
 					const country = row.country || 'Japan';
-					const point = geoCache.get(makeGeoKey(district, region, country));
-					if (!point) continue;
-					const pLat = Number(point.lat);
-					const pLon = Number(point.lon);
+					const pLat = Number(row.geo_lat);
+					const pLon = Number(row.geo_lng);
 					if (!Number.isFinite(pLat) || !Number.isFinite(pLon)) continue;
 					const key = pLat.toFixed(5) + '|' + pLon.toFixed(5);
 					const used = pointUsage.get(key) || 0;
@@ -4463,8 +4377,14 @@ export function renderDashboardPage(): string {
 						setVisitButtonState(row);
 					});
 				}
+				missingCoordinates = rows.length - bounds.length;
 				if (bounds.length) {
 					map.fitBounds(bounds, { padding: [30, 30] });
+					if (missingCoordinates > 0) {
+						setStatus('Loaded markers: ' + bounds.length + '. Missing coordinates: ' + missingCoordinates);
+					} else {
+						setStatus('');
+					}
 				} else {
 					const fallback = [35.7512, 139.7093];
 					L.circleMarker(fallback, {
@@ -4475,6 +4395,7 @@ export function renderDashboardPage(): string {
 						fillOpacity: 0.9
 					}).bindPopup('Itabashi / Tokyo / Japan').addTo(markerLayer);
 					map.setView(fallback, 10);
+					setStatus('No valid coordinates found, showing fallback marker');
 				}
 			}
 
@@ -4488,7 +4409,6 @@ export function renderDashboardPage(): string {
 				const rows = Array.isArray(data.results) ? data.results : [];
 				renderTable(rows);
 				await drawMap(rows);
-				setStatus('');
 			}
 
 			document.getElementById('reloadBtn').addEventListener('click', loadData);
@@ -4501,7 +4421,6 @@ export function renderDashboardPage(): string {
 			}
 
 			(async function init() {
-				loadGeoCacheFromStorage();
 				await loadCountries();
 				await loadData();
 			})();
