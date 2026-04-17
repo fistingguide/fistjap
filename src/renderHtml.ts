@@ -4266,6 +4266,7 @@ export function renderDashboardPage(): string {
 			const countryFilterEl = document.getElementById('countryFilter');
 			const rowsEl = document.getElementById('rows');
 			const visitPerformerBtn = document.getElementById('visitPerformerBtn');
+			const reloadBtn = document.getElementById('reloadBtn');
 			const map = L.map('map').setView([35.6812, 139.7671], 5);
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				maxZoom: 18,
@@ -4273,7 +4274,7 @@ export function renderDashboardPage(): string {
 			}).addTo(map);
 			const markerLayer = L.layerGroup().addTo(map);
 			let selectedPerformer = null;
-			const locationPointCache = new Map();
+			let reloadInFlight = false;
 
 			function setStatus(text) { statusEl.textContent = text; }
 			function formatNum(value) { return Number(value || 0).toLocaleString(); }
@@ -4305,65 +4306,6 @@ export function renderDashboardPage(): string {
 				}
 				visitPerformerBtn.disabled = !String(selectedPerformer.profile_url || '').trim();
 				visitPerformerBtn.textContent = text;
-			}
-			function makeLocationKey(district, region, country) {
-				return [district, region, country].map(function (part) {
-					return String(part || '').trim().toLowerCase();
-				}).join('|');
-			}
-			async function resolvePointByLocation(district, region, country) {
-				const key = makeLocationKey(district, region, country);
-				if (!key || key === '||') return null;
-				if (locationPointCache.has(key)) return locationPointCache.get(key);
-				const query = [district, region, country].map(function (part) {
-					return String(part || '').trim();
-				}).filter(Boolean).join(', ');
-				if (!query) {
-					locationPointCache.set(key, null);
-					return null;
-				}
-				try {
-					const res = await fetch('/api/geo/point?q=' + encodeURIComponent(query));
-					const data = await res.json();
-					const point = data && data.point ? data.point : null;
-					const lat = Number(point && point.lat);
-					const lng = Number(point && point.lon);
-					const normalized = Number.isFinite(lat) && Number.isFinite(lng) ? { lat: lat, lng: lng } : null;
-					locationPointCache.set(key, normalized);
-					return normalized;
-				} catch {
-					locationPointCache.set(key, null);
-					return null;
-				}
-			}
-			async function resolveRowsByLocation(rows) {
-				const unique = new Map();
-				for (const row of rows) {
-					const district = (row.district || row.city) || 'Itabashi';
-					const region = (row.region || row.province) || 'Tokyo';
-					const country = row.country || 'Japan';
-					const key = makeLocationKey(district, region, country);
-					if (!unique.has(key)) {
-						unique.set(key, { district: district, region: region, country: country });
-					}
-				}
-				const entries = Array.from(unique.entries());
-				for (const entry of entries) {
-					const location = entry[1];
-					await resolvePointByLocation(location.district, location.region, location.country);
-				}
-				return rows.map(function (row) {
-					const district = (row.district || row.city) || 'Itabashi';
-					const region = (row.region || row.province) || 'Tokyo';
-					const country = row.country || 'Japan';
-					const point = locationPointCache.get(makeLocationKey(district, region, country)) || null;
-					const next = Object.assign({}, row);
-					if (point) {
-						next._resolved_lat = point.lat;
-						next._resolved_lng = point.lng;
-					}
-					return next;
-				});
 			}
 			async function loadCountries() {
 				const res = await fetch('/api/countries');
@@ -4409,8 +4351,8 @@ export function renderDashboardPage(): string {
 					const district = (row.district || row.city) || 'Itabashi';
 					const region = (row.region || row.province) || 'Tokyo';
 					const country = row.country || 'Japan';
-					const pLat = Number(row._resolved_lat != null ? row._resolved_lat : row.geo_lat);
-					const pLon = Number(row._resolved_lng != null ? row._resolved_lng : row.geo_lng);
+					const pLat = Number(row.geo_lat);
+					const pLon = Number(row.geo_lng);
 					if (!Number.isFinite(pLat) || !Number.isFinite(pLon)) continue;
 					const key = pLat.toFixed(5) + '|' + pLon.toFixed(5);
 					const used = pointUsage.get(key) || 0;
@@ -4459,8 +4401,7 @@ export function renderDashboardPage(): string {
 				}
 			}
 
-			async function loadData(options) {
-				const decodeByLocation = Boolean(options && options.decodeByLocation);
+			async function loadData() {
 				setStatus('Loading dashboard data...');
 				const params = new URLSearchParams();
 				if (countryFilterEl.value) params.set('country', countryFilterEl.value);
@@ -4469,16 +4410,43 @@ export function renderDashboardPage(): string {
 				const data = await res.json();
 				const rows = Array.isArray(data.results) ? data.results : [];
 				renderTable(rows);
-				if (decodeByLocation) {
-					setStatus('Decoding coordinates from location...');
-					const resolvedRows = await resolveRowsByLocation(rows);
-					await drawMap(resolvedRows);
-					return;
-				}
 				await drawMap(rows);
 			}
 
-			document.getElementById('reloadBtn').addEventListener('click', function () { return loadData({ decodeByLocation: true }); });
+			async function runGeoBackfill() {
+				if (reloadInFlight) return;
+				reloadInFlight = true;
+				if (reloadBtn) reloadBtn.disabled = true;
+				try {
+					const pwd = window.prompt('请输入删除密码以执行经纬度回填：');
+					if (!pwd) {
+						setStatus('Cancelled: password is required');
+						return;
+					}
+					setStatus('Backfilling missing coordinates...');
+					const res = await fetch('/api/admin/backfill-geo?mode=missing', {
+						method: 'POST',
+						headers: { 'x-delete-password': pwd }
+					});
+					if (!res.ok) {
+						const msg = await res.text();
+						setStatus('Backfill failed: ' + msg);
+						return;
+					}
+					const data = await res.json();
+					const updated = Number(data && data.updated);
+					const failed = Number(data && data.failed);
+					setStatus('Backfill done. Updated: ' + (Number.isFinite(updated) ? updated : 0) + ', failed: ' + (Number.isFinite(failed) ? failed : 0));
+					await loadData();
+				} catch (error) {
+					setStatus('Backfill failed: ' + String(error && error.message ? error.message : error));
+				} finally {
+					reloadInFlight = false;
+					if (reloadBtn) reloadBtn.disabled = false;
+				}
+			}
+
+			document.getElementById('reloadBtn').addEventListener('click', runGeoBackfill);
 			countryFilterEl.addEventListener('change', loadData);
 			if (visitPerformerBtn) {
 				visitPerformerBtn.addEventListener('click', function () {

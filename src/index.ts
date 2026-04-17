@@ -1237,17 +1237,18 @@ async function backfillProfileGeoPoints(
 }> {
 	const rewriteAll = options?.rewriteAll !== false;
 	const limit = Number.isFinite(Number(options?.limit)) ? Math.max(1, Math.floor(Number(options?.limit))) : 0;
+	const whereClause = rewriteAll ? "" : " WHERE geo_lat IS NULL OR geo_lng IS NULL";
 	const limitSql = limit > 0 ? " LIMIT ?" : "";
 	const stmt =
 		limit > 0
 			? db.prepare(
 					`SELECT id, country, province AS region, city AS district, geo_lat, geo_lng
-					 FROM profiles
+					 FROM profiles${whereClause}
 					 ORDER BY id ASC${limitSql}`,
 				).bind(limit)
 			: db.prepare(
 					`SELECT id, country, province AS region, city AS district, geo_lat, geo_lng
-					 FROM profiles
+					 FROM profiles${whereClause}
 					 ORDER BY id ASC`,
 				);
 	const { results } = await stmt.all<{
@@ -1264,31 +1265,43 @@ async function backfillProfileGeoPoints(
 	let skipped = 0;
 	let failed = 0;
 
-	for (const row of rows) {
-		processed += 1;
-		const currentLat = Number(row.geo_lat);
-		const currentLng = Number(row.geo_lng);
-		const hasCoordinates = Number.isFinite(currentLat) && Number.isFinite(currentLng);
-		if (!rewriteAll && hasCoordinates) {
-			skipped += 1;
-			continue;
-		}
-		const district = normalizeGeoToken(row.district);
-		const region = normalizeGeoToken(row.region);
-		const country = normalizeGeoToken(row.country);
-		const query = [district, region, country].filter(Boolean).join(", ");
-		if (!query) {
-			failed += 1;
-			continue;
-		}
-		const point = await queryGeoPoint(query);
-		if (!point) {
-			failed += 1;
-			continue;
-		}
-		await db.prepare("UPDATE profiles SET geo_lat = ?, geo_lng = ? WHERE id = ?").bind(point.lat, point.lon, row.id).run();
-		updated += 1;
-	}
+	let cursor = 0;
+	const workerCount = Math.min(6, rows.length || 1);
+	await Promise.all(
+		Array.from({ length: workerCount }, async () => {
+			while (cursor < rows.length) {
+				const current = cursor;
+				cursor += 1;
+				const row = rows[current];
+				if (!row) continue;
+				processed += 1;
+				const currentLat = Number(row.geo_lat);
+				const currentLng = Number(row.geo_lng);
+				const hasCoordinates = Number.isFinite(currentLat) && Number.isFinite(currentLng);
+				if (!rewriteAll && hasCoordinates) {
+					skipped += 1;
+					continue;
+				}
+				const district = normalizeGeoToken(row.district);
+				const region = normalizeGeoToken(row.region);
+				const country = normalizeGeoToken(row.country);
+				const query = [district, region, country].filter(Boolean).join(", ");
+				if (!query) {
+					failed += 1;
+					continue;
+				}
+				const point = await queryGeoPoint(query);
+				if (!point) {
+					failed += 1;
+					continue;
+				}
+				await db.prepare("UPDATE profiles SET geo_lat = ?, geo_lng = ? WHERE id = ?")
+					.bind(point.lat, point.lon, row.id)
+					.run();
+				updated += 1;
+			}
+		}),
+	);
 
 	return {
 		total: rows.length,
@@ -2216,14 +2229,15 @@ export default {
 			const authError = verifyDeletePassword(request, env);
 			if (authError) return authError;
 			const mode = (url.searchParams.get("mode") || "all").trim().toLowerCase();
+			const rewriteAll = mode !== "missing";
 			const limitRaw = (url.searchParams.get("limit") || "").trim();
 			const parsedLimit = Number(limitRaw);
-			const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.floor(parsedLimit) : undefined;
+			const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.floor(parsedLimit) : rewriteAll ? 0 : 400;
 			const summary = await backfillProfileGeoPoints(env.DB, {
-				rewriteAll: mode !== "missing",
+				rewriteAll,
 				limit,
 			});
-			return json({ ok: true, mode: mode !== "missing" ? "all" : "missing", ...summary });
+			return json({ ok: true, mode: rewriteAll ? "all" : "missing", limit, ...summary });
 		}
 
 		if (method === "POST" && pathname === "/api/profiles") {
