@@ -2992,6 +2992,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let locationMarker = null;
 			let selectedLat = 35.7512;
 			let selectedLng = 139.7093;
+			let adminWritePassword = '';
 			let reverseRequestSeq = 0;
 			const MODE_CREATE = 'create';
 			const MODE_EDIT = 'edit';
@@ -3626,16 +3627,32 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				const isUpdate = currentMode === MODE_EDIT;
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
+				if (!adminWritePassword) {
+					const pwd = window.prompt('Enter delete password to continue:');
+					if (!pwd) {
+						setStatus('Submit cancelled: password is required.');
+						return;
+					}
+					adminWritePassword = pwd;
+				}
 
 				setStatus(t('admin_status_submitting', 'Submitting...'));
 				const res = await fetch(url, {
 					method,
-					headers: { 'content-type': 'application/json' },
+					headers: {
+						'content-type': 'application/json',
+						'x-delete-password': adminWritePassword
+					},
 					body: JSON.stringify(payload)
 				});
 
 				if (!res.ok) {
 					const msg = await res.text();
+					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
+						adminWritePassword = '';
+						window.alert('密码输入错误');
+						return;
+					}
 					setStatus('Submit failed: ' + msg);
 					return;
 				}

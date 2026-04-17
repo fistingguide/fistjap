@@ -2197,7 +2197,7 @@ export default {
 			if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
 				return badRequest("lat and lng are required numbers");
 			}
-			const result = await queryGeoReverse(lat, lng);
+			const result = (await queryGeoReverse(lat, lng)) ?? (await queryGeoReverseFallback(lat, lng));
 			return json({ result });
 		}
 
@@ -2213,7 +2213,9 @@ export default {
 			if (!expectedToken) {
 				return json({ error: "TEST_EMAIL_TOKEN is not configured" }, 500);
 			}
-			const providedToken = (url.searchParams.get("token") || "").trim();
+			const providedToken =
+				(request.headers.get("x-test-email-token") || "").trim() ||
+				(url.searchParams.get("token") || "").trim();
 			if (!providedToken || providedToken !== expectedToken) {
 				return json({ error: "unauthorized" }, 401);
 			}
@@ -2241,6 +2243,8 @@ export default {
 		}
 
 		if (method === "POST" && pathname === "/api/profiles") {
+			const authError = verifyDeletePassword(request, env);
+			if (authError) return authError;
 			const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 			let payload: ProfilePayload;
 			try {
@@ -2307,6 +2311,8 @@ export default {
 			const id = Number(idMatch[1]);
 
 			if (method === "PUT" || method === "PATCH") {
+				const authError = verifyDeletePassword(request, env);
+				if (authError) return authError;
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				let payload: ProfilePayload;
 				try {
