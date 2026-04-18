@@ -1625,6 +1625,60 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				text-align: center;
 				border: 1px solid var(--line);
 			}
+			.verify-overlay {
+				position: fixed;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: rgba(15, 20, 25, 0.72);
+				z-index: 10001;
+				padding: 16px;
+			}
+			.verify-dialog {
+				width: min(460px, 100%);
+				background: #16181C;
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 14px;
+				display: grid;
+				gap: 10px;
+			}
+			.verify-title {
+				margin: 0;
+				font-size: 16px;
+				font-weight: 700;
+				color: var(--text);
+			}
+			.verify-desc {
+				margin: 0;
+				font-size: 13px;
+				color: var(--muted);
+				line-height: 1.5;
+				white-space: pre-line;
+			}
+			.verify-input {
+				height: 42px;
+				width: 100%;
+			}
+			.verify-actions {
+				display: flex;
+				justify-content: flex-end;
+				gap: 8px;
+			}
+			.verify-actions button {
+				height: 38px;
+				padding: 0 14px;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+				background: #0F1419;
+				color: #E7E9EA;
+			}
+			.verify-actions .verify-confirm {
+				background: var(--primary);
+				color: #FFFFFF;
+				border: none;
+			}
 			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
 			.age-btn {
 				border: none;
@@ -2037,6 +2091,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<div class="age-gate-actions">
 					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
 					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
+				</div>
+			</div>
+		</div>
+		<div class="verify-overlay" id="verifyDialog" hidden>
+			<div class="verify-dialog" role="dialog" aria-modal="true" aria-labelledby="verifyDialogTitle">
+				<h3 class="verify-title" id="verifyDialogTitle">Verification</h3>
+				<p class="verify-desc" id="verifyDialogDesc"></p>
+				<input class="verify-input" id="verifyDialogInput" autocomplete="off" />
+				<div class="verify-actions">
+					<button type="button" class="verify-cancel" id="verifyDialogCancel">Cancel</button>
+					<button type="button" class="verify-confirm" id="verifyDialogConfirm">Confirm</button>
 				</div>
 			</div>
 		</div>
@@ -3164,7 +3229,13 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				submitBtn: document.getElementById('submitBtn'),
 				cancelEditBtn: document.getElementById('cancelEditBtn'),
 				deleteOnlyBtn: document.getElementById('deleteOnlyBtn'),
-				deleteTargetText: document.getElementById('deleteTargetText')
+				deleteTargetText: document.getElementById('deleteTargetText'),
+				verifyDialog: document.getElementById('verifyDialog'),
+				verifyDialogTitle: document.getElementById('verifyDialogTitle'),
+				verifyDialogDesc: document.getElementById('verifyDialogDesc'),
+				verifyDialogInput: document.getElementById('verifyDialogInput'),
+				verifyDialogConfirm: document.getElementById('verifyDialogConfirm'),
+				verifyDialogCancel: document.getElementById('verifyDialogCancel')
 			};
 
 			function t(key, fallback) {
@@ -3320,56 +3391,167 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 				const copy = {
 					en: {
+						emailTitle: 'Email verification',
 						email: 'Enter the email address to receive the verification code:',
 						emailNotice: 'This email is only used to deliver the verification code to prevent bots and abuse.',
-						code: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: 'Enter verification code',
+						code: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):',
+						codePlaceholder: '6-digit code',
+						confirm: 'Confirm',
+						cancel: 'Cancel'
 					},
 					'zh-CN': {
+						emailTitle: '邮箱验证',
 						email: '请输入接收验证码的邮箱地址：',
 						emailNotice: '该邮箱仅用于接收验证码，以防止机器人和滥用行为。',
-						code: '验证码已发送，请输入6位验证码（5分钟内有效）：'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: '输入验证码',
+						code: '验证码已发送，请输入6位验证码（5分钟内有效）：',
+						codePlaceholder: '6位验证码',
+						confirm: '确认',
+						cancel: '取消'
 					},
 					'zh-TW': {
+						emailTitle: '郵箱驗證',
 						email: '請輸入接收驗證碼的電子郵箱地址：',
 						emailNotice: '該郵箱僅用於接收驗證碼，以防止機器人與濫用行為。',
-						code: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: '輸入驗證碼',
+						code: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：',
+						codePlaceholder: '6位驗證碼',
+						confirm: '確認',
+						cancel: '取消'
 					},
 					ja: {
+						emailTitle: 'メール認証',
 						email: '認証コードを受け取るメールアドレスを入力してください：',
 						emailNotice: 'このメールアドレスは、ボットや不正利用を防ぐための認証コード送信にのみ使用されます。',
-						code: '認証コードを送信しました。6桁のコードを入力してください（有効期限5分）：'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: '認証コード入力',
+						code: '認証コードを送信しました。6桁のコードを入力してください（有効期限5分）：',
+						codePlaceholder: '6桁のコード',
+						confirm: '確認',
+						cancel: 'キャンセル'
 					},
 					ko: {
+						emailTitle: '이메일 인증',
 						email: '인증코드를 받을 이메일 주소를 입력하세요:',
 						emailNotice: '이 이메일 주소는 봇 및 악용 방지를 위한 인증코드 수신 용도로만 사용됩니다.',
-						code: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: '인증코드 입력',
+						code: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):',
+						codePlaceholder: '6자리 코드',
+						confirm: '확인',
+						cancel: '취소'
 					},
 					es: {
+						emailTitle: 'Verificacion por correo',
 						email: 'Introduce el correo para recibir el código de verificación:',
 						emailNotice: 'Este correo solo se utiliza para enviar el código y prevenir bots y abusos.',
-						code: 'Código enviado. Introduce el código de 6 dígitos (válido por 5 minutos):'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: 'Introducir código',
+						code: 'Código enviado. Introduce el código de 6 dígitos (válido por 5 minutos):',
+						codePlaceholder: 'Código de 6 dígitos',
+						confirm: 'Confirmar',
+						cancel: 'Cancelar'
 					},
 					pt: {
+						emailTitle: 'Verificacao por e-mail',
 						email: 'Digite o e-mail para receber o código de verificação:',
 						emailNotice: 'Este e-mail é usado apenas para receber o código e prevenir bots e abusos.',
-						code: 'Código enviado. Digite o código de 6 dígitos (válido por 5 minutos):'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: 'Inserir codigo',
+						code: 'Código enviado. Digite o código de 6 dígitos (válido por 5 minutos):',
+						codePlaceholder: 'Código de 6 dígitos',
+						confirm: 'Confirmar',
+						cancel: 'Cancelar'
 					},
 					th: {
+						emailTitle: 'ยืนยันอีเมล',
 						email: 'กรุณากรอกอีเมลสำหรับรับรหัสยืนยัน:',
 						emailNotice: 'อีเมลนี้ใช้เพื่อรับรหัสยืนยันเท่านั้น เพื่อป้องกันบอทและการใช้งานในทางที่ผิด',
-						code: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: 'กรอกรหัสยืนยัน',
+						code: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):',
+						codePlaceholder: 'รหัส 6 หลัก',
+						confirm: 'ยืนยัน',
+						cancel: 'ยกเลิก'
 					},
 					vi: {
+						emailTitle: 'Xac minh email',
 						email: 'Nhap email de nhan ma xac minh:',
 						emailNotice: 'Email nay chi duoc dung de nhan ma xac minh nham ngan bot va hanh vi lam dung.',
-						code: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):'
+						emailPlaceholder: 'name@example.com',
+						codeTitle: 'Nhap ma xac minh',
+						code: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):',
+						codePlaceholder: 'Ma 6 so',
+						confirm: 'Xac nhan',
+						cancel: 'Huy'
 					}
 				};
 
 				const bucket = copy[langKey] || copy.en;
-				if (kind === 'code') return bucket.code;
-				if (kind === 'emailNotice') return bucket.emailNotice;
-				return bucket.email;
+				return bucket[kind] || '';
+			}
+
+			function showVerifyInputDialog(options) {
+				if (!els.verifyDialog || !els.verifyDialogInput || !els.verifyDialogTitle || !els.verifyDialogDesc || !els.verifyDialogConfirm || !els.verifyDialogCancel) {
+					return Promise.resolve(null);
+				}
+				const dialog = els.verifyDialog;
+				const titleEl = els.verifyDialogTitle;
+				const descEl = els.verifyDialogDesc;
+				const inputEl = els.verifyDialogInput;
+				const confirmEl = els.verifyDialogConfirm;
+				const cancelEl = els.verifyDialogCancel;
+
+				titleEl.textContent = options.title || '';
+				descEl.textContent = options.description || '';
+				inputEl.value = '';
+				inputEl.type = options.type === 'code' ? 'tel' : 'email';
+				inputEl.inputMode = options.type === 'code' ? 'numeric' : 'email';
+				inputEl.placeholder = options.placeholder || '';
+				confirmEl.textContent = options.confirmText || 'Confirm';
+				cancelEl.textContent = options.cancelText || 'Cancel';
+
+				dialog.hidden = false;
+				document.body.style.overflow = 'hidden';
+
+				return new Promise(function (resolve) {
+					let done = false;
+					const finish = function (value) {
+						if (done) return;
+						done = true;
+						dialog.hidden = true;
+						document.body.style.overflow = '';
+						confirmEl.onclick = null;
+						cancelEl.onclick = null;
+						inputEl.onkeydown = null;
+						resolve(value);
+					};
+					confirmEl.onclick = function () {
+						const value = String(inputEl.value || '').trim();
+						if (!value) return;
+						finish(value);
+					};
+					cancelEl.onclick = function () {
+						finish(null);
+					};
+					inputEl.onkeydown = function (event) {
+						if (event.key === 'Enter') {
+							event.preventDefault();
+							confirmEl.click();
+						}
+						if (event.key === 'Escape') {
+							event.preventDefault();
+							cancelEl.click();
+						}
+					};
+					setTimeout(function () {
+						try { inputEl.focus(); } catch {}
+					}, 0);
+				});
 			}
 
 			async function readErrorMessage(res) {
@@ -3386,7 +3568,14 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			async function requestAdminVerificationHeaders(actionName) {
 				setStatus(getVerifyPromptText('emailNotice'));
-				const email = window.prompt(getVerifyPromptText('email'));
+				const email = await showVerifyInputDialog({
+					type: 'email',
+					title: getVerifyPromptText('emailTitle'),
+					description: getVerifyPromptText('email'),
+					placeholder: getVerifyPromptText('emailPlaceholder'),
+					confirmText: getVerifyPromptText('confirm'),
+					cancelText: getVerifyPromptText('cancel')
+				});
 				if (!email || !String(email).trim()) {
 					setStatus(actionName + ' cancelled: email is required.');
 					return null;
@@ -3410,7 +3599,14 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					return null;
 				}
 
-				const code = window.prompt(getVerifyPromptText('code'));
+				const code = await showVerifyInputDialog({
+					type: 'code',
+					title: getVerifyPromptText('codeTitle'),
+					description: getVerifyPromptText('code'),
+					placeholder: getVerifyPromptText('codePlaceholder'),
+					confirmText: getVerifyPromptText('confirm'),
+					cancelText: getVerifyPromptText('cancel')
+				});
 				if (!code || !String(code).trim()) {
 					setStatus(actionName + ' cancelled: verification code is required.');
 					return null;
