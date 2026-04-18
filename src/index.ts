@@ -583,6 +583,18 @@ function htmlResponse(html: string, origin: string, seo: SeoOptions, env: Runtim
 	});
 }
 
+function adminHtmlResponse(html: string, origin: string, seo: SeoOptions, env: RuntimeEnv): Response {
+	const base = htmlResponse(html, origin, seo, env);
+	const headers = new Headers(base.headers);
+	headers.set("cache-control", "no-store, no-cache, must-revalidate");
+	headers.set("pragma", "no-cache");
+	headers.set("expires", "0");
+	return new Response(base.body, {
+		status: base.status,
+		headers,
+	});
+}
+
 function buildRobotsTxt(origin: string): string {
 	return [
 		"User-agent: *",
@@ -2265,7 +2277,7 @@ export default {
 
 		if (method === "GET" && pathname === "/admin") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage("home"), origin, {
+			return adminHtmlResponse(renderAdminPage("home"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin",
@@ -2277,7 +2289,7 @@ export default {
 
 		if (method === "GET" && pathname === "/admin/create") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage("create"), origin, {
+			return adminHtmlResponse(renderAdminPage("create"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin/create",
@@ -2289,7 +2301,7 @@ export default {
 
 		if (method === "GET" && pathname === "/admin/edit") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage("edit"), origin, {
+			return adminHtmlResponse(renderAdminPage("edit"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin/edit",
@@ -2301,7 +2313,7 @@ export default {
 
 		if (method === "GET" && pathname === "/admin/delete") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage("delete"), origin, {
+			return adminHtmlResponse(renderAdminPage("delete"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin/delete",
