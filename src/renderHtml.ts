@@ -3285,7 +3285,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				if (orientation) lines.push('Orientation: ' + orientation);
 				if (district || region || country) lines.push('Location: ' + [district, region, country].filter(Boolean).join(' / '));
 				if (Number.isFinite(lat) && Number.isFinite(lng)) lines.push('Coordinates: ' + lat + ', ' + lng);
-				return lines.join('\n');
+				return lines.join('\\n');
 			}
 
 			function setSelectedPoint(lat, lng) {
@@ -3826,7 +3826,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					? t('admin_alert_updated_success', 'Profile updated successfully.')
 					: t('admin_alert_created_success', 'Profile created successfully.');
 				const summary = formatProfileSummary(result && result.profile ? result.profile : null, payload.handle);
-				showSuccessDialog(summary ? (actionText + '\n\n' + summary) : actionText);
+				showSuccessDialog(summary ? (actionText + '\\n\\n' + summary) : actionText);
 				resetForm();
 				if (currentMode === MODE_EDIT) {
 					els.handleSearch.value = payload.handle;
