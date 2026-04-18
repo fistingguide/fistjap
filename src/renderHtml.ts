@@ -2383,9 +2383,26 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							return String(opt.value) === selectedValue;
 						}) || options[0];
 						const isNavMenu = mountEl.id === 'mobilePageNavCustom';
-						const triggerHtml = isNavMenu
-							? '<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu" aria-haspopup="listbox" aria-expanded="false"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>'
-							: '<button type="button" class="mobile-select-trigger" aria-haspopup="listbox" aria-expanded="false">' + esc(selectedOption ? selectedOption.text : '') + '</button>';
+						if (isNavMenu) {
+							mountEl.innerHTML =
+								'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+							const trigger = mountEl.querySelector('.mobile-select-trigger');
+							if (trigger) {
+								trigger.addEventListener('click', function (event) {
+									event.preventDefault();
+									if (window.history.length > 1) {
+										window.history.back();
+									} else {
+										window.location.href = '/';
+									}
+								});
+							}
+							return;
+						}
+						const triggerHtml =
+							'<button type="button" class="mobile-select-trigger" aria-haspopup="listbox" aria-expanded="false">' +
+							esc(selectedOption ? selectedOption.text : '') +
+							'</button>';
 						mountEl.innerHTML =
 							triggerHtml +
 							'<div class="mobile-select-menu" role="listbox">' +
@@ -3900,30 +3917,17 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				}
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
-					const options = Array.from(select.options || []);
-					const selectedValue = String(select.value || '');
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
-						'<div class="mobile-select-menu" role="listbox">' +
-							options.map(function (opt) {
-								const value = String(opt.value || '');
-								const selectedClass = value === selectedValue ? ' is-selected' : '';
-								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
-							}).join('') +
-						'</div>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
-					const menu = mount.querySelector('.mobile-select-menu');
-					if (!trigger || !menu) return;
+					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
 						event.preventDefault();
-						mount.classList.toggle('open');
-					});
-					menu.addEventListener('click', function (event) {
-						const btn = event.target.closest('.mobile-select-option');
-						if (!btn) return;
-						const nextValue = btn.getAttribute('data-value') || '';
-						if (nextValue) window.location.href = nextValue;
-						closeMenu();
+						if (window.history.length > 1) {
+							window.history.back();
+						} else {
+							window.location.href = '/';
+						}
 					});
 				}
 				select.addEventListener('change', render);
@@ -4578,30 +4582,17 @@ export function renderDashboardPage(): string {
 				}
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
-					const options = Array.from(select.options || []);
-					const selectedValue = String(select.value || '');
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
-						'<div class="mobile-select-menu" role="listbox">' +
-							options.map(function (opt) {
-								const value = String(opt.value || '');
-								const selectedClass = value === selectedValue ? ' is-selected' : '';
-								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
-							}).join('') +
-						'</div>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
-					const menu = mount.querySelector('.mobile-select-menu');
-					if (!trigger || !menu) return;
+					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
 						event.preventDefault();
-						mount.classList.toggle('open');
-					});
-					menu.addEventListener('click', function (event) {
-						const btn = event.target.closest('.mobile-select-option');
-						if (!btn) return;
-						const nextValue = btn.getAttribute('data-value') || '';
-						if (nextValue) window.location.href = nextValue;
-						closeMenu();
+						if (window.history.length > 1) {
+							window.history.back();
+						} else {
+							window.location.href = '/';
+						}
 					});
 				}
 				select.addEventListener('change', render);
@@ -4953,30 +4944,17 @@ export function renderAboutPage(): string {
 				}
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
-					const options = Array.from(select.options || []);
-					const selectedValue = String(select.value || '');
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
-						'<div class="mobile-select-menu" role="listbox">' +
-							options.map(function (opt) {
-								const value = String(opt.value || '');
-								const selectedClass = value === selectedValue ? ' is-selected' : '';
-								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
-							}).join('') +
-						'</div>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
-					const menu = mount.querySelector('.mobile-select-menu');
-					if (!trigger || !menu) return;
+					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
 						event.preventDefault();
-						mount.classList.toggle('open');
-					});
-					menu.addEventListener('click', function (event) {
-						const btn = event.target.closest('.mobile-select-option');
-						if (!btn) return;
-						const nextValue = btn.getAttribute('data-value') || '';
-						if (nextValue) window.location.href = nextValue;
-						closeMenu();
+						if (window.history.length > 1) {
+							window.history.back();
+						} else {
+							window.location.href = '/';
+						}
 					});
 				}
 				select.addEventListener('change', render);
@@ -5350,30 +5328,17 @@ A photo of the upper body with the face obscured, a fisting video, and a caption
 				}
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
-					const options = Array.from(select.options || []);
-					const selectedValue = String(select.value || '');
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
-						'<div class="mobile-select-menu" role="listbox">' +
-							options.map(function (opt) {
-								const value = String(opt.value || '');
-								const selectedClass = value === selectedValue ? ' is-selected' : '';
-								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
-							}).join('') +
-						'</div>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
-					const menu = mount.querySelector('.mobile-select-menu');
-					if (!trigger || !menu) return;
+					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
 						event.preventDefault();
-						mount.classList.toggle('open');
-					});
-					menu.addEventListener('click', function (event) {
-						const btn = event.target.closest('.mobile-select-option');
-						if (!btn) return;
-						const nextValue = btn.getAttribute('data-value') || '';
-						if (nextValue) window.location.href = nextValue;
-						closeMenu();
+						if (window.history.length > 1) {
+							window.history.back();
+						} else {
+							window.location.href = '/';
+						}
 					});
 				}
 				select.addEventListener('change', render);
@@ -5758,30 +5723,17 @@ Fisting属于高强度玩法，安全、渐进、充足润滑和双方自愿非�
 				}
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
-					const options = Array.from(select.options || []);
-					const selectedValue = String(select.value || '');
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Open navigation menu"><span class="nav-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>' +
-						'<div class="mobile-select-menu" role="listbox">' +
-							options.map(function (opt) {
-								const value = String(opt.value || '');
-								const selectedClass = value === selectedValue ? ' is-selected' : '';
-								return '<button type="button" class="mobile-select-option' + selectedClass + '" data-value="' + esc(value) + '">' + esc(opt.text) + '</button>';
-							}).join('') +
-						'</div>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
-					const menu = mount.querySelector('.mobile-select-menu');
-					if (!trigger || !menu) return;
+					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
 						event.preventDefault();
-						mount.classList.toggle('open');
-					});
-					menu.addEventListener('click', function (event) {
-						const btn = event.target.closest('.mobile-select-option');
-						if (!btn) return;
-						const nextValue = btn.getAttribute('data-value') || '';
-						if (nextValue) window.location.href = nextValue;
-						closeMenu();
+						if (window.history.length > 1) {
+							window.history.back();
+						} else {
+							window.location.href = '/';
+						}
 					});
 				}
 				select.addEventListener('change', render);
