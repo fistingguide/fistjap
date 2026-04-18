@@ -2060,24 +2060,24 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			</div>
 			<div class="community-article-link-wrap">
 				<a class="community-article-link" href="/admin" target="_self" aria-label="Open Add Edit Delete">
-					<img class="community-article-image" src="/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
+					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
 				</a>
 				<a class="community-article-link" href="/dashboard" target="_self" aria-label="Open Member Map">
-					<img class="community-article-image" src="/assets/mobile-carousel/member_map.png" alt="Member Map" loading="lazy" decoding="async" />
+					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/member_map.png" alt="Member Map" loading="lazy" decoding="async" />
 				</a>
 				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="View Articles">
-					<img class="community-article-image" src="/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
+					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
 				</a>
 			</div>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Brand Links">
-				<a class="mobile-inline-carousel-slide" href="https://x.com/kikuchi168" target="_self"><img src="/assets/mobile-carousel/1.png" alt="KIKUCHI" loading="eager" fetchpriority="high" decoding="async" /><span class="mobile-inline-carousel-label">KIKUCHI</span></a>
-				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/assets/mobile-carousel/2.png" alt="PLAYBEAR" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">PLAYBEAR</span></a>
-				<a class="mobile-inline-carousel-slide" href="https://t.co/sSpFX1Z8kk" target="_self"><img src="/assets/mobile-carousel/3.png" alt="QUTOYS" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label" data-i18n="partner_qutoys">QUTOYS(10%折扣)</span></a>
-				<a class="mobile-inline-carousel-slide" href="https://www.amazon.com/dp/B0G6Y9HL5V" target="_self"><img src="/assets/mobile-carousel/4.png" alt="HungerFF" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">HungerFF</span></a>
-				<a class="mobile-inline-carousel-slide" href="https://www.ilovefist.com/" target="_self"><img src="/assets/mobile-carousel/5.png" alt="ILOVEFIST" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">ILOVEFIST</span></a>
-				<a class="mobile-inline-carousel-slide" href="https://agay.jp/magazine/category/fist/" target="_self"><img src="/assets/mobile-carousel/6.png" alt="AGAY.jp" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">AGAY.jp</span></a>
-				<a class="mobile-inline-carousel-slide" href="https://www.tarisss.com/" target="_self"><img src="/assets/mobile-carousel/7.png" alt="TaRiss's" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">TaRiss's</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://x.com/kikuchi168" target="_self"><img src="/r2-fg/assets/mobile-carousel/1.png" alt="KIKUCHI" loading="eager" fetchpriority="high" decoding="async" /><span class="mobile-inline-carousel-label">KIKUCHI</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://pixiong.tmall.com" target="_self"><img src="/r2-fg/assets/mobile-carousel/2.png" alt="PLAYBEAR" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">PLAYBEAR</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://t.co/sSpFX1Z8kk" target="_self"><img src="/r2-fg/assets/mobile-carousel/3.png" alt="QUTOYS" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label" data-i18n="partner_qutoys">QUTOYS(10%折扣)</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://www.amazon.com/dp/B0G6Y9HL5V" target="_self"><img src="/r2-fg/assets/mobile-carousel/4.png" alt="HungerFF" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">HungerFF</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://www.ilovefist.com/" target="_self"><img src="/r2-fg/assets/mobile-carousel/5.png" alt="ILOVEFIST" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">ILOVEFIST</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://agay.jp/magazine/category/fist/" target="_self"><img src="/r2-fg/assets/mobile-carousel/6.png" alt="AGAY.jp" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">AGAY.jp</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://www.tarisss.com/" target="_self"><img src="/r2-fg/assets/mobile-carousel/7.png" alt="TaRiss's" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">TaRiss's</span></a>
 			</div>
 			<section class="event-promo" aria-label="list star promotion">
 				<h2 class="event-promo-campaign" data-i18n="campaign_title">Campaign</h2>
@@ -2085,7 +2085,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<div class="event-promo-item">
 						<div class="event-promo-banner">
 							<a class="event-promo-banner-link" href="/list-star" target="_self" aria-label="Open List Star Campaign">
-								<img class="event-promo-banner-img" src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+								<img class="event-promo-banner-img" src="/r2-fg/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
 							</a>
 						</div>
 						<h3 class="event-promo-title" data-i18n="event_title">List Star</h3>
@@ -2093,7 +2093,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<div class="event-promo-item">
 						<div class="event-promo-banner">
 							<a class="event-promo-banner-link" href="/author-call" target="_self" aria-label="Open Author Call">
-								<img class="event-promo-banner-img" src="/assets/mobile-carousel/author.png" alt="Author Call Banner" loading="lazy" fetchpriority="low" decoding="async" />
+								<img class="event-promo-banner-img" src="/r2-fg/assets/mobile-carousel/author.png" alt="Author Call Banner" loading="lazy" fetchpriority="low" decoding="async" />
 							</a>
 						</div>
 						<h3 class="event-promo-title" data-i18n="author_call_title">文章征稿</h3>
@@ -5236,7 +5236,7 @@ export function renderListStarPage(): string {
 				<h2 class="campaign-label" data-i18n="campaign_title">Campaign</h2>
 				<div class="feature-layout">
 					<div class="poster-box">
-						<img src="/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
+						<img src="/r2-fg/assets/mobile-carousel/liststar.png" alt="List Star Banner" loading="eager" fetchpriority="high" decoding="async" />
 					</div>
 					<div class="feature-content">
 						<h3 class="event-title" data-i18n="event_title">List Star</h3>
@@ -5633,7 +5633,7 @@ export function renderAuthorCallPage(): string {
 				<h2 class="campaign-label" data-i18n="campaign_title">Campaign</h2>
 				<div class="feature-layout">
 					<div class="poster-box">
-						<img class="poster" src="/assets/mobile-carousel/author.png" alt="文章征稿" loading="eager" fetchpriority="high" decoding="async" />
+						<img class="poster" src="/r2-fg/assets/mobile-carousel/author.png" alt="文章征稿" loading="eager" fetchpriority="high" decoding="async" />
 					</div>
 					<div class="feature-content">
 						<h3 class="event-title" data-i18n="author_call_title">文章征稿</h3>

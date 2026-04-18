@@ -16,6 +16,7 @@ type RuntimeEnv = Env & {
 	RESEND_FROM?: string;
 	TEST_EMAIL_TOKEN?: string;
 	DELETE_PASSWORD?: string;
+	R2_FG?: R2Bucket;
 };
 
 type GeoSuggestion = {
@@ -54,6 +55,7 @@ const DEFAULT_REGION = "Tokyo";
 const DEFAULT_DISTRICT = "Itabashi";
 const PINNED_ROTATION_SECONDS = 600;
 const BLOG_URL = "https://blog.fistingguide.workers.dev/";
+const R2_ASSET_PREFIX = "/r2-fg/";
 
 type WikiPayload = {
 	title?: unknown;
@@ -520,8 +522,8 @@ function injectSeoTags(html: string, origin: string, seo: SeoOptions): string {
 					.join("\n\t\t")
 			: "";
 	const tags = `
-		<link rel="icon" type="image/png" href="/assets/mobile-carousel/logo.png" />
-		<link rel="shortcut icon" type="image/png" href="/assets/mobile-carousel/logo.png" />
+		<link rel="icon" type="image/png" href="/r2-fg/assets/mobile-carousel/logo.png" />
+		<link rel="shortcut icon" type="image/png" href="/r2-fg/assets/mobile-carousel/logo.png" />
 		<meta name="description" content="${escapeHtml(seo.description)}" />
 		<meta name="robots" content="${escapeHtml(robots)}" />
 		<link rel="canonical" href="${escapeHtml(canonical)}" />
@@ -828,6 +830,52 @@ async function proxyTextAsset(url: string, contentType: string): Promise<Respons
 			"content-type": contentType,
 			"cache-control": "public, max-age=86400",
 		},
+	});
+}
+
+function inferContentTypeFromPath(path: string): string {
+	const lower = path.toLowerCase();
+	if (lower.endsWith(".png")) return "image/png";
+	if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+	if (lower.endsWith(".webp")) return "image/webp";
+	if (lower.endsWith(".gif")) return "image/gif";
+	if (lower.endsWith(".svg")) return "image/svg+xml";
+	if (lower.endsWith(".ico")) return "image/x-icon";
+	if (lower.endsWith(".avif")) return "image/avif";
+	if (lower.endsWith(".bmp")) return "image/bmp";
+	return "application/octet-stream";
+}
+
+async function proxyR2Asset(request: Request, env: RuntimeEnv, pathname: string): Promise<Response> {
+	const bucket = env.R2_FG;
+	if (!bucket) {
+		return new Response("R2 binding R2_FG is not configured", { status: 500 });
+	}
+	const key = pathname.slice(R2_ASSET_PREFIX.length);
+	if (!key || key.includes("..")) {
+		return new Response("invalid asset key", { status: 400 });
+	}
+
+	const object = await bucket.get(key);
+	if (!object) {
+		return new Response("Not Found", { status: 404 });
+	}
+
+	const headers = new Headers();
+	object.writeHttpMetadata(headers);
+	headers.set("etag", object.httpEtag);
+	if (!headers.get("content-type")) {
+		headers.set("content-type", inferContentTypeFromPath(key));
+	}
+	headers.set("cache-control", "public, max-age=86400, s-maxage=86400");
+
+	if (request.method.toUpperCase() === "HEAD") {
+		return new Response(null, { status: 200, headers });
+	}
+
+	return new Response(object.body, {
+		status: 200,
+		headers,
 	});
 }
 
@@ -1974,6 +2022,10 @@ export default {
 				},
 				410,
 			);
+		}
+
+		if ((method === "GET" || method === "HEAD") && pathname.startsWith(R2_ASSET_PREFIX)) {
+			return proxyR2Asset(request, env, pathname);
 		}
 
 		if (

@@ -13,6 +13,12 @@
 			"database_name": "japs"
 		}
 	],
+	"r2_buckets": [
+		{
+			"binding": "R2_FG",
+			"bucket_name": "fistingguide-website-bucket"
+		}
+	],
 	"triggers": {
 		"crons": [
 			"0 16 * * *"
