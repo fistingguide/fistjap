@@ -1964,6 +1964,20 @@ function normalizePayload(payload: ProfilePayload) {
 	};
 }
 
+function normalizeEditPayload(payload: ProfilePayload) {
+	const lat = toCoordinate(payload.lat);
+	const lng = toCoordinate(payload.lng);
+	if (lat === null || lng === null) {
+		throw new Error("lat and lng are required numbers");
+	}
+	return {
+		telegram: toText(payload.telegram),
+		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
+		lat,
+		lng,
+	};
+}
+
 async function resolveProfileInputWithX(
 	input: ReturnType<typeof normalizePayload>,
 	env: RuntimeEnv,
@@ -2365,7 +2379,7 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, lat, lng, followers_count
+					`SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province AS region, city AS district, lat, lng
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
@@ -2375,7 +2389,7 @@ export default {
 				ctx.waitUntil(sendAdminNotification(env, "CREATE", inserted, operatorIp));
 			}
 
-			return json({ ok: true }, 201);
+			return json({ ok: true, profile: inserted ?? null }, 201);
 		}
 
 		if (idMatch) {
@@ -2385,6 +2399,13 @@ export default {
 				const authError = verifyDeletePassword(request, env);
 				if (authError) return authError;
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
+				const existing = await env.DB
+					.prepare("SELECT handle FROM profiles WHERE id = ?")
+					.bind(id)
+					.first<{ handle?: string }>();
+				if (!existing) {
+					return json({ error: "not found" }, 404);
+				}
 				let payload: ProfilePayload;
 				try {
 					payload = await parsePayload(request);
@@ -2394,12 +2415,7 @@ export default {
 
 				let input;
 				try {
-					input = normalizePayload(payload);
-				} catch (error) {
-					return badRequest((error as Error).message);
-				}
-				try {
-					input = await resolveProfileInputWithX(input, env);
+					input = normalizeEditPayload(payload);
 				} catch (error) {
 					return badRequest((error as Error).message);
 				}
@@ -2413,18 +2429,12 @@ export default {
 				try {
 					const result = await env.DB.prepare(
 						`UPDATE profiles
-						 SET name = ?, handle = ?, telegram = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?, lat = ?, lng = ?
+						 SET telegram = ?, sexual_orientation = ?, country = ?, province = ?, city = ?, lat = ?, lng = ?
 						 WHERE id = ?`,
 					)
 						.bind(
-							input.name,
-							input.handle,
 							input.telegram,
-							input.bio,
-							input.profileUrl,
-							input.avatar,
 							input.sexualOrientation,
-							input.followersCount,
 							location.country,
 							location.region,
 							location.district,
@@ -2443,7 +2453,7 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, lat, lng, followers_count
+						`SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province AS region, city AS district, lat, lng
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -2453,7 +2463,7 @@ export default {
 					ctx.waitUntil(sendAdminNotification(env, "UPDATE", updated, operatorIp));
 				}
 
-				return json({ ok: true });
+				return json({ ok: true, profile: updated ?? null });
 			}
 
 			if (method === "DELETE") {

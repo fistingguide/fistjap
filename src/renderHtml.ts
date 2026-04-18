@@ -3229,6 +3229,11 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				if (els.modeCreateBtn) els.modeCreateBtn.classList.toggle('active', mode === MODE_CREATE);
 				if (els.modeEditBtn) els.modeEditBtn.classList.toggle('active', mode === MODE_EDIT);
 				if (els.modeDeleteBtn) els.modeDeleteBtn.classList.toggle('active', mode === MODE_DELETE);
+				if (els.handle) {
+					const lockHandle = mode === MODE_EDIT;
+					els.handle.readOnly = lockHandle;
+					els.handle.setAttribute('aria-readonly', lockHandle ? 'true' : 'false');
+				}
 				setEditingState(Boolean(editingId));
 				setModeInUrl(mode);
 				updateModeTitle();
@@ -3254,6 +3259,29 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function normalizeHandleValue(raw) {
 				return String(raw || '').trim().replace(/^@+/, '');
+			}
+
+			function formatProfileSummary(profile, fallbackHandle) {
+				const safe = profile && typeof profile === 'object' ? profile : {};
+				const name = String(safe.name || '').trim();
+				const handle = String(safe.handle || fallbackHandle || '').trim();
+				const followers = safe.followers_count === null || safe.followers_count === undefined ? '' : String(safe.followers_count);
+				const telegram = String(safe.telegram || '').trim();
+				const orientation = String(safe.sexual_orientation || '').trim();
+				const country = String(safe.country || '').trim();
+				const region = String((safe.region || safe.province) || '').trim();
+				const district = String((safe.district || safe.city) || '').trim();
+				const lat = Number(safe.lat);
+				const lng = Number(safe.lng);
+				const lines = [];
+				if (name) lines.push('Display Name: ' + name);
+				if (handle) lines.push('X Handle: @' + handle.replace(/^@+/, ''));
+				if (followers) lines.push('Followers: ' + followers);
+				if (telegram) lines.push('Telegram: ' + telegram);
+				if (orientation) lines.push('Orientation: ' + orientation);
+				if (district || region || country) lines.push('Location: ' + [district, region, country].filter(Boolean).join(' / '));
+				if (Number.isFinite(lat) && Number.isFinite(lng)) lines.push('Coordinates: ' + lat + ', ' + lng);
+				return lines.join('\n');
 			}
 
 			function setSelectedPoint(lat, lng) {
@@ -3683,8 +3711,9 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function selectByHandle(handle) {
 				if (currentMode === MODE_CREATE) return;
+				const normalizedTarget = normalizeHandleValue(handle);
 				const target = currentRows.find(function (row) {
-					return String(row.handle || '').toLowerCase() === String(handle || '').toLowerCase();
+					return String(row.handle || '').toLowerCase() === normalizedTarget.toLowerCase();
 				});
 				if (!target) {
 					setStatus(t('admin_status_no_exact_match_mode', 'No exact handle match for this mode.'));
@@ -3699,7 +3728,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			async function loadSuggestions() {
 				if (currentMode === MODE_CREATE) return;
 				const keyword = normalizeHandleValue(els.handleSearch.value);
-				els.handleSearch.value = keyword;
 				if (!keyword) {
 					currentRows = [];
 					renderSuggestions([]);
@@ -3722,13 +3750,11 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 
 			function collectPayload() {
-				const normalizedHandle = normalizeHandleValue(els.handle.value);
-				els.handle.value = normalizedHandle;
 				const followersRaw = String(els.followers.value || '').trim();
 				const followersCount = followersRaw ? Number(followersRaw) : null;
 				return {
 					name: els.name.value,
-					handle: normalizedHandle,
+					handle: String(els.handle.value || '').trim(),
 					telegram: els.telegram.value,
 					bio: els.bio.value,
 					profileUrl: els.profileUrl.value,
@@ -3789,9 +3815,14 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					setStatus('Submit failed: ' + msg);
 					return;
 				}
+				const result = await res.json();
 
 				setStatus(isUpdate ? t('admin_status_updated_success', 'Updated successfully') : t('admin_status_created_success', 'Created successfully'));
-				showSuccessDialog(isUpdate ? t('admin_alert_updated_success', 'Profile updated successfully.') : t('admin_alert_created_success', 'Profile created successfully.'));
+				const actionText = isUpdate
+					? t('admin_alert_updated_success', 'Profile updated successfully.')
+					: t('admin_alert_created_success', 'Profile created successfully.');
+				const summary = formatProfileSummary(result && result.profile ? result.profile : null, payload.handle);
+				showSuccessDialog(summary ? (actionText + '\n\n' + summary) : actionText);
 				resetForm();
 				if (currentMode === MODE_EDIT) {
 					els.handleSearch.value = payload.handle;
@@ -3835,9 +3866,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			els.form.addEventListener('submit', submitForm);
-			els.handle.addEventListener('blur', function () {
-				els.handle.value = normalizeHandleValue(els.handle.value);
-			});
 			if (els.modeCreateBtn) {
 				els.modeCreateBtn.addEventListener('click', function () {
 					window.location.href = '/admin/create';
