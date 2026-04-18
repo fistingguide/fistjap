@@ -1728,11 +1728,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				z-index: 30;
 			}
 			#rankCountryFilterCustom.mobile-select-enhanced .mobile-select-menu {
-				position: static;
-				margin-top: 6px;
+				position: absolute;
+				top: calc(100% + 6px);
+				left: 0;
+				right: 0;
 				max-height: 220px;
 				overflow-y: auto;
-				z-index: auto;
+				z-index: 120;
 			}
 			.social-link {
 				display: inline-flex;
