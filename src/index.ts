@@ -13,6 +13,7 @@ type RuntimeEnv = Env & {
 	ADMIN_NOTIFICATION_EMAIL?: string;
 	RESEND_API_KEY?: string;
 	RESEND_FROM?: string;
+	SEND_VERITY_CODE?: string;
 	TEST_EMAIL_TOKEN?: string;
 	DELETE_PASSWORD?: string;
 	GETXAPI_TOKEN?: string;
@@ -56,6 +57,8 @@ const DEFAULT_COUNTRY = "Japan";
 const DEFAULT_REGION = "Tokyo";
 const DEFAULT_DISTRICT = "Itabashi";
 const PINNED_ROTATION_SECONDS = 600;
+const ADMIN_VERIFY_CODE_TTL_MS = 5 * 60 * 1000;
+const ADMIN_VERIFY_CODE_LENGTH = 6;
 const BLOG_URL = "https://blog.fistingguide.workers.dev/";
 const R2_ASSET_PREFIX = "/r2-fg/";
 const MOBILE_CAROUSEL_PREFIX = `${R2_ASSET_PREFIX}assets/mobile-carousel/`;
@@ -698,17 +701,172 @@ function badRequest(message: string): Response {
 	return new Response(message, { status: 400 });
 }
 
-function verifyDeletePassword(request: Request, env: RuntimeEnv): Response | null {
-	const expected = (env.DELETE_PASSWORD || "").trim();
-	if (!expected) {
-		return json({ error: "server delete password is not configured" }, 500);
+function normalizeEmail(raw: unknown): string {
+	return String(raw || "").trim().toLowerCase();
+}
+
+function isValidEmail(email: string): boolean {
+	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function generateVerificationCode(length: number): string {
+	const bytes = new Uint8Array(length);
+	crypto.getRandomValues(bytes);
+	let out = "";
+	for (let i = 0; i < bytes.length; i += 1) {
+		out += String(bytes[i] % 10);
+	}
+	return out;
+}
+
+function createVerificationId(): string {
+	if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+	const bytes = new Uint8Array(16);
+	crypto.getRandomValues(bytes);
+	return Array.from(bytes)
+		.map((b) => b.toString(16).padStart(2, "0"))
+		.join("");
+}
+
+async function sha256Hex(input: string): Promise<string> {
+	const encoded = new TextEncoder().encode(input);
+	const digest = await crypto.subtle.digest("SHA-256", encoded);
+	return Array.from(new Uint8Array(digest))
+		.map((b) => b.toString(16).padStart(2, "0"))
+		.join("");
+}
+
+async function sendVerificationCodeEmail(
+	env: RuntimeEnv,
+	email: string,
+	verificationCode: string,
+	verificationId: string,
+): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+	const apiKey = (env.SEND_VERITY_CODE || "").trim();
+	if (!apiKey) {
+		return { ok: false, status: 500, error: "SEND_VERITY_CODE is missing" };
 	}
 
-	const provided = (request.headers.get("x-delete-password") || "").trim();
-	if (!provided || provided !== expected) {
-		return json({ error: "invalid delete password" }, 403);
+	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
+	const expiresAtIso = new Date(Date.now() + ADMIN_VERIFY_CODE_TTL_MS).toISOString();
+	const subject = "Admin verification code";
+	const text = [
+		"Your admin verification code is:",
+		verificationCode,
+		"",
+		`Verification ID: ${verificationId}`,
+		`Expires at: ${expiresAtIso}`,
+		"Valid for 5 minutes.",
+		"",
+		"If you did not request this code, please ignore this email.",
+	].join("\n");
+
+	try {
+		const res = await fetch("https://api.resend.com/emails", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${apiKey}`,
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({
+				from,
+				to: [email],
+				subject,
+				text,
+			}),
+		});
+		if (!res.ok) {
+			const error = await res.text();
+			return { ok: false, status: 502, error: `resend failed (${res.status}): ${error}` };
+		}
+		return { ok: true };
+	} catch (error) {
+		return { ok: false, status: 502, error: `send failed: ${(error as Error).message}` };
+	}
+}
+
+async function issueAdminVerificationChallenge(
+	env: RuntimeEnv,
+	email: string,
+): Promise<{ ok: true; verificationId: string } | { ok: false; status: number; error: string }> {
+	const normalizedEmail = normalizeEmail(email);
+	if (!isValidEmail(normalizedEmail)) {
+		return { ok: false, status: 400, error: "invalid email" };
 	}
 
+	const verificationId = createVerificationId();
+	const verificationCode = generateVerificationCode(ADMIN_VERIFY_CODE_LENGTH);
+	const codeHash = await sha256Hex(`${verificationId}:${verificationCode}`);
+	const now = Date.now();
+	const expiresAt = now + ADMIN_VERIFY_CODE_TTL_MS;
+
+	await env.DB.prepare("DELETE FROM admin_email_verifications WHERE expires_at < ?")
+		.bind(now)
+		.run();
+
+	try {
+		await env.DB.prepare(
+			`INSERT INTO admin_email_verifications (id, email, code_hash, created_at, expires_at, consumed_at)
+			 VALUES (?, ?, ?, ?, ?, NULL)`,
+		)
+			.bind(verificationId, normalizedEmail, codeHash, now, expiresAt)
+			.run();
+	} catch (error) {
+		return { ok: false, status: 500, error: `failed to create verification: ${(error as Error).message}` };
+	}
+
+	const sendResult = await sendVerificationCodeEmail(env, normalizedEmail, verificationCode, verificationId);
+	if (!sendResult.ok) {
+		await env.DB.prepare("DELETE FROM admin_email_verifications WHERE id = ?").bind(verificationId).run();
+		return sendResult;
+	}
+
+	return { ok: true, verificationId };
+}
+
+async function verifyAdminVerificationCode(request: Request, env: RuntimeEnv): Promise<Response | null> {
+	const verificationId = (request.headers.get("x-admin-verification-id") || "").trim();
+	const verificationCode = (request.headers.get("x-admin-verification-code") || "").trim();
+	if (!verificationId || !verificationCode) {
+		return json({ error: "admin verification is required" }, 401);
+	}
+
+	const record = await env.DB.prepare(
+		`SELECT id, code_hash, expires_at, consumed_at
+		 FROM admin_email_verifications
+		 WHERE id = ?`,
+	)
+		.bind(verificationId)
+		.first<{ id: string; code_hash: string; expires_at: number | string; consumed_at: number | string | null }>();
+
+	if (!record) {
+		return json({ error: "invalid verification challenge" }, 403);
+	}
+
+	const now = Date.now();
+	const expiresAt = Number(record.expires_at ?? 0);
+	if (!Number.isFinite(expiresAt) || expiresAt < now) {
+		return json({ error: "verification code expired" }, 403);
+	}
+
+	if (record.consumed_at !== null && record.consumed_at !== undefined) {
+		return json({ error: "verification code already used" }, 403);
+	}
+
+	const expectedHash = String(record.code_hash || "");
+	const providedHash = await sha256Hex(`${verificationId}:${verificationCode}`);
+	if (!expectedHash || providedHash !== expectedHash) {
+		return json({ error: "invalid verification code" }, 403);
+	}
+
+	const consumedAt = Date.now();
+	const consumeResult = await env.DB
+		.prepare("UPDATE admin_email_verifications SET consumed_at = ? WHERE id = ? AND consumed_at IS NULL")
+		.bind(consumedAt, verificationId)
+		.run();
+	if ((consumeResult.meta.changes ?? 0) === 0) {
+		return json({ error: "verification code already used" }, 403);
+	}
 	return null;
 }
 
@@ -2320,9 +2478,29 @@ export default {
 			);
 		}
 
+		if (method === "POST" && pathname === "/api/admin/verification-code/send") {
+			let payload: { email?: unknown };
+			try {
+				payload = (await request.json()) as { email?: unknown };
+			} catch {
+				return badRequest("invalid json");
+			}
+			const email = normalizeEmail(payload?.email);
+			if (!email) return badRequest("email is required");
+			if (!isValidEmail(email)) return badRequest("invalid email");
+
+			const issued = await issueAdminVerificationChallenge(env, email);
+			if (!issued.ok) {
+				return json({ error: issued.error }, issued.status);
+			}
+			return json({
+				ok: true,
+				verificationId: issued.verificationId,
+				expiresInSeconds: Math.floor(ADMIN_VERIFY_CODE_TTL_MS / 1000),
+			});
+		}
+
 		if (method === "POST" && pathname === "/api/profiles") {
-			const authError = verifyDeletePassword(request, env);
-			if (authError) return authError;
 			const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 			let payload: ProfilePayload;
 			try {
@@ -2348,6 +2526,8 @@ export default {
 			} catch (error) {
 				return badRequest((error as Error).message);
 			}
+			const authError = await verifyAdminVerificationCode(request, env);
+			if (authError) return authError;
 
 			try {
 				await env.DB.prepare(
@@ -2394,8 +2574,6 @@ export default {
 			const id = Number(idMatch[1]);
 
 			if (method === "PUT" || method === "PATCH") {
-				const authError = verifyDeletePassword(request, env);
-				if (authError) return authError;
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				const existing = await env.DB
 					.prepare("SELECT handle FROM profiles WHERE id = ?")
@@ -2423,6 +2601,8 @@ export default {
 				} catch (error) {
 					return badRequest((error as Error).message);
 				}
+				const authError = await verifyAdminVerificationCode(request, env);
+				if (authError) return authError;
 
 				try {
 					const result = await env.DB.prepare(
@@ -2465,7 +2645,7 @@ export default {
 			}
 
 			if (method === "DELETE") {
-				const authError = verifyDeletePassword(request, env);
+				const authError = await verifyAdminVerificationCode(request, env);
 				if (authError) return authError;
 
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";

@@ -3120,7 +3120,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let locationMarker = null;
 			let selectedLat = 35.7512;
 			let selectedLng = 139.7093;
-			let adminWritePassword = '';
 			let reverseRequestSeq = 0;
 			let createHandleCheckTimer = null;
 			let lastCreateHandleChecked = '';
@@ -3300,6 +3299,55 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function showSuccessDialog(message) {
 				window.alert(message);
+			}
+
+			async function readErrorMessage(res) {
+				try {
+					const data = await res.json();
+					if (data && typeof data.error === 'string' && data.error.trim()) return data.error;
+				} catch {}
+				try {
+					const text = await res.text();
+					if (text && String(text).trim()) return String(text).trim();
+				} catch {}
+				return 'request failed';
+			}
+
+			async function requestAdminVerificationHeaders(actionName) {
+				const email = window.prompt('请输入接收验证码的邮箱地址：');
+				if (!email || !String(email).trim()) {
+					setStatus(actionName + ' cancelled: email is required.');
+					return null;
+				}
+
+				setStatus('Sending verification code...');
+				const sendRes = await fetch('/api/admin/verification-code/send', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ email: String(email).trim() })
+				});
+				if (!sendRes.ok) {
+					const sendErr = await readErrorMessage(sendRes);
+					setStatus('Failed to send verification code: ' + sendErr);
+					return null;
+				}
+				const sendData = await sendRes.json();
+				const verificationId = String(sendData && sendData.verificationId ? sendData.verificationId : '').trim();
+				if (!verificationId) {
+					setStatus('Failed to start verification challenge.');
+					return null;
+				}
+
+				const code = window.prompt('验证码已发送，请输入6位验证码（5分钟内有效）：');
+				if (!code || !String(code).trim()) {
+					setStatus(actionName + ' cancelled: verification code is required.');
+					return null;
+				}
+
+				return {
+					'x-admin-verification-id': verificationId,
+					'x-admin-verification-code': String(code).trim()
+				};
 			}
 
 			function updateAvatarPreview() {
@@ -3825,32 +3873,22 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				const isUpdate = currentMode === MODE_EDIT;
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
-				if (!adminWritePassword) {
-					const pwd = window.prompt('Enter delete password to continue:');
-					if (!pwd) {
-						setStatus('Submit cancelled: password is required.');
-						return;
-					}
-					adminWritePassword = pwd;
-				}
+				const verificationHeaders = await requestAdminVerificationHeaders(isUpdate ? 'Update' : 'Create');
+				if (!verificationHeaders) return;
 
 				setStatus(t('admin_status_submitting', 'Submitting...'));
 				const res = await fetch(url, {
 					method,
 					headers: {
 						'content-type': 'application/json',
-						'x-delete-password': adminWritePassword
+						'x-admin-verification-id': verificationHeaders['x-admin-verification-id'],
+						'x-admin-verification-code': verificationHeaders['x-admin-verification-code']
 					},
 					body: JSON.stringify(payload)
 				});
 
 				if (!res.ok) {
-					const msg = await res.text();
-					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						adminWritePassword = '';
-						window.alert('密码输入错误');
-						return;
-					}
+					const msg = await readErrorMessage(res);
 					setStatus('Submit failed: ' + msg);
 					return;
 				}
@@ -3876,23 +3914,19 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					return;
 				}
 				if (!confirm('Delete ID ' + editingId + '?')) return;
-				const deletePassword = window.prompt('Enter delete password to continue:');
-				if (!deletePassword) {
-					setStatus('Delete cancelled: password is required.');
-					return;
-				}
+				const verificationHeaders = await requestAdminVerificationHeaders('Delete');
+				if (!verificationHeaders) return;
 
 				setStatus('Deleting...');
 				const res = await fetch('/api/profiles/' + editingId, {
 					method: 'DELETE',
-					headers: { 'x-delete-password': deletePassword }
+					headers: {
+						'x-admin-verification-id': verificationHeaders['x-admin-verification-id'],
+						'x-admin-verification-code': verificationHeaders['x-admin-verification-code']
+					}
 				});
 				if (!res.ok) {
-					const msg = await res.text();
-					if (res.status === 403 && msg.indexOf('invalid delete password') !== -1) {
-						window.alert('密码输入错误');
-						return;
-					}
+					const msg = await readErrorMessage(res);
 					setStatus('Delete failed: ' + msg);
 					return;
 				}
