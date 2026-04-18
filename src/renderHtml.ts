@@ -3014,16 +3014,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				</div>
 			</section>
 
-			${adminMode === "home" ? `
-			<section class="card">
-				<div class="admin-mode-switch">
-					<button type="button" class="mode-btn" id="modeCreateBtn" data-mode="create" data-i18n="admin_mode_btn_create">Add Performer</button>
-					<button type="button" class="mode-btn" id="modeEditBtn" data-mode="edit" data-i18n="admin_mode_btn_edit">Edit Performer</button>
-					<button type="button" class="mode-btn" id="modeDeleteBtn" data-mode="delete" data-i18n="admin_mode_btn_delete">Delete Performer</button>
-				</div>
-			</section>
-			` : ""}
-
 			<section class="card" id="searchSection">
 				<div class="toolbar">
 					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (e.g. @demo)" data-i18n-placeholder="admin_search_placeholder" />

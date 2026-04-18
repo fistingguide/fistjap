@@ -897,22 +897,28 @@ async function resolveBoundaryHierarchy(
 	return { adm1: adm1 || undefined, adm2: adm2 || undefined };
 }
 
-async function proxyTextAsset(url: string, contentType: string): Promise<Response> {
-	const res = await fetch(url, {
-		headers: {
-			"user-agent": "fistjap-worker/1.0",
-		},
-	});
-	if (!res.ok) {
-		return new Response("asset fetch failed", { status: 502 });
+async function proxyTextAsset(url: string | string[], contentType: string): Promise<Response> {
+	const urls = Array.isArray(url) ? url : [url];
+	for (const target of urls) {
+		try {
+			const res = await fetch(target, {
+				headers: {
+					"user-agent": "fistjap-worker/1.0",
+				},
+			});
+			if (!res.ok) continue;
+			const text = await res.text();
+			return new Response(text, {
+				headers: {
+					"content-type": contentType,
+					"cache-control": "public, max-age=86400",
+				},
+			});
+		} catch {
+			// Try next CDN.
+		}
 	}
-	const text = await res.text();
-	return new Response(text, {
-		headers: {
-			"content-type": contentType,
-			"cache-control": "public, max-age=86400",
-		},
-	});
+	return new Response("asset fetch failed", { status: 502 });
 }
 
 function inferContentTypeFromPath(path: string): string {
@@ -2088,11 +2094,23 @@ export default {
 		}
 
 		if (method === "GET" && pathname === "/assets/leaflet.css") {
-			return proxyTextAsset("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", "text/css; charset=UTF-8");
+			return proxyTextAsset(
+				[
+					"https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css",
+					"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+				],
+				"text/css; charset=UTF-8",
+			);
 		}
 
 		if (method === "GET" && pathname === "/assets/leaflet.js") {
-			return proxyTextAsset("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "application/javascript; charset=UTF-8");
+			return proxyTextAsset(
+				[
+					"https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
+					"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+				],
+				"application/javascript; charset=UTF-8",
+			);
 		}
 
 		if (method === "GET" && pathname === "/") {
@@ -2109,7 +2127,7 @@ export default {
 
 		if (method === "GET" && pathname === "/admin") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage("home"), origin, {
+			return htmlResponse(renderAdminPage("create"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin",
