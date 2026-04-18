@@ -1469,7 +1469,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					box-shadow: none;
 				}
 				.header h1 { font-size: 20px; }
-				.header-language-title { font-size: 12px; }
+				.header h1.header-language-title { font-size: 12px; }
 				.lang-switch {
 					height: 34px;
 					font-size: 13px;
@@ -2116,9 +2116,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</span>
 				</a>
 			</div>
-			<section class="inline-map-card" aria-label="Community Map">
-				<div id="inlineMap"></div>
-			</section>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Brand Links">
 				<a class="mobile-inline-carousel-slide" href="https://x.com/kikuchi168" target="_self"><img src="/r2-fg/assets/mobile-carousel/1.png" alt="KIKUCHI" loading="eager" fetchpriority="high" decoding="async" /><span class="mobile-inline-carousel-label">KIKUCHI</span></a>
@@ -2149,6 +2146,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						<h3 class="event-promo-title" data-i18n="author_call_title">文章征稿</h3>
 					</div>
 				</div>
+			</section>
+			<section class="inline-map-card" aria-label="Community Map">
+				<div id="inlineMap"></div>
 			</section>
 			<ol class="list">
 				<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>
