@@ -1299,6 +1299,9 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				gap: 14px;
 				margin: 0 auto;
 			}
+			.panel-sticky-top {
+				position: static;
+			}
 			.header {
 				padding: 26px 24px;
 				background: var(--card);
@@ -1433,6 +1436,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.header-filter { width: 100%; min-width: 0; }
 				.mobile-field-label { display: block; }
 				.panel { width: 100%; max-width: 100%; gap: 0; }
+				.panel-sticky-top {
+					position: sticky;
+					top: 0;
+					z-index: 180;
+					background: rgba(0, 0, 0, 0.96);
+					padding: 6px 0;
+				}
 				.header {
 					padding: 10px 0 12px;
 					border: 0;
@@ -1963,6 +1973,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.social-link {
 					padding: 6px 0;
 				}
+				.social-link-icon-wrap {
+					width: 39px;
+					height: 39px;
+				}
+				.discord-promo-icon {
+					width: 25px;
+					height: 25px;
+				}
 				.event-promo-desc {
 					font-size: 12px;
 					margin: 8px 0 0;
@@ -2011,37 +2029,39 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		</div>
 		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<section class="panel">
-			<p class="ranking-notice top-disclaimer" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
-			<header class="header">
-				<div class="header-main">
-					<div class="header-left">
-						<div class="header-title-row">
-							<h1 data-i18n="heading_ranking">Performers List</h1>
-							${renderLanguageSwitcher("rankingLangSwitch")}
-							<div class="mobile-nav-row">
-								<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-									<option value="/" selected data-i18n="nav_ranking">Performers List</option>
-									<option value="/about" data-i18n="nav_about">About</option>
-								</select>
-								<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
+			<div class="panel-sticky-top">
+				<p class="ranking-notice top-disclaimer" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
+				<header class="header">
+					<div class="header-main">
+						<div class="header-left">
+							<div class="header-title-row">
+								<h1 data-i18n="heading_ranking">Performers List</h1>
+								${renderLanguageSwitcher("rankingLangSwitch")}
+								<div class="mobile-nav-row">
+									<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
+										<option value="/" selected data-i18n="nav_ranking">Performers List</option>
+										<option value="/about" data-i18n="nav_about">About</option>
+									</select>
+									<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
+								</div>
 							</div>
 						</div>
+							<div class="header-right">
+								<div class="header-filter">
+									<label class="mobile-field-label" for="rankCountryFilter" data-i18n="country_region">country(region)<span class="label-globe" aria-hidden="true"></span></label>
+									<select id="rankCountryFilter" aria-label="Country (Region)">
+										<option value="" data-i18n="all_option">All</option>
+									</select>
+									<div id="rankCountryFilterCustom" class="mobile-select-enhanced"></div>
+								</div>
+							<nav class="top-nav">
+								<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
+								<a class="nav-btn secondary" href="/about" data-i18n="nav_about">About</a>
+							</nav>
+						</div>
 					</div>
-						<div class="header-right">
-							<div class="header-filter">
-								<label class="mobile-field-label" for="rankCountryFilter" data-i18n="country_region">country(region)<span class="label-globe" aria-hidden="true"></span></label>
-								<select id="rankCountryFilter" aria-label="Country (Region)">
-									<option value="" data-i18n="all_option">All</option>
-								</select>
-								<div id="rankCountryFilterCustom" class="mobile-select-enhanced"></div>
-							</div>
-						<nav class="top-nav">
-							<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
-							<a class="nav-btn secondary" href="/about" data-i18n="nav_about">About</a>
-						</nav>
-					</div>
-				</div>
-			</header>
+				</header>
+			</div>
 			<div class="social-links" aria-label="Social Links">
 				<a class="social-link" href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" aria-label="Open Discord Link">
 					<span class="social-link-icon-wrap discord-icon-wrap" aria-hidden="true">
