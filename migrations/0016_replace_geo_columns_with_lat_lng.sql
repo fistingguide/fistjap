@@ -1,7 +1,4 @@
 -- Migration number: 0016    2026-04-18T00:50:00.000Z
-ALTER TABLE profiles ADD COLUMN lat REAL;
-ALTER TABLE profiles ADD COLUMN lng REAL;
-
 UPDATE profiles
 SET lat = COALESCE(lat, geo_lat),
 	lng = COALESCE(lng, geo_lng);
