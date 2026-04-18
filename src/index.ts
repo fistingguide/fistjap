@@ -2093,26 +2093,6 @@ export default {
 			await ensureSeededOnce(env.DB);
 		}
 
-		if (method === "GET" && pathname === "/assets/leaflet.css") {
-			return proxyTextAsset(
-				[
-					"https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css",
-					"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-				],
-				"text/css; charset=UTF-8",
-			);
-		}
-
-		if (method === "GET" && pathname === "/assets/leaflet.js") {
-			return proxyTextAsset(
-				[
-					"https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
-					"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
-				],
-				"application/javascript; charset=UTF-8",
-			);
-		}
-
 		if (method === "GET" && pathname === "/") {
 			const rows = await queryProfiles(env.DB, {});
 			const seo = pageSeo(uiLang, "ranking");
@@ -2127,7 +2107,7 @@ export default {
 
 		if (method === "GET" && pathname === "/admin") {
 			const seo = pageSeo(uiLang, "admin");
-			return htmlResponse(renderAdminPage("create"), origin, {
+			return htmlResponse(renderAdminPage("home"), origin, {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin",

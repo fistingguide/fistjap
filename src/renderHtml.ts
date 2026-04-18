@@ -2733,6 +2733,10 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				gap: 10px;
 			}
 			.mode-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				text-decoration: none;
 				height: 42px;
 				border: 1px solid var(--line);
 				border-radius: 10px;
@@ -3014,7 +3018,17 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				</div>
 			</section>
 
-			<section class="card" id="searchSection">
+			${adminMode === "home" ? `
+			<section class="card">
+				<div class="admin-mode-switch">
+					<a class="mode-btn" href="/admin/create" data-mode="create" data-i18n="admin_mode_btn_create">Add Performer</a>
+					<a class="mode-btn" href="/admin/edit" data-mode="edit" data-i18n="admin_mode_btn_edit">Edit Performer</a>
+					<a class="mode-btn" href="/admin/delete" data-mode="delete" data-i18n="admin_mode_btn_delete">Delete Performer</a>
+				</div>
+			</section>
+			` : ""}
+
+			<section class="card" id="searchSection"${adminMode === "home" ? " hidden" : ""}>
 				<div class="toolbar">
 					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (e.g. @demo)" data-i18n-placeholder="admin_search_placeholder" />
 					<datalist id="handleSuggestions"></datalist>
@@ -3024,7 +3038,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				<div class="search-hint" data-i18n="admin_search_hint">Only supports existing accounts for modifying their related information or deleting.</div>
 			</section>
 
-			<section class="card" id="formSection">
+			<section class="card" id="formSection"${adminMode === "home" ? " hidden" : ""}>
 				<form id="profileForm" class="form">
 					<input type="hidden" id="id" />
 					<div class="field identity-field auto-filled-field">
