@@ -1290,100 +1290,6 @@ async function queryGeoPoint(query: string): Promise<{ lat: number; lon: number 
 	return null;
 }
 
-function normalizeGeoToken(value: unknown): string {
-	const text = String(value ?? "").trim();
-	if (!text) return "";
-	if (text.toLowerCase() === "unknown") return "";
-	return text;
-}
-
-async function backfillProfileGeoPoints(
-	db: D1Database,
-	options?: { rewriteAll?: boolean; limit?: number },
-): Promise<{
-	total: number;
-	processed: number;
-	updated: number;
-	skipped: number;
-	failed: number;
-}> {
-	const rewriteAll = options?.rewriteAll !== false;
-	const limit = Number.isFinite(Number(options?.limit)) ? Math.max(1, Math.floor(Number(options?.limit))) : 0;
-	const whereClause = rewriteAll ? "" : " WHERE lat IS NULL OR lng IS NULL";
-	const limitSql = limit > 0 ? " LIMIT ?" : "";
-	const stmt =
-		limit > 0
-			? db.prepare(
-					`SELECT id, country, province AS region, city AS district, lat, lng
-					 FROM profiles${whereClause}
-					 ORDER BY id ASC${limitSql}`,
-				).bind(limit)
-			: db.prepare(
-					`SELECT id, country, province AS region, city AS district, lat, lng
-					 FROM profiles${whereClause}
-					 ORDER BY id ASC`,
-				);
-	const { results } = await stmt.all<{
-		id: number;
-		country?: string;
-		region?: string;
-		district?: string;
-		lat?: number;
-		lng?: number;
-	}>();
-	const rows = results ?? [];
-	let processed = 0;
-	let updated = 0;
-	let skipped = 0;
-	let failed = 0;
-
-	let cursor = 0;
-	const workerCount = Math.min(6, rows.length || 1);
-	await Promise.all(
-		Array.from({ length: workerCount }, async () => {
-			while (cursor < rows.length) {
-				const current = cursor;
-				cursor += 1;
-				const row = rows[current];
-				if (!row) continue;
-				processed += 1;
-				const currentLat = Number(row.lat);
-				const currentLng = Number(row.lng);
-				const hasCoordinates = Number.isFinite(currentLat) && Number.isFinite(currentLng);
-				if (!rewriteAll && hasCoordinates) {
-					skipped += 1;
-					continue;
-				}
-				const district = normalizeGeoToken(row.district);
-				const region = normalizeGeoToken(row.region);
-				const country = normalizeGeoToken(row.country);
-				const query = [district, region, country].filter(Boolean).join(", ");
-				if (!query) {
-					failed += 1;
-					continue;
-				}
-				const point = await queryGeoPoint(query);
-				if (!point) {
-					failed += 1;
-					continue;
-				}
-				await db.prepare("UPDATE profiles SET lat = ?, lng = ? WHERE id = ?")
-					.bind(point.lat, point.lon, row.id)
-					.run();
-				updated += 1;
-			}
-		}),
-	);
-
-	return {
-		total: rows.length,
-		processed,
-		updated,
-		skipped,
-		failed,
-	};
-}
-
 async function queryGeoReverse(lat: number, lng: number): Promise<GeoSuggestion | null> {
 	if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
 		return null;
@@ -1606,13 +1512,12 @@ async function resolveLocationByPoint(
 	const country = String(fallback.country || DEFAULT_COUNTRY).trim() || DEFAULT_COUNTRY;
 	const region = String(fallback.region || DEFAULT_REGION).trim() || DEFAULT_REGION;
 	const district = String(fallback.district || DEFAULT_DISTRICT).trim() || DEFAULT_DISTRICT;
-	const normalizedPoint = await queryGeoPoint([district, region, country].filter(Boolean).join(", "));
 	return {
 		country,
 		region,
 		district,
-		lat: normalizedPoint?.lat ?? lat,
-		lng: normalizedPoint?.lon ?? lng,
+		lat,
+		lng,
 	};
 }
 
@@ -2296,16 +2201,13 @@ export default {
 		}
 
 		if (method === "POST" && pathname === "/api/admin/backfill-geo") {
-			const mode = (url.searchParams.get("mode") || "all").trim().toLowerCase();
-			const rewriteAll = mode !== "missing";
-			const limitRaw = (url.searchParams.get("limit") || "").trim();
-			const parsedLimit = Number(limitRaw);
-			const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.floor(parsedLimit) : rewriteAll ? 0 : 400;
-			const summary = await backfillProfileGeoPoints(env.DB, {
-				rewriteAll,
-				limit,
-			});
-			return json({ ok: true, mode: rewriteAll ? "all" : "missing", limit, ...summary });
+			return json(
+				{
+					error: "geo backfill has been disabled",
+					reason: "lat/lng must come from user input only",
+				},
+				410,
+			);
 		}
 
 		if (method === "POST" && pathname === "/api/profiles") {

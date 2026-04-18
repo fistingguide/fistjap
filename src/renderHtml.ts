@@ -1711,28 +1711,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				border: 1px solid var(--line);
 				border-radius: 12px;
 				background: var(--card);
-			}
-			.inline-map-toolbar {
-				display: grid;
-				grid-template-columns: 1fr auto 1fr;
-				gap: 8px;
-				align-items: center;
-			}
-			#inlineMapReloadBtn {
-				border: 0;
-				border-radius: 10px;
-				height: 36px;
-				padding: 0 12px;
-				background: var(--primary);
-				color: #FFFFFF;
-				font-weight: 600;
-				cursor: pointer;
-			}
-			#inlineMapStatus {
-				font-size: 12px;
-				color: var(--muted);
-				justify-self: end;
-				white-space: nowrap;
+				position: relative;
+				z-index: 1;
 			}
 			#inlineMap {
 				width: 100%;
@@ -1740,6 +1720,19 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				border-radius: 10px;
 				overflow: hidden;
 				border: 1px solid var(--line);
+				position: relative;
+				z-index: 1;
+			}
+			.header-filter {
+				position: relative;
+				z-index: 30;
+			}
+			#rankCountryFilterCustom.mobile-select-enhanced .mobile-select-menu {
+				position: static;
+				margin-top: 6px;
+				max-height: 220px;
+				overflow-y: auto;
+				z-index: auto;
 			}
 			.social-link {
 				display: inline-flex;
@@ -2019,12 +2012,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					border-radius: 0;
 					background: transparent;
 				}
-				.inline-map-toolbar {
-					grid-template-columns: 1fr auto;
-				}
-				#inlineMapStatus {
-					display: none;
-				}
 				#inlineMap {
 					height: 300px;
 					border-radius: 0;
@@ -2113,11 +2100,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				</a>
 			</div>
 			<section class="inline-map-card" aria-label="Community Map">
-				<div class="inline-map-toolbar">
-					<div></div>
-					<button type="button" id="inlineMapReloadBtn">Update Map</button>
-					<div id="inlineMapStatus"></div>
-				</div>
 				<div id="inlineMap"></div>
 			</section>
 			<div class="community-article-link-wrap">
@@ -2175,8 +2157,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				const navSelect = document.getElementById('mobilePageNav');
 				const countryCustom = document.getElementById('rankCountryFilterCustom');
 				const navCustom = document.getElementById('mobilePageNavCustom');
-				const inlineMapReloadBtn = document.getElementById('inlineMapReloadBtn');
-				const inlineMapStatusEl = document.getElementById('inlineMapStatus');
 				let inlineMap = null;
 				let inlineMapLayer = null;
 				let pinnedSpotlightEl = document.getElementById('pinnedSpotlight');
@@ -2204,11 +2184,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const numeric = Number(value || 0);
 					if (!Number.isFinite(numeric)) return '0';
 					return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\\.0$/, '');
-				}
-
-				function setInlineMapStatus(text) {
-					if (!inlineMapStatusEl) return;
-					inlineMapStatusEl.textContent = text || '';
 				}
 
 				function ensureInlineMap() {
@@ -2260,10 +2235,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					}
 					if (bounds.length) {
 						inlineMap.fitBounds(bounds, { padding: [20, 20] });
-						setInlineMapStatus('');
 					} else {
 						inlineMap.setView([35.7512, 139.7093], 10);
-						setInlineMapStatus('No valid coordinates found.');
 					}
 				}
 
@@ -2496,33 +2469,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					}
 				}
 
-				async function runInlineGeoBackfill() {
-					if (!inlineMapReloadBtn) return;
-					inlineMapReloadBtn.disabled = true;
-					try {
-						setInlineMapStatus('Backfilling missing coordinates...');
-						const res = await fetch('/api/admin/backfill-geo?mode=missing', {
-							method: 'POST'
-						});
-						if (!res.ok) {
-							const msg = await res.text();
-							setInlineMapStatus('Backfill failed: ' + msg);
-							return;
-						}
-						await filterByCountry();
-						setInlineMapStatus('Backfill completed.');
-					} catch (error) {
-						setInlineMapStatus('Backfill failed: ' + String(error && error.message ? error.message : error));
-					} finally {
-						inlineMapReloadBtn.disabled = false;
-					}
-				}
-
 				if (countrySelect) {
 					countrySelect.addEventListener('change', filterByCountry);
-				}
-				if (inlineMapReloadBtn) {
-					inlineMapReloadBtn.addEventListener('click', runInlineGeoBackfill);
 				}
 				drawInlineMap(initialRows);
 				loadCountries();
@@ -4583,28 +4531,10 @@ export function renderDashboardPage(): string {
 				reloadInFlight = true;
 				if (reloadBtn) reloadBtn.disabled = true;
 				try {
-					const pwd = window.prompt('请输入删除密码以执行经纬度回填：');
-					if (!pwd) {
-						setStatus('Cancelled: password is required');
-						return;
-					}
-					setStatus('Backfilling missing coordinates...');
-					const res = await fetch('/api/admin/backfill-geo?mode=missing', {
-						method: 'POST',
-						headers: { 'x-delete-password': pwd }
-					});
-					if (!res.ok) {
-						const msg = await res.text();
-						setStatus('Backfill failed: ' + msg);
-						return;
-					}
-					const data = await res.json();
-					const updated = Number(data && data.updated);
-					const failed = Number(data && data.failed);
-					setStatus('Backfill done. Updated: ' + (Number.isFinite(updated) ? updated : 0) + ', failed: ' + (Number.isFinite(failed) ? failed : 0));
+					setStatus('Refreshing map data...');
 					await loadData();
 				} catch (error) {
-					setStatus('Backfill failed: ' + String(error && error.message ? error.message : error));
+					setStatus('Refresh failed: ' + String(error && error.message ? error.message : error));
 				} finally {
 					reloadInFlight = false;
 					if (reloadBtn) reloadBtn.disabled = false;
