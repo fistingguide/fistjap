@@ -15,6 +15,7 @@ type RuntimeEnv = Env & {
 	RESEND_FROM?: string;
 	TEST_EMAIL_TOKEN?: string;
 	DELETE_PASSWORD?: string;
+	GETXAPI_TOKEN?: string;
 	R2_FG?: R2Bucket;
 	ASSET_BASE_URL?: string;
 	ASSET_VERSION?: string;
@@ -615,10 +616,67 @@ function toFollowers(value: unknown): number {
 	return Math.floor(parsed);
 }
 
+function toOptionalFollowers(value: unknown): number | null {
+	if (value === null || value === undefined) return null;
+	if (typeof value === "string" && value.trim() === "") return null;
+	return toFollowers(value);
+}
+
 function toCoordinate(value: unknown): number | null {
 	const parsed = Number(value);
 	if (!Number.isFinite(parsed)) return null;
 	return parsed;
+}
+
+function normalizeHandle(raw: string): string {
+	return String(raw || "").trim().replace(/^@+/, "");
+}
+
+type GetXApiUserData = {
+	name: string;
+	userName: string;
+	description: string;
+	url: string;
+	profilePicture: string;
+	followers: number | null;
+};
+
+async function fetchGetXApiUserInfo(handle: string, env: RuntimeEnv): Promise<GetXApiUserData | null> {
+	const token = (env.GETXAPI_TOKEN || "").trim();
+	const normalizedHandle = normalizeHandle(handle);
+	if (!token || !normalizedHandle) return null;
+	try {
+		const endpoint = `https://api.getxapi.com/twitter/user/info?userName=${encodeURIComponent(normalizedHandle)}`;
+		const res = await fetch(endpoint, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (!res.ok) return null;
+		const raw = (await res.json()) as {
+			status?: string;
+			data?: {
+				name?: string;
+				userName?: string;
+				description?: string;
+				url?: string;
+				profilePicture?: string;
+				followers?: number | string;
+			};
+		};
+		if (String(raw?.status || "").toLowerCase() !== "success" || !raw?.data) return null;
+		const followersParsed = Number(raw.data.followers);
+		return {
+			name: String(raw.data.name || "").trim(),
+			userName: String(raw.data.userName || "").trim(),
+			description: String(raw.data.description || "").trim(),
+			url: String(raw.data.url || "").trim(),
+			profilePicture: String(raw.data.profilePicture || "").trim(),
+			followers: Number.isFinite(followersParsed) && followersParsed >= 0 ? Math.floor(followersParsed) : null,
+		};
+	} catch {
+		return null;
+	}
 }
 
 function json(data: unknown, status = 200, extraHeaders?: HeadersInit): Response {
@@ -1882,7 +1940,7 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 }
 
 function normalizePayload(payload: ProfilePayload) {
-	const handle = toText(payload.handle);
+	const handle = normalizeHandle(toText(payload.handle));
 	if (!handle) {
 		throw new Error("handle is required");
 	}
@@ -1900,9 +1958,49 @@ function normalizePayload(payload: ProfilePayload) {
 		profileUrl: toText(payload.profileUrl),
 		avatar: toText(payload.avatar),
 		sexualOrientation: toText(payload.sexualOrientation, "Gay") || "Gay",
-		followersCount: toFollowers(payload.followersCount),
+		followersCount: toOptionalFollowers(payload.followersCount),
 		lat,
 		lng,
+	};
+}
+
+async function resolveProfileInputWithX(
+	input: ReturnType<typeof normalizePayload>,
+	env: RuntimeEnv,
+): Promise<{
+	name: string;
+	handle: string;
+	telegram: string;
+	bio: string;
+	profileUrl: string;
+	avatar: string;
+	sexualOrientation: string;
+	followersCount: number;
+	lat: number;
+	lng: number;
+}> {
+	const xData = await fetchGetXApiUserInfo(input.handle, env);
+	const handle = normalizeHandle(xData?.userName || input.handle);
+	const name = xData?.name || xData?.userName || input.name || handle;
+	const profileUrlCandidate = xData?.url || input.profileUrl || "";
+	const normalizedProfileUrl =
+		/^https?:\/\//i.test(profileUrlCandidate) && profileUrlCandidate.trim()
+			? profileUrlCandidate.trim()
+			: `https://x.com/${encodeURIComponent(handle)}`;
+	const avatar = xData?.profilePicture || input.avatar || "";
+	const bio = xData?.description || input.bio || "";
+	const followersCount = xData?.followers ?? input.followersCount ?? 20;
+	return {
+		name,
+		handle,
+		telegram: input.telegram,
+		bio,
+		profileUrl: normalizedProfileUrl,
+		avatar,
+		sexualOrientation: input.sexualOrientation || "Gay",
+		followersCount: toFollowers(followersCount),
+		lat: input.lat,
+		lng: input.lng,
 	};
 }
 
@@ -2227,6 +2325,11 @@ export default {
 			} catch (error) {
 				return badRequest((error as Error).message);
 			}
+			try {
+				input = await resolveProfileInputWithX(input, env);
+			} catch (error) {
+				return badRequest((error as Error).message);
+			}
 			let location;
 			try {
 				location = await resolveLocationByPoint(input.lat, input.lng);
@@ -2292,6 +2395,11 @@ export default {
 				let input;
 				try {
 					input = normalizePayload(payload);
+				} catch (error) {
+					return badRequest((error as Error).message);
+				}
+				try {
+					input = await resolveProfileInputWithX(input, env);
 				} catch (error) {
 					return badRequest((error as Error).message);
 				}

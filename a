@@ -1,5 +1,51 @@
-我现在的地图渲染是使用国家省市进行渲染的，这个处理效果不太好，给我修改逻辑
-1. 在数据库增加经度和纬度两个字段
-2. 只在用户新增或者修改信息的时候只提交选择点的经纬度，通过经度和维度进行国家省份和城市的更新其余时间不更新
-3. 地图的渲染使用经纬度，不使用国家，省份和城市进行渲染
-给我评价当前方案可以提升多少效率，如果方案可行请立即更改。
+我现在使用一个api可以获得用户X账号的相关信息：
+发送API类似于：
+curl --request GET \
+  --url 'https://api.getxapi.com/twitter/user/info?userName=fistingguide' \
+  --header 'Authorization: Bearer get-x-api-e2b94680e82bdc901b5d8d2762f0a3ba857c800bb9338960'
+
+  其中userName对应的是用户不带@的X句柄，
+  get-x-api-e2b94680e82bdc901b5d8d2762f0a3ba857c800bb9338960 是我的key，我想将其存储为worker的一个环境变量，名字是GETXAPI_TOKEN
+  返回结构体是：
+
+{
+  "status": "success",
+  "msg": "success",
+  "data": {
+    "id": "1651145497909018629",
+    "name": "FistingGuide",
+    "userName": "FistingGuide",
+    "location": null,
+    "url": "https://fisting.guide",
+    "description": "Dedicated to building the best non-commercial list of Gay Fisting content creators\n✈️https://t.co/62nxZrEqga\n🌐https://t.co/9MlhJhEJ7z",
+    "protected": false,
+    "isVerified": false,
+    "isBlueVerified": true,
+    "followers": 11504,
+    "following": 1218,
+    "favouritesCount": 1145,
+    "statusesCount": 2880,
+    "mediaCount": 43,
+    "createdAt": "2023-04-26T08:45:44.000000Z",
+    "coverPicture": "https://pbs.twimg.com/profile_banners/1651145497909018629/1775845235",
+    "profilePicture": "https://pbs.twimg.com/profile_images/2040351594445983744/5GRsIuWF_400x400.jpg",
+    "canDm": true,
+    "pinnedTweetIds": [
+      "2044727271274221961"
+    ]
+  }
+}
+
+json返回的字段对应我当前需要填写的信息如下：
+name -> 显示名称
+username -> X账号（不带有@的）
+followers -> 关注者
+profilePicture -> 头像url
+description -> 简介
+
+所以当我使用这个api的时候，我的用户编辑表单只需要用户的X账号，取向选择，选择地理位置，telegram用户名，其他的都可以让api自动完成
+
+给我实现这个功能的改造。
+
+
+

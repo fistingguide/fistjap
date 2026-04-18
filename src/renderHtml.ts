@@ -189,7 +189,7 @@ const TH_MESSAGES: Record<string, string> = {
 	admin_label_display_name: "ชื่อที่แสดง",
 	admin_ph_display_name: "ชื่อที่แสดง",
 	admin_label_x_handle: "แฮนเดิล X",
-	admin_ph_x_handle: "แฮนเดิล (เช่น @demo)",
+	admin_ph_x_handle: "แฮนเดิล (เช่น demo)",
 	admin_label_orientation: "รสนิยมทางเพศ",
 	admin_ph_orientation: "รสนิยมทางเพศ",
 	admin_label_fans_count: "ผู้ติดตาม",
@@ -409,7 +409,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_label_display_name: "Display Name",
 		admin_ph_display_name: "Display name",
 		admin_label_x_handle: "X Handle",
-		admin_ph_x_handle: "Handle (e.g. @demo)",
+		admin_ph_x_handle: "Handle (e.g. demo)",
 		admin_label_orientation: "Orientation",
 		admin_ph_orientation: "Orientation",
 		admin_label_fans_count: "Followers",
@@ -503,7 +503,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_label_display_name: "\u663e\u793a\u540d\u79f0",
 		admin_ph_display_name: "\u663e\u793a\u540d\u79f0",
 		admin_label_x_handle: "X \u8d26\u53f7",
-		admin_ph_x_handle: "\u8d26\u53f7\uff08\u4f8b\u5982 @demo\uff09",
+		admin_ph_x_handle: "\u8d26\u53f7\uff08\u4f8b\u5982 demo\uff09",
 		admin_label_orientation: "\u53d6\u5411",
 		admin_ph_orientation: "\u53d6\u5411",
 		admin_label_fans_count: "\u5173\u6ce8\u8005",
@@ -598,7 +598,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_label_display_name: "\u986f\u793a\u540d\u7a31",
 		admin_ph_display_name: "\u986f\u793a\u540d\u7a31",
 		admin_label_x_handle: "X \u5e33\u865f",
-		admin_ph_x_handle: "\u5e33\u865f\uff08\u4f8b\u5982 @demo\uff09",
+		admin_ph_x_handle: "\u5e33\u865f\uff08\u4f8b\u5982 demo\uff09",
 		admin_label_orientation: "\u53d6\u5411",
 		admin_ph_orientation: "\u53d6\u5411",
 		admin_label_fans_count: "\u8ffd\u8e64\u8005",
@@ -693,7 +693,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_label_display_name: "\u8868\u793a\u540d",
 		admin_ph_display_name: "\u8868\u793a\u540d",
 		admin_label_x_handle: "X \u30cf\u30f3\u30c9\u30eb",
-		admin_ph_x_handle: "\u30cf\u30f3\u30c9\u30eb\uff08\u4f8b @demo\uff09",
+		admin_ph_x_handle: "\u30cf\u30f3\u30c9\u30eb\uff08\u4f8b demo\uff09",
 		admin_label_orientation: "\u6307\u5411",
 		admin_ph_orientation: "\u6307\u5411",
 		admin_label_fans_count: "\u30d5\u30a9\u30ed\u30ef\u30fc",
@@ -788,7 +788,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_label_display_name: "\ud45c\uc2dc \uc774\ub984",
 		admin_ph_display_name: "\ud45c\uc2dc \uc774\ub984",
 		admin_label_x_handle: "X \ud578\ub4e4",
-		admin_ph_x_handle: "\ud578\ub4e4(\uc608: @demo)",
+		admin_ph_x_handle: "\ud578\ub4e4(\uc608: demo)",
 		admin_label_orientation: "\uc131\ud5a5",
 		admin_ph_orientation: "\uc131\ud5a5",
 		admin_label_fans_count: "\ud314\ub85c\uc6cc",
@@ -883,7 +883,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		admin_label_display_name: "Nombre visible",
 		admin_ph_display_name: "Nombre visible",
 		admin_label_x_handle: "Handle de X",
-		admin_ph_x_handle: "Handle (ej. @demo)",
+		admin_ph_x_handle: "Handle (ej. demo)",
 		admin_label_orientation: "Orientacion",
 		admin_ph_orientation: "Orientacion",
 		admin_label_fans_count: "Seguidores",
@@ -2385,7 +2385,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						const isNavMenu = mountEl.id === 'mobilePageNavCustom';
 						if (isNavMenu) {
 							mountEl.innerHTML =
-								'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+								'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&lt;</button>';
 							const trigger = mountEl.querySelector('.mobile-select-trigger');
 							if (trigger) {
 								trigger.addEventListener('click', function (event) {
@@ -2692,6 +2692,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			.field { display: grid; gap: 6px; min-width: 0; }
 			.field input, .field textarea, .field select { width: 100%; min-width: 0; }
 			.field label { font-size: 12px; color: var(--muted); font-weight: 600; }
+			.auto-filled-field { display: none; }
 			.form .full { grid-column: 1 / -1; }
 			.avatar-inline {
 				display: grid;
@@ -3036,21 +3037,21 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			<section class="card" id="formSection">
 				<form id="profileForm" class="form">
 					<input type="hidden" id="id" />
-					<div class="field identity-field">
+					<div class="field identity-field auto-filled-field">
 						<label for="name" data-i18n="admin_label_display_name">Display Name</label>
-						<input id="name" placeholder="Display name" data-i18n-placeholder="admin_ph_display_name" />
+						<input id="name" placeholder="Display name" data-i18n-placeholder="admin_ph_display_name" readonly />
 					</div>
 					<div class="field identity-field">
 						<label for="handle" data-i18n="admin_label_x_handle">X Handle</label>
-						<input id="handle" placeholder="Handle (e.g. @demo)" data-i18n-placeholder="admin_ph_x_handle" required />
+						<input id="handle" placeholder="Handle (e.g. demo)" data-i18n-placeholder="admin_ph_x_handle" required />
 					</div>
 					<div class="field identity-field">
 						<label for="orientation" data-i18n="admin_label_orientation">Orientation</label>
 						<input id="orientation" value="Gay" placeholder="Orientation" data-i18n-placeholder="admin_ph_orientation" />
 					</div>
-					<div class="field identity-field">
+					<div class="field identity-field auto-filled-field">
 						<label for="followers" data-i18n="admin_label_fans_count">Followers</label>
-						<input id="followers" type="number" min="0" value="20" placeholder="Followers" data-i18n-placeholder="admin_ph_fans_count" />
+						<input id="followers" type="number" min="0" value="" placeholder="Followers" data-i18n-placeholder="admin_ph_fans_count" readonly />
 					</div>
 					<div class="field full">
 						<label for="locationSearch" data-i18n="admin_label_location">District / Region / Country (Region)</label>
@@ -3068,24 +3069,24 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 						<label data-i18n="admin_label_map_preview">Please click your location until the default address changes</label>
 						<div id="locationPreview" class="location-preview"></div>
 					</div>
-					<div class="field full">
+					<div class="field full auto-filled-field">
 						<label for="profileUrl" data-i18n="admin_label_profile_url">Profile URL</label>
-						<input id="profileUrl" placeholder="Profile URL" data-i18n-placeholder="admin_ph_profile_url" />
+						<input id="profileUrl" placeholder="Profile URL" data-i18n-placeholder="admin_ph_profile_url" readonly />
 					</div>
-					<div class="field full">
+					<div class="field full auto-filled-field">
 						<label for="avatar" data-i18n="admin_label_avatar_url">Avatar URL</label>
 						<div class="avatar-inline">
 							<img id="avatarPreview" class="avatar-preview" src="" alt="Avatar preview" />
-							<input id="avatar" placeholder="Avatar URL" data-i18n-placeholder="admin_ph_avatar_url" />
+							<input id="avatar" placeholder="Avatar URL" data-i18n-placeholder="admin_ph_avatar_url" readonly />
 						</div>
 					</div>
 					<div class="field full">
 						<label for="telegram">Telegram</label>
 						<input id="telegram" placeholder="@username" />
 					</div>
-					<div class="field full">
+					<div class="field full auto-filled-field">
 						<label for="bio" data-i18n="admin_label_bio">Bio</label>
-						<textarea id="bio" placeholder="Bio" data-i18n-placeholder="admin_ph_bio"></textarea>
+						<textarea id="bio" placeholder="Bio" data-i18n-placeholder="admin_ph_bio" readonly></textarea>
 					</div>
 					<div class="full actions">
 						<button type="submit" id="submitBtn" data-i18n="admin_btn_create">Create</button>
@@ -3249,6 +3250,10 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function setStatus(text) {
 				els.status.textContent = text;
+			}
+
+			function normalizeHandleValue(raw) {
+				return String(raw || '').trim().replace(/^@+/, '');
 			}
 
 			function setSelectedPoint(lat, lng) {
@@ -3625,7 +3630,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.profileUrl.value = '';
 				els.avatar.value = '';
 				els.orientation.value = 'Gay';
-				els.followers.value = '20';
+				els.followers.value = '';
 				els.country.value = 'Japan';
 				els.region.value = 'Tokyo';
 				els.district.value = 'Itabashi';
@@ -3648,7 +3653,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.profileUrl.value = row.profile_url || '';
 				els.avatar.value = row.avatar || '';
 				els.orientation.value = row.sexual_orientation || 'Gay';
-				els.followers.value = String(row.followers_count || 0);
+				els.followers.value = row.followers_count === null || row.followers_count === undefined ? '' : String(row.followers_count);
 				els.country.value = row.country || 'Japan';
 				els.region.value = (row.region || row.province) || 'Tokyo';
 				els.district.value = (row.district || row.city) || 'Itabashi';
@@ -3693,7 +3698,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			async function loadSuggestions() {
 				if (currentMode === MODE_CREATE) return;
-				const keyword = els.handleSearch.value.trim();
+				const keyword = normalizeHandleValue(els.handleSearch.value);
+				els.handleSearch.value = keyword;
 				if (!keyword) {
 					currentRows = [];
 					renderSuggestions([]);
@@ -3716,15 +3722,19 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 
 			function collectPayload() {
+				const normalizedHandle = normalizeHandleValue(els.handle.value);
+				els.handle.value = normalizedHandle;
+				const followersRaw = String(els.followers.value || '').trim();
+				const followersCount = followersRaw ? Number(followersRaw) : null;
 				return {
 					name: els.name.value,
-					handle: els.handle.value,
+					handle: normalizedHandle,
 					telegram: els.telegram.value,
 					bio: els.bio.value,
 					profileUrl: els.profileUrl.value,
 					avatar: els.avatar.value,
 					sexualOrientation: els.orientation.value,
-					followersCount: Number(els.followers.value || '0'),
+					followersCount: Number.isFinite(followersCount) ? followersCount : null,
 					lat: selectedLat,
 					lng: selectedLng
 				};
@@ -3825,6 +3835,9 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			els.form.addEventListener('submit', submitForm);
+			els.handle.addEventListener('blur', function () {
+				els.handle.value = normalizeHandleValue(els.handle.value);
+			});
 			if (els.modeCreateBtn) {
 				els.modeCreateBtn.addEventListener('click', function () {
 					window.location.href = '/admin/create';
@@ -3918,7 +3931,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&lt;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
 					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
@@ -4583,7 +4596,7 @@ export function renderDashboardPage(): string {
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&lt;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
 					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
@@ -4945,7 +4958,7 @@ export function renderAboutPage(): string {
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&lt;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
 					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
@@ -5329,7 +5342,7 @@ A photo of the upper body with the face obscured, a fisting video, and a caption
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&lt;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
 					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
@@ -5724,7 +5737,7 @@ Fisting属于高强度玩法，安全、渐进、充足润滑和双方自愿非�
 				function closeMenu() { mount.classList.remove('open'); }
 				function render() {
 					mount.innerHTML =
-						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&#8592;</button>';
+						'<button type="button" class="mobile-select-trigger" aria-label="Go back" title="Go back">&lt;</button>';
 					const trigger = mount.querySelector('.mobile-select-trigger');
 					if (!trigger) return;
 					trigger.addEventListener('click', function (event) {
