@@ -142,6 +142,7 @@ const TH_MESSAGES: Record<string, string> = {
 	page_title_wiki: "Fisting Wiki",
 	page_title_wiki_article: "Fisting Wiki",
 	heading_ranking: "รายชื่อนักแสดง",
+	heading_language: "ภาษา",
 	heading_add: "เพิ่มใหม่",
 	heading_star: "แผนที่",
 	heading_about: "เกี่ยวกับ",
@@ -236,6 +237,7 @@ const VI_MESSAGES: Record<string, string> = {
 	page_title_wiki: "Fisting Wiki",
 	page_title_wiki_article: "Fisting Wiki",
 	heading_ranking: "Danh sach nguoi bieu dien",
+	heading_language: "Ngon ngu",
 	heading_add: "Thêm mới",
 	heading_star: "Bản đồ",
 	heading_about: "Giới thiệu",
@@ -298,6 +300,7 @@ const PT_MESSAGES: Record<string, string> = {
 	page_title_wiki: "Fisting Wiki",
 	page_title_wiki_article: "Fisting Wiki",
 	heading_ranking: "Lista de Criadores",
+	heading_language: "Idioma",
 	heading_add: "Adicionar",
 	heading_star: "Mapa",
 	heading_about: "Sobre",
@@ -360,6 +363,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "Performers List",
+		heading_language: "Language",
 		heading_add: "Add new",
 		heading_star: "Map",
 		heading_about: "About",
@@ -453,6 +457,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\u8868\u6f14\u8005\u5217\u8868",
+		heading_language: "\u8bed\u8a00",
 		heading_add: "\u65b0\u589e",
 		heading_star: "\u5730\u56fe",
 		heading_about: "\u5173\u4e8e",
@@ -546,6 +551,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\u8868\u6f14\u8005\u6e05\u55ae",
+		heading_language: "\u8a9e\u8a00",
 		heading_add: "\u65b0\u589e",
 		heading_star: "\u5730\u5716",
 		heading_about: "\u95dc\u65bc",
@@ -640,6 +646,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\u30d1\u30d5\u30a9\u30fc\u30de\u30fc\u4e00\u89a7",
+		heading_language: "\u8a00\u8a9e",
 		heading_add: "\u65b0\u898f\u8ffd\u52a0",
 		heading_star: "\u30de\u30c3\u30d7",
 		heading_about: "\u6982\u8981",
@@ -734,6 +741,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "\ud37c\ud3ec\uba38 \ubaa9\ub85d",
+		heading_language: "\uc5b8\uc5b4",
 		heading_add: "\ucd94\uac00",
 		heading_star: "\uc9c0\ub3c4",
 		heading_about: "\uc18c\uac1c",
@@ -828,6 +836,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		page_title_wiki: "Fisting Wiki",
 		page_title_wiki_article: "Fisting Wiki",
 		heading_ranking: "Lista de artistas",
+		heading_language: "Idioma",
 		heading_add: "Agregar",
 		heading_star: "Mapa",
 		heading_about: "Acerca de",
@@ -1311,6 +1320,15 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				box-shadow: 0 8px 20px rgba(15, 20, 25, 0.08);
 			}
 			.header h1 { margin: 0; font-size: 30px; }
+			.header-language-title {
+				margin: 0;
+				font-size: 12px;
+				letter-spacing: 0;
+				text-transform: none;
+				color: #8B98A5;
+				font-weight: 500;
+				white-space: nowrap;
+			}
 			.header-main {
 				display: flex;
 				justify-content: space-between;
@@ -1423,7 +1441,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			@media (max-width: 720px) {
 				body { font-size: 13px; }
 				.top-nav { display: none; }
-				.mobile-nav-row { display: block; width: auto; }
 				.header-main { flex-direction: column; align-items: flex-start; }
 				.header-left { width: 100%; }
 				.header-title-row {
@@ -1452,6 +1469,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					box-shadow: none;
 				}
 				.header h1 { font-size: 20px; }
+				.header-language-title { font-size: 12px; }
 				.lang-switch {
 					height: 34px;
 					font-size: 13px;
@@ -1473,12 +1491,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					grid-template-columns: 116px 1fr;
 					align-items: center;
 					gap: 10px;
-				}
-				.mobile-nav-row {
-					display: flex;
-					align-items: center;
-					justify-content: flex-end;
-					margin-left: auto;
 				}
 				html.mobile-select-ready .header-filter select,
 				html.mobile-select-ready .mobile-nav {
@@ -1743,6 +1755,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			.telegram-icon-wrap { background: #229ED9; }
 			.profile-icon-wrap { background: #2E7D32; }
 			.blog-icon-wrap { background: #EF6C00; }
+			.about-icon-wrap { background: #455A64; }
 			.x-icon-wrap { background: #000000; }
 			.email-icon-wrap { background: #0F1419; }
 			.discord-promo-icon {
@@ -2004,7 +2017,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					background: transparent;
 				}
 				#inlineMap {
-					height: 300px;
+					height: 240px;
 					border-radius: 0;
 				}
 				.spotlight-label {
@@ -2035,15 +2048,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					<div class="header-main">
 						<div class="header-left">
 							<div class="header-title-row">
-								<h1 data-i18n="heading_ranking">Performers List</h1>
+								<h1 class="header-language-title" data-i18n="heading_language">Language</h1>
 								${renderLanguageSwitcher("rankingLangSwitch")}
-								<div class="mobile-nav-row">
-									<select id="mobilePageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
-										<option value="/" selected data-i18n="nav_ranking">Performers List</option>
-										<option value="/about" data-i18n="nav_about">About</option>
-									</select>
-									<div id="mobilePageNavCustom" class="mobile-select-enhanced"></div>
-								</div>
 							</div>
 						</div>
 							<div class="header-right">
@@ -2054,10 +2060,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 									</select>
 									<div id="rankCountryFilterCustom" class="mobile-select-enhanced"></div>
 								</div>
-							<nav class="top-nav">
-								<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
-								<a class="nav-btn secondary" href="/about" data-i18n="nav_about">About</a>
-							</nav>
 						</div>
 					</div>
 				</header>
@@ -2103,6 +2105,13 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
 							<rect x="2.5" y="5.5" width="19" height="13" rx="2.4" ry="2.4" fill="none" stroke="#FFFFFF" stroke-width="1.8"></rect>
 							<path d="M4 7.5 12 13l8-5.5" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+						</svg>
+					</span>
+				</a>
+				<a class="social-link" href="/about" target="_self" aria-label="Open About">
+					<span class="social-link-icon-wrap about-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 4a1.5 1.5 0 1 1-1.5 1.5A1.5 1.5 0 0 1 12 6Zm2 12h-4v-1.8h1.2v-4H10V10h3v6.2H14Z"></path>
 						</svg>
 					</span>
 				</a>
