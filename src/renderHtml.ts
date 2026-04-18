@@ -3122,6 +3122,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let selectedLng = 139.7093;
 			let adminWritePassword = '';
 			let reverseRequestSeq = 0;
+			let createHandleCheckTimer = null;
+			let lastCreateHandleChecked = '';
 			const MODE_CREATE = 'create';
 			const MODE_EDIT = 'edit';
 			const MODE_DELETE = 'delete';
@@ -3654,6 +3656,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			function resetForm() {
 				editingId = null;
+				lastCreateHandleChecked = '';
 				els.id.value = '';
 				els.name.value = '';
 				els.handle.value = '';
@@ -3717,7 +3720,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				if (currentMode === MODE_CREATE) return;
 				const normalizedTarget = normalizeHandleValue(handle);
 				const target = currentRows.find(function (row) {
-					return String(row.handle || '').toLowerCase() === normalizedTarget.toLowerCase();
+					const rowHandle = normalizeHandleValue(String(row.handle || ''));
+					return rowHandle.toLowerCase() === normalizedTarget.toLowerCase();
 				});
 				if (!target) {
 					setStatus(t('admin_status_no_exact_match_mode', 'No exact handle match for this mode.'));
@@ -3745,7 +3749,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				const data = await res.json();
 				const rows = Array.isArray(data.results) ? data.results : [];
 				currentRows = rows.filter(function (row) {
-					return String(row.handle || '').toLowerCase().includes(keyword.toLowerCase());
+					const rowHandle = normalizeHandleValue(String(row.handle || ''));
+					return rowHandle.toLowerCase().includes(keyword.toLowerCase());
 				});
 				renderSuggestions(currentRows);
 				setStatus(fmt(t('admin_status_matched_handles', 'Matched {count} handles'), { count: currentRows.length }));
@@ -3770,12 +3775,42 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				};
 			}
 
+			async function checkHandleExistsForCreate(showAlert) {
+				if (currentMode !== MODE_CREATE) return false;
+				const normalizedHandle = normalizeHandleValue(els.handle.value);
+				if (!normalizedHandle) return false;
+				if (normalizedHandle.toLowerCase() === lastCreateHandleChecked.toLowerCase()) return false;
+				try {
+					const res = await fetch('/api/profiles?keyword=' + encodeURIComponent(normalizedHandle) + '&limit=20');
+					const data = await res.json();
+					const rows = Array.isArray(data.results) ? data.results : [];
+					const exists = rows.some(function (row) {
+						const rowHandle = normalizeHandleValue(String(row.handle || ''));
+						return rowHandle.toLowerCase() === normalizedHandle.toLowerCase();
+					});
+					lastCreateHandleChecked = normalizedHandle;
+					if (exists) {
+						const msg = '该账号已经存在';
+						setStatus(msg);
+						if (showAlert) window.alert(msg);
+						return true;
+					}
+					return false;
+				} catch {
+					return false;
+				}
+			}
+
 			async function submitForm(event) {
 				event.preventDefault();
 				if (currentMode === MODE_DELETE) return;
 				if (!els.handle.value.trim()) {
 					setStatus(t('admin_status_handle_required', 'Handle is required'));
 					return;
+				}
+				if (currentMode === MODE_CREATE) {
+					const exists = await checkHandleExistsForCreate(true);
+					if (exists) return;
 				}
 				if (currentMode === MODE_EDIT && !editingId) {
 					setStatus(t('admin_status_pick_existing_first', 'Please search and select an existing performer first.'));
@@ -3870,6 +3905,20 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			els.form.addEventListener('submit', submitForm);
+			els.handle.addEventListener('input', function () {
+				lastCreateHandleChecked = '';
+				if (currentMode !== MODE_CREATE) return;
+				if (createHandleCheckTimer) clearTimeout(createHandleCheckTimer);
+				createHandleCheckTimer = setTimeout(function () {
+					createHandleCheckTimer = null;
+					void checkHandleExistsForCreate(false);
+				}, 350);
+			});
+			els.handle.addEventListener('blur', function () {
+				lastCreateHandleChecked = '';
+				if (currentMode !== MODE_CREATE) return;
+				void checkHandleExistsForCreate(true);
+			});
 			if (els.modeCreateBtn) {
 				els.modeCreateBtn.addEventListener('click', function () {
 					window.location.href = '/admin/create';
