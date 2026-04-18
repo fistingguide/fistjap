@@ -59,6 +59,7 @@ const DEFAULT_DISTRICT = "Itabashi";
 const PINNED_ROTATION_SECONDS = 600;
 const ADMIN_VERIFY_CODE_TTL_MS = 5 * 60 * 1000;
 const ADMIN_VERIFY_CODE_LENGTH = 6;
+const ADMIN_VERIFY_SESSION_TTL_MS = 5 * 60 * 1000;
 const BLOG_URL = "https://blog.fistingguide.workers.dev/";
 const R2_ASSET_PREFIX = "/r2-fg/";
 const MOBILE_CAROUSEL_PREFIX = `${R2_ASSET_PREFIX}assets/mobile-carousel/`;
@@ -836,39 +837,43 @@ async function issueAdminVerificationChallenge(
 	return { ok: true, verificationId };
 }
 
-async function verifyAdminVerificationCode(request: Request, env: RuntimeEnv): Promise<Response | null> {
-	const verificationId = (request.headers.get("x-admin-verification-id") || "").trim();
-	const verificationCode = (request.headers.get("x-admin-verification-code") || "").trim();
-	if (!verificationId || !verificationCode) {
-		return json({ error: "admin verification is required" }, 401);
-	}
-
-	const record = await env.DB.prepare(
-		`SELECT id, code_hash, expires_at, consumed_at
-		 FROM admin_email_verifications
-		 WHERE id = ?`,
-	)
+async function consumeAdminVerificationCode(
+	env: RuntimeEnv,
+	verificationId: string,
+	verificationCode: string,
+): Promise<{ ok: true; email: string } | { ok: false; status: number; error: string }> {
+	const record = await env.DB
+		.prepare(
+			`SELECT id, email, code_hash, expires_at, consumed_at
+			 FROM admin_email_verifications
+			 WHERE id = ?`,
+		)
 		.bind(verificationId)
-		.first<{ id: string; code_hash: string; expires_at: number | string; consumed_at: number | string | null }>();
+		.first<{
+			id: string;
+			email: string;
+			code_hash: string;
+			expires_at: number | string;
+			consumed_at: number | string | null;
+		}>();
 
 	if (!record) {
-		return json({ error: "invalid verification challenge" }, 403);
+		return { ok: false, status: 403, error: "invalid verification challenge" };
 	}
 
 	const now = Date.now();
 	const expiresAt = Number(record.expires_at ?? 0);
 	if (!Number.isFinite(expiresAt) || expiresAt < now) {
-		return json({ error: "verification code expired" }, 403);
+		return { ok: false, status: 403, error: "verification code expired" };
 	}
-
 	if (record.consumed_at !== null && record.consumed_at !== undefined) {
-		return json({ error: "verification code already used" }, 403);
+		return { ok: false, status: 403, error: "verification code already used" };
 	}
 
 	const expectedHash = String(record.code_hash || "");
 	const providedHash = await sha256Hex(`${verificationId}:${verificationCode}`);
 	if (!expectedHash || providedHash !== expectedHash) {
-		return json({ error: "invalid verification code" }, 403);
+		return { ok: false, status: 403, error: "invalid verification code" };
 	}
 
 	const consumedAt = Date.now();
@@ -877,7 +882,50 @@ async function verifyAdminVerificationCode(request: Request, env: RuntimeEnv): P
 		.bind(consumedAt, verificationId)
 		.run();
 	if ((consumeResult.meta.changes ?? 0) === 0) {
-		return json({ error: "verification code already used" }, 403);
+		return { ok: false, status: 403, error: "verification code already used" };
+	}
+	return { ok: true, email: normalizeEmail(record.email || "") };
+}
+
+async function createAdminVerificationSession(
+	env: RuntimeEnv,
+	email: string,
+): Promise<{ token: string; expiresAt: number }> {
+	const token = createVerificationId() + createVerificationId();
+	const tokenHash = await sha256Hex(token);
+	const now = Date.now();
+	const expiresAt = now + ADMIN_VERIFY_SESSION_TTL_MS;
+	await env.DB.prepare("DELETE FROM admin_verification_sessions WHERE expires_at < ?")
+		.bind(now)
+		.run();
+	await env.DB.prepare(
+		`INSERT INTO admin_verification_sessions (id, token_hash, email, created_at, expires_at)
+		 VALUES (?, ?, ?, ?, ?)`,
+	)
+		.bind(createVerificationId(), tokenHash, normalizeEmail(email), now, expiresAt)
+		.run();
+	return { token, expiresAt };
+}
+
+async function verifyAdminSessionToken(request: Request, env: RuntimeEnv): Promise<Response | null> {
+	const token = (request.headers.get("x-admin-session-token") || "").trim();
+	if (!token) {
+		return json({ error: "admin verification is required" }, 401);
+	}
+	const tokenHash = await sha256Hex(token);
+	const record = await env.DB
+		.prepare(
+			`SELECT id, expires_at
+			 FROM admin_verification_sessions
+			 WHERE token_hash = ?`,
+		)
+		.bind(tokenHash)
+		.first<{ id: string; expires_at: number | string }>();
+	if (!record) return json({ error: "invalid admin session" }, 403);
+	const now = Date.now();
+	const expiresAt = Number(record.expires_at ?? 0);
+	if (!Number.isFinite(expiresAt) || expiresAt < now) {
+		return json({ error: "admin session expired" }, 403);
 	}
 	return null;
 }
@@ -2512,6 +2560,31 @@ export default {
 			});
 		}
 
+		if (method === "POST" && pathname === "/api/admin/verification-code/confirm") {
+			let payload: { verificationId?: unknown; code?: unknown };
+			try {
+				payload = (await request.json()) as { verificationId?: unknown; code?: unknown };
+			} catch {
+				return badRequest("invalid json");
+			}
+			const verificationId = String(payload?.verificationId || "").trim();
+			const code = String(payload?.code || "").trim();
+			if (!verificationId) return badRequest("verificationId is required");
+			if (!code) return badRequest("code is required");
+
+			const consumed = await consumeAdminVerificationCode(env, verificationId, code);
+			if (!consumed.ok) {
+				return json({ error: consumed.error }, consumed.status);
+			}
+			const session = await createAdminVerificationSession(env, consumed.email);
+			return json({
+				ok: true,
+				sessionToken: session.token,
+				expiresAt: new Date(session.expiresAt).toISOString(),
+				expiresInSeconds: Math.floor(ADMIN_VERIFY_SESSION_TTL_MS / 1000),
+			});
+		}
+
 		if (method === "POST" && pathname === "/api/profiles") {
 			const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 			let payload: ProfilePayload;
@@ -2538,7 +2611,7 @@ export default {
 			} catch (error) {
 				return badRequest((error as Error).message);
 			}
-			const authError = await verifyAdminVerificationCode(request, env);
+			const authError = await verifyAdminSessionToken(request, env);
 			if (authError) return authError;
 
 			try {
@@ -2613,7 +2686,7 @@ export default {
 				} catch (error) {
 					return badRequest((error as Error).message);
 				}
-				const authError = await verifyAdminVerificationCode(request, env);
+				const authError = await verifyAdminSessionToken(request, env);
 				if (authError) return authError;
 
 				try {
@@ -2657,7 +2730,7 @@ export default {
 			}
 
 			if (method === "DELETE") {
-				const authError = await verifyAdminVerificationCode(request, env);
+				const authError = await verifyAdminSessionToken(request, env);
 				if (authError) return authError;
 
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";

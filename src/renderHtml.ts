@@ -1625,60 +1625,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				text-align: center;
 				border: 1px solid var(--line);
 			}
-			.verify-overlay {
-				position: fixed;
-				inset: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: rgba(15, 20, 25, 0.72);
-				z-index: 10001;
-				padding: 16px;
-			}
-			.verify-dialog {
-				width: min(460px, 100%);
-				background: #16181C;
-				border: 1px solid var(--line);
-				border-radius: 14px;
-				padding: 14px;
-				display: grid;
-				gap: 10px;
-			}
-			.verify-title {
-				margin: 0;
-				font-size: 16px;
-				font-weight: 700;
-				color: var(--text);
-			}
-			.verify-desc {
-				margin: 0;
-				font-size: 13px;
-				color: var(--muted);
-				line-height: 1.5;
-				white-space: pre-line;
-			}
-			.verify-input {
-				height: 42px;
-				width: 100%;
-			}
-			.verify-actions {
-				display: flex;
-				justify-content: flex-end;
-				gap: 8px;
-			}
-			.verify-actions button {
-				height: 38px;
-				padding: 0 14px;
-				border-radius: 10px;
-				border: 1px solid var(--line);
-				background: #0F1419;
-				color: #E7E9EA;
-			}
-			.verify-actions .verify-confirm {
-				background: var(--primary);
-				color: #FFFFFF;
-				border: none;
-			}
 			.age-gate-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
 			.age-btn {
 				border: none;
@@ -2091,17 +2037,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<div class="age-gate-actions">
 					<button class="age-btn yes" id="ageYes" data-i18n="age_yes">Yes, I am 18+</button>
 					<button class="age-btn no" id="ageNo" data-i18n="age_no">No</button>
-				</div>
-			</div>
-		</div>
-		<div class="verify-overlay" id="verifyDialog" hidden>
-			<div class="verify-dialog" role="dialog" aria-modal="true" aria-labelledby="verifyDialogTitle">
-				<h3 class="verify-title" id="verifyDialogTitle">Verification</h3>
-				<p class="verify-desc" id="verifyDialogDesc"></p>
-				<input class="verify-input" id="verifyDialogInput" autocomplete="off" />
-				<div class="verify-actions">
-					<button type="button" class="verify-cancel" id="verifyDialogCancel">Cancel</button>
-					<button type="button" class="verify-confirm" id="verifyDialogConfirm">Confirm</button>
 				</div>
 			</div>
 		</div>
@@ -2840,6 +2775,40 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				font-size: 12px;
 				margin-top: 8px;
 			}
+			.verify-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 8px;
+				align-items: center;
+			}
+			.verify-grid input {
+				height: 40px;
+			}
+			.verify-grid button {
+				height: 40px;
+				padding: 0 12px;
+				border-radius: 10px;
+				background: #0F1419;
+				color: #E7E9EA;
+				border: 1px solid var(--line);
+			}
+			.verify-grid button.primary {
+				background: var(--primary);
+				color: #FFFFFF;
+				border: none;
+			}
+			.verify-note {
+				color: var(--muted);
+				font-size: 12px;
+				line-height: 1.5;
+				margin: 0;
+			}
+			.verify-status {
+				color: #28C76F;
+				font-size: 13px;
+				margin: 0;
+				white-space: pre-line;
+			}
 			.location-selected { color: var(--muted); font-size: 12px; }
 			.location-meta {
 				display: grid;
@@ -3042,6 +3011,9 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				.form .full { grid-column: 1 / -1; }
 				.form .identity-field { grid-column: auto; }
 				.location-meta { grid-template-columns: 1fr; }
+				.verify-grid {
+					grid-template-columns: 1fr;
+				}
 			}
 		</style>
 		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
@@ -3101,6 +3073,25 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					<button id="resetBtn" class="secondary" data-i18n="admin_reset_btn">Reset</button>
 				</div>
 				<div class="search-hint" data-i18n="admin_search_hint">Only supports existing accounts for modifying their related information or deleting.</div>
+			</section>
+
+			<section class="card" id="verifySection"${adminMode === "home" ? " hidden" : ""}>
+				<div class="field full">
+					<label id="verifyEmailLabel">Verification Email</label>
+					<div class="verify-grid">
+						<input id="verifyEmailInput" type="email" autocomplete="email" />
+						<button type="button" id="sendVerifyCodeBtn"></button>
+					</div>
+				</div>
+				<p class="verify-note" id="verifyEmailNote"></p>
+				<div class="field full">
+					<label id="verifyCodeLabel">Verification Code</label>
+					<div class="verify-grid">
+						<input id="verifyCodeInput" inputmode="numeric" autocomplete="one-time-code" />
+						<button type="button" class="primary" id="confirmVerifyCodeBtn"></button>
+					</div>
+				</div>
+				<p class="verify-status" id="verifyStatus"></p>
 			</section>
 
 			<section class="card" id="formSection"${adminMode === "home" ? " hidden" : ""}>
@@ -3188,8 +3179,9 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let reverseRequestSeq = 0;
 			let createHandleCheckTimer = null;
 			let lastCreateHandleChecked = '';
-			let verifyDialogState = null;
-			let verifyDialogHandlersBound = false;
+			let adminSessionToken = '';
+			let adminSessionExpiresAt = 0;
+			let pendingVerificationId = '';
 			const MODE_CREATE = 'create';
 			const MODE_EDIT = 'edit';
 			const MODE_DELETE = 'delete';
@@ -3202,6 +3194,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				modeEditBtn: document.getElementById('modeEditBtn'),
 				modeDeleteBtn: document.getElementById('modeDeleteBtn'),
 				searchSection: document.getElementById('searchSection'),
+				verifySection: document.getElementById('verifySection'),
 				formSection: document.getElementById('formSection'),
 				deleteSection: document.getElementById('deleteSection'),
 				handleSearch: document.getElementById('handleSearch'),
@@ -3232,12 +3225,14 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				cancelEditBtn: document.getElementById('cancelEditBtn'),
 				deleteOnlyBtn: document.getElementById('deleteOnlyBtn'),
 				deleteTargetText: document.getElementById('deleteTargetText'),
-				verifyDialog: document.getElementById('verifyDialog'),
-				verifyDialogTitle: document.getElementById('verifyDialogTitle'),
-				verifyDialogDesc: document.getElementById('verifyDialogDesc'),
-				verifyDialogInput: document.getElementById('verifyDialogInput'),
-				verifyDialogConfirm: document.getElementById('verifyDialogConfirm'),
-				verifyDialogCancel: document.getElementById('verifyDialogCancel')
+				verifyEmailLabel: document.getElementById('verifyEmailLabel'),
+				verifyEmailInput: document.getElementById('verifyEmailInput'),
+				sendVerifyCodeBtn: document.getElementById('sendVerifyCodeBtn'),
+				verifyEmailNote: document.getElementById('verifyEmailNote'),
+				verifyCodeLabel: document.getElementById('verifyCodeLabel'),
+				verifyCodeInput: document.getElementById('verifyCodeInput'),
+				confirmVerifyCodeBtn: document.getElementById('confirmVerifyCodeBtn'),
+				verifyStatus: document.getElementById('verifyStatus')
 			};
 
 			function t(key, fallback) {
@@ -3297,6 +3292,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			function applyMode(mode) {
 				currentMode = mode;
 				if (els.searchSection) els.searchSection.hidden = (mode === MODE_CREATE || mode === MODE_HOME);
+				if (els.verifySection) els.verifySection.hidden = mode === MODE_HOME;
 				if (els.formSection) els.formSection.hidden = (mode === MODE_DELETE || mode === MODE_HOME);
 				if (els.deleteSection) els.deleteSection.hidden = mode !== MODE_DELETE;
 				if (els.locationSearch) {
@@ -3374,7 +3370,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				window.alert(message);
 			}
 
-			function getVerifyPromptText(kind) {
+			function getVerifyText(kind) {
 				const rawLang =
 					(window.__uiLang && String(window.__uiLang)) ||
 					document.documentElement.getAttribute('lang') ||
@@ -3393,103 +3389,112 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 				const copy = {
 					en: {
-						emailTitle: 'Email verification',
 						email: 'Enter the email address to receive the verification code:',
-						emailNotice: 'This email is only used to deliver the verification code to prevent bots and abuse.',
+						emailNotice: 'This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: 'Enter verification code',
 						code: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):',
 						codePlaceholder: '6-digit code',
-						confirm: 'Confirm',
-						cancel: 'Cancel'
+						send: 'Send Code',
+						verify: 'Verify Code',
+						sent: 'Verification code sent. Check your inbox.',
+						verified: 'Verification successful. You can now submit admin operations.',
+						expired: 'Verification has expired. Please verify again.'
 					},
 					'zh-CN': {
-						emailTitle: '邮箱验证',
 						email: '请输入接收验证码的邮箱地址：',
-						emailNotice: '该邮箱仅用于接收验证码，以防止机器人和滥用行为。',
+						emailNotice: '该邮箱仅用于接收验证码，以防止机器人和滥用行为，不会被收录。',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: '输入验证码',
 						code: '验证码已发送，请输入6位验证码（5分钟内有效）：',
 						codePlaceholder: '6位验证码',
-						confirm: '确认',
-						cancel: '取消'
+						send: '发送验证码',
+						verify: '确认验证码',
+						sent: '验证码已发送，请查看邮箱。',
+						verified: '验证成功，现在可以执行管理操作。',
+						expired: '验证已过期，请重新验证。'
 					},
 					'zh-TW': {
-						emailTitle: '郵箱驗證',
 						email: '請輸入接收驗證碼的電子郵箱地址：',
-						emailNotice: '該郵箱僅用於接收驗證碼，以防止機器人與濫用行為。',
+						emailNotice: '該郵箱僅用於接收驗證碼，以防止機器人與濫用行為，不會被收錄。',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: '輸入驗證碼',
 						code: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：',
 						codePlaceholder: '6位驗證碼',
-						confirm: '確認',
-						cancel: '取消'
+						send: '發送驗證碼',
+						verify: '確認驗證碼',
+						sent: '驗證碼已發送，請查看郵箱。',
+						verified: '驗證成功，現在可以執行管理操作。',
+						expired: '驗證已過期，請重新驗證。'
 					},
 					ja: {
-						emailTitle: 'メール認証',
 						email: '認証コードを受け取るメールアドレスを入力してください：',
-						emailNotice: 'このメールアドレスは、ボットや不正利用を防ぐための認証コード送信にのみ使用されます。',
+						emailNotice: 'このメールアドレスは認証コード送信のみに使用され、ボットや不正利用を防止し、保存されません。',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: '認証コード入力',
 						code: '認証コードを送信しました。6桁のコードを入力してください（有効期限5分）：',
 						codePlaceholder: '6桁のコード',
-						confirm: '確認',
-						cancel: 'キャンセル'
+						send: 'コード送信',
+						verify: 'コード確認',
+						sent: '認証コードを送信しました。メールを確認してください。',
+						verified: '認証成功。管理操作を実行できます。',
+						expired: '認証の有効期限が切れました。再認証してください。'
 					},
 					ko: {
-						emailTitle: '이메일 인증',
 						email: '인증코드를 받을 이메일 주소를 입력하세요:',
-						emailNotice: '이 이메일 주소는 봇 및 악용 방지를 위한 인증코드 수신 용도로만 사용됩니다.',
+						emailNotice: '이 이메일 주소는 인증코드 수신과 봇/악용 방지에만 사용되며 저장되지 않습니다.',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: '인증코드 입력',
 						code: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):',
 						codePlaceholder: '6자리 코드',
-						confirm: '확인',
-						cancel: '취소'
+						send: '코드 전송',
+						verify: '코드 확인',
+						sent: '인증코드를 전송했습니다. 이메일을 확인하세요.',
+						verified: '인증 성공. 이제 관리자 작업을 수행할 수 있습니다.',
+						expired: '인증이 만료되었습니다. 다시 인증해 주세요.'
 					},
 					es: {
-						emailTitle: 'Verificacion por correo',
 						email: 'Introduce el correo para recibir el código de verificación:',
-						emailNotice: 'Este correo solo se utiliza para enviar el código y prevenir bots y abusos.',
+						emailNotice: 'Este correo solo se utiliza para enviar el código y prevenir bots y abusos, y no se guardará.',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: 'Introducir código',
 						code: 'Código enviado. Introduce el código de 6 dígitos (válido por 5 minutos):',
 						codePlaceholder: 'Código de 6 dígitos',
-						confirm: 'Confirmar',
-						cancel: 'Cancelar'
+						send: 'Enviar codigo',
+						verify: 'Confirmar codigo',
+						sent: 'Codigo enviado. Revisa tu correo.',
+						verified: 'Verificacion correcta. Ya puedes ejecutar operaciones de admin.',
+						expired: 'La verificacion ha caducado. Verifica de nuevo.'
 					},
 					pt: {
-						emailTitle: 'Verificacao por e-mail',
 						email: 'Digite o e-mail para receber o código de verificação:',
-						emailNotice: 'Este e-mail é usado apenas para receber o código e prevenir bots e abusos.',
+						emailNotice: 'Este e-mail é usado apenas para receber o código e prevenir bots e abusos, e não será armazenado.',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: 'Inserir codigo',
 						code: 'Código enviado. Digite o código de 6 dígitos (válido por 5 minutos):',
 						codePlaceholder: 'Código de 6 dígitos',
-						confirm: 'Confirmar',
-						cancel: 'Cancelar'
+						send: 'Enviar codigo',
+						verify: 'Confirmar codigo',
+						sent: 'Codigo enviado. Verifique seu e-mail.',
+						verified: 'Verificacao concluida. Agora voce pode executar operacoes administrativas.',
+						expired: 'A verificacao expirou. Verifique novamente.'
 					},
 					th: {
-						emailTitle: 'ยืนยันอีเมล',
 						email: 'กรุณากรอกอีเมลสำหรับรับรหัสยืนยัน:',
-						emailNotice: 'อีเมลนี้ใช้เพื่อรับรหัสยืนยันเท่านั้น เพื่อป้องกันบอทและการใช้งานในทางที่ผิด',
+						emailNotice: 'อีเมลนี้ใช้เพื่อรับรหัสยืนยันเท่านั้น เพื่อป้องกันบอทและการใช้งานในทางที่ผิด และจะไม่ถูกบันทึก',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: 'กรอกรหัสยืนยัน',
 						code: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):',
 						codePlaceholder: 'รหัส 6 หลัก',
-						confirm: 'ยืนยัน',
-						cancel: 'ยกเลิก'
+						send: 'ส่งรหัส',
+						verify: 'ยืนยันรหัส',
+						sent: 'ส่งรหัสแล้ว โปรดตรวจสอบอีเมล',
+						verified: 'ยืนยันสำเร็จ ตอนนี้สามารถดำเนินการผู้ดูแลได้',
+						expired: 'การยืนยันหมดอายุแล้ว โปรดยืนยันใหม่'
 					},
 					vi: {
-						emailTitle: 'Xac minh email',
 						email: 'Nhap email de nhan ma xac minh:',
-						emailNotice: 'Email nay chi duoc dung de nhan ma xac minh nham ngan bot va hanh vi lam dung.',
+						emailNotice: 'Email nay chi duoc dung de nhan ma xac minh nham ngan bot va hanh vi lam dung, va se khong duoc luu.',
 						emailPlaceholder: 'name@example.com',
-						codeTitle: 'Nhap ma xac minh',
 						code: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):',
 						codePlaceholder: 'Ma 6 so',
-						confirm: 'Xac nhan',
-						cancel: 'Huy'
+						send: 'Gui ma',
+						verify: 'Xac nhan ma',
+						sent: 'Da gui ma. Vui long kiem tra email.',
+						verified: 'Xac minh thanh cong. Ban co the thuc hien thao tac quan tri.',
+						expired: 'Xac minh da het han. Vui long xac minh lai.'
 					}
 				};
 
@@ -3497,87 +3502,90 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				return bucket[kind] || '';
 			}
 
-			function showVerifyInputDialog(options) {
-				if (!els.verifyDialog || !els.verifyDialogInput || !els.verifyDialogTitle || !els.verifyDialogDesc || !els.verifyDialogConfirm || !els.verifyDialogCancel) {
-					return Promise.resolve(null);
+			function applyVerificationCopy() {
+				if (!els.verifySection) return;
+				if (els.verifyEmailLabel) els.verifyEmailLabel.textContent = getVerifyText('email');
+				if (els.verifyEmailInput) els.verifyEmailInput.placeholder = getVerifyText('emailPlaceholder');
+				if (els.sendVerifyCodeBtn) els.sendVerifyCodeBtn.textContent = getVerifyText('send');
+				if (els.verifyEmailNote) els.verifyEmailNote.textContent = getVerifyText('emailNotice');
+				if (els.verifyCodeLabel) els.verifyCodeLabel.textContent = getVerifyText('code');
+				if (els.verifyCodeInput) els.verifyCodeInput.placeholder = getVerifyText('codePlaceholder');
+				if (els.confirmVerifyCodeBtn) els.confirmVerifyCodeBtn.textContent = getVerifyText('verify');
+			}
+
+			function setVerifyStatus(text, isError) {
+				if (!els.verifyStatus) return;
+				els.verifyStatus.textContent = String(text || '');
+				els.verifyStatus.style.color = isError ? '#F4212E' : '#28C76F';
+			}
+
+			function isAdminSessionActive() {
+				return Boolean(adminSessionToken) && adminSessionExpiresAt > Date.now();
+			}
+
+			function ensureAdminSessionActive() {
+				if (isAdminSessionActive()) return true;
+				adminSessionToken = '';
+				adminSessionExpiresAt = 0;
+				setVerifyStatus(getVerifyText('expired'), true);
+				return false;
+			}
+
+			async function sendVerificationCodeFromPage() {
+				const email = String((els.verifyEmailInput && els.verifyEmailInput.value) || '').trim();
+				if (!email) {
+					setVerifyStatus(getVerifyText('email'), true);
+					return;
 				}
-				const dialog = els.verifyDialog;
-				const titleEl = els.verifyDialogTitle;
-				const descEl = els.verifyDialogDesc;
-				const inputEl = els.verifyDialogInput;
-				const confirmEl = els.verifyDialogConfirm;
-				const cancelEl = els.verifyDialogCancel;
-				const closeDialog = function () {
-					dialog.hidden = true;
-					document.body.style.overflow = '';
-				};
-				const settleDialog = function (value) {
-					if (!verifyDialogState || typeof verifyDialogState.resolve !== 'function') {
-						closeDialog();
-						return;
-					}
-					const resolve = verifyDialogState.resolve;
-					verifyDialogState = null;
-					closeDialog();
-					resolve(value);
-				};
-
-				if (!verifyDialogHandlersBound) {
-					confirmEl.addEventListener('click', function () {
-						const value = String(inputEl.value || '').trim();
-						if (!value) return;
-						settleDialog(value);
-					});
-					cancelEl.addEventListener('click', function () {
-						settleDialog(null);
-					});
-					inputEl.addEventListener('keydown', function (event) {
-						if (event.key === 'Enter') {
-							event.preventDefault();
-							confirmEl.click();
-						}
-						if (event.key === 'Escape') {
-							event.preventDefault();
-							cancelEl.click();
-						}
-					});
-					window.addEventListener('pageshow', function () {
-						if (dialog && !dialog.hidden) {
-							verifyDialogState = null;
-							closeDialog();
-						}
-					});
-					document.addEventListener('visibilitychange', function () {
-						if (!document.hidden && dialog && !dialog.hidden && !verifyDialogState) {
-							closeDialog();
-						}
-					});
-					verifyDialogHandlersBound = true;
-				}
-
-				if (verifyDialogState && typeof verifyDialogState.resolve === 'function') {
-					verifyDialogState.resolve(null);
-					verifyDialogState = null;
-				}
-
-				titleEl.textContent = options.title || '';
-				descEl.textContent = options.description || '';
-				inputEl.value = '';
-				inputEl.type = options.type === 'code' ? 'tel' : 'email';
-				inputEl.inputMode = options.type === 'code' ? 'numeric' : 'email';
-				inputEl.placeholder = options.placeholder || '';
-				confirmEl.textContent = options.confirmText || 'Confirm';
-				cancelEl.textContent = options.cancelText || 'Cancel';
-
-				dialog.hidden = false;
-				document.body.style.overflow = 'hidden';
-
-				return new Promise(function (resolve) {
-					verifyDialogState = { resolve };
-					setTimeout(function () {
-						try { inputEl.focus(); } catch {}
-					}, 0);
+				setVerifyStatus(getVerifyText('send') + '...', false);
+				const sendRes = await fetch('/api/admin/verification-code/send', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ email: email })
 				});
+				if (!sendRes.ok) {
+					const sendErr = await readErrorMessage(sendRes);
+					setVerifyStatus(sendErr, true);
+					return;
+				}
+				const data = await sendRes.json();
+				pendingVerificationId = String(data && data.verificationId ? data.verificationId : '').trim();
+				adminSessionToken = '';
+				adminSessionExpiresAt = 0;
+				setVerifyStatus(getVerifyText('sent'), false);
+			}
+
+			async function confirmVerificationCodeFromPage() {
+				const code = String((els.verifyCodeInput && els.verifyCodeInput.value) || '').trim();
+				if (!pendingVerificationId) {
+					setVerifyStatus(getVerifyText('sent'), true);
+					return;
+				}
+				if (!code) {
+					setVerifyStatus(getVerifyText('code'), true);
+					return;
+				}
+				setVerifyStatus(getVerifyText('verify') + '...', false);
+				const verifyRes = await fetch('/api/admin/verification-code/confirm', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({
+						verificationId: pendingVerificationId,
+						code: code
+					})
+				});
+				if (!verifyRes.ok) {
+					const err = await readErrorMessage(verifyRes);
+					setVerifyStatus(err, true);
+					return;
+				}
+				const data = await verifyRes.json();
+				adminSessionToken = String(data && data.sessionToken ? data.sessionToken : '').trim();
+				const expiresAtIso = String(data && data.expiresAt ? data.expiresAt : '').trim();
+				adminSessionExpiresAt = expiresAtIso ? Date.parse(expiresAtIso) : (Date.now() + 5 * 60 * 1000);
+				pendingVerificationId = '';
+				if (els.verifyCodeInput) els.verifyCodeInput.value = '';
+				setVerifyStatus(getVerifyText('verified'), false);
 			}
 
 			async function readErrorMessage(res) {
@@ -3592,55 +3600,13 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				return 'request failed';
 			}
 
-			async function requestAdminVerificationHeaders(actionName) {
-				setStatus(getVerifyPromptText('emailNotice'));
-				const email = await showVerifyInputDialog({
-					type: 'email',
-					title: getVerifyPromptText('emailTitle'),
-					description: getVerifyPromptText('email'),
-					placeholder: getVerifyPromptText('emailPlaceholder'),
-					confirmText: getVerifyPromptText('confirm'),
-					cancelText: getVerifyPromptText('cancel')
-				});
-				if (!email || !String(email).trim()) {
-					setStatus(actionName + ' cancelled: email is required.');
+			function requestAdminVerificationHeaders(actionName) {
+				if (!ensureAdminSessionActive()) {
+					setStatus(actionName + ' cancelled: verification is required.');
 					return null;
 				}
-
-				setStatus('Sending verification code...');
-				const sendRes = await fetch('/api/admin/verification-code/send', {
-					method: 'POST',
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify({ email: String(email).trim() })
-				});
-				if (!sendRes.ok) {
-					const sendErr = await readErrorMessage(sendRes);
-					setStatus('Failed to send verification code: ' + sendErr);
-					return null;
-				}
-				const sendData = await sendRes.json();
-				const verificationId = String(sendData && sendData.verificationId ? sendData.verificationId : '').trim();
-				if (!verificationId) {
-					setStatus('Failed to start verification challenge.');
-					return null;
-				}
-
-				const code = await showVerifyInputDialog({
-					type: 'code',
-					title: getVerifyPromptText('codeTitle'),
-					description: getVerifyPromptText('code'),
-					placeholder: getVerifyPromptText('codePlaceholder'),
-					confirmText: getVerifyPromptText('confirm'),
-					cancelText: getVerifyPromptText('cancel')
-				});
-				if (!code || !String(code).trim()) {
-					setStatus(actionName + ' cancelled: verification code is required.');
-					return null;
-				}
-
 				return {
-					'x-admin-verification-id': verificationId,
-					'x-admin-verification-code': String(code).trim()
+					'x-admin-session-token': adminSessionToken
 				};
 			}
 
@@ -4167,7 +4133,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				const isUpdate = currentMode === MODE_EDIT;
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
-				const verificationHeaders = await requestAdminVerificationHeaders(isUpdate ? 'Update' : 'Create');
+				const verificationHeaders = requestAdminVerificationHeaders(isUpdate ? 'Update' : 'Create');
 				if (!verificationHeaders) return;
 
 				setStatus(t('admin_status_submitting', 'Submitting...'));
@@ -4175,8 +4141,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					method,
 					headers: {
 						'content-type': 'application/json',
-						'x-admin-verification-id': verificationHeaders['x-admin-verification-id'],
-						'x-admin-verification-code': verificationHeaders['x-admin-verification-code']
+						'x-admin-session-token': verificationHeaders['x-admin-session-token']
 					},
 					body: JSON.stringify(payload)
 				});
@@ -4208,15 +4173,14 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					return;
 				}
 				if (!confirm('Delete ID ' + editingId + '?')) return;
-				const verificationHeaders = await requestAdminVerificationHeaders('Delete');
+				const verificationHeaders = requestAdminVerificationHeaders('Delete');
 				if (!verificationHeaders) return;
 
 				setStatus('Deleting...');
 				const res = await fetch('/api/profiles/' + editingId, {
 					method: 'DELETE',
 					headers: {
-						'x-admin-verification-id': verificationHeaders['x-admin-verification-id'],
-						'x-admin-verification-code': verificationHeaders['x-admin-verification-code']
+						'x-admin-session-token': verificationHeaders['x-admin-session-token']
 					}
 				});
 				if (!res.ok) {
@@ -4307,6 +4271,24 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			if (els.deleteOnlyBtn) {
 				els.deleteOnlyBtn.addEventListener('click', handleDelete);
 			}
+			if (els.sendVerifyCodeBtn) {
+				els.sendVerifyCodeBtn.addEventListener('click', function () {
+					void sendVerificationCodeFromPage();
+				});
+			}
+			if (els.confirmVerifyCodeBtn) {
+				els.confirmVerifyCodeBtn.addEventListener('click', function () {
+					void confirmVerificationCodeFromPage();
+				});
+			}
+			if (els.verifyCodeInput) {
+				els.verifyCodeInput.addEventListener('keydown', function (event) {
+					if (event.key === 'Enter') {
+						event.preventDefault();
+						void confirmVerificationCodeFromPage();
+					}
+				});
+			}
 			els.resetBtn.addEventListener('click', function () {
 				els.handleSearch.value = '';
 				renderSuggestions([]);
@@ -4319,9 +4301,18 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			});
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
+			const langSwitchEl = document.getElementById('adminLangSwitch');
+			if (langSwitchEl) {
+				langSwitchEl.addEventListener('change', function () {
+					setTimeout(applyVerificationCopy, 0);
+				});
+			}
+
 			applyMode(getModeFromUrl());
+			applyVerificationCopy();
 			updateAvatarPreview();
 			renderLocationPreview(35.7512, 139.7093);
+			setVerifyStatus('', false);
 			setStatus('');
 		</script>
 <script>
