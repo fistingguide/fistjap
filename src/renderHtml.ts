@@ -3301,6 +3301,66 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				window.alert(message);
 			}
 
+			function getVerifyPromptText(kind) {
+				const rawLang =
+					(window.__uiLang && String(window.__uiLang)) ||
+					document.documentElement.getAttribute('lang') ||
+					navigator.language ||
+					'en';
+				const lang = String(rawLang).toLowerCase();
+				const langKey = lang.startsWith('zh-cn') || lang.startsWith('zh-hans') ? 'zh-CN'
+					: (lang.startsWith('zh-tw') || lang.startsWith('zh-hk') || lang.startsWith('zh-hant')) ? 'zh-TW'
+					: lang.startsWith('ja') ? 'ja'
+					: lang.startsWith('ko') ? 'ko'
+					: lang.startsWith('es') ? 'es'
+					: lang.startsWith('pt') ? 'pt'
+					: lang.startsWith('th') ? 'th'
+					: lang.startsWith('vi') ? 'vi'
+					: 'en';
+
+				const copy = {
+					en: {
+						email: 'Enter the email address to receive the verification code:\nThis email is only used to deliver the verification code to prevent bots and abuse.',
+						code: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):'
+					},
+					'zh-CN': {
+						email: '请输入接收验证码的邮箱地址：\n该邮箱仅用于接收验证码，以防止机器人和滥用行为。',
+						code: '验证码已发送，请输入6位验证码（5分钟内有效）：'
+					},
+					'zh-TW': {
+						email: '請輸入接收驗證碼的電子郵箱地址：\n該郵箱僅用於接收驗證碼，以防止機器人與濫用行為。',
+						code: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：'
+					},
+					ja: {
+						email: '認証コードを受け取るメールアドレスを入力してください：\nこのメールアドレスは、ボットや不正利用を防ぐための認証コード送信にのみ使用されます。',
+						code: '認証コードを送信しました。6桁のコードを入力してください（有効期限5分）：'
+					},
+					ko: {
+						email: '인증코드를 받을 이메일 주소를 입력하세요:\n이 이메일 주소는 봇 및 악용 방지를 위한 인증코드 수신 용도로만 사용됩니다.',
+						code: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):'
+					},
+					es: {
+						email: 'Introduce el correo para recibir el código de verificación:\nEste correo solo se utiliza para enviar el código y prevenir bots y abusos.',
+						code: 'Código enviado. Introduce el código de 6 dígitos (válido por 5 minutos):'
+					},
+					pt: {
+						email: 'Digite o e-mail para receber o código de verificação:\nEste e-mail é usado apenas para receber o código e prevenir bots e abusos.',
+						code: 'Código enviado. Digite o código de 6 dígitos (válido por 5 minutos):'
+					},
+					th: {
+						email: 'กรุณากรอกอีเมลสำหรับรับรหัสยืนยัน:\nอีเมลนี้ใช้เพื่อรับรหัสยืนยันเท่านั้น เพื่อป้องกันบอทและการใช้งานในทางที่ผิด',
+						code: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):'
+					},
+					vi: {
+						email: 'Nhap email de nhan ma xac minh:\nEmail nay chi duoc dung de nhan ma xac minh nham ngan bot va hanh vi lam dung.',
+						code: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):'
+					}
+				};
+
+				const bucket = copy[langKey] || copy.en;
+				return kind === 'code' ? bucket.code : bucket.email;
+			}
+
 			async function readErrorMessage(res) {
 				try {
 					const data = await res.json();
@@ -3314,7 +3374,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			async function requestAdminVerificationHeaders(actionName) {
-				const email = window.prompt('请输入接收验证码的邮箱地址：');
+				const email = window.prompt(getVerifyPromptText('email'));
 				if (!email || !String(email).trim()) {
 					setStatus(actionName + ' cancelled: email is required.');
 					return null;
@@ -3338,7 +3398,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					return null;
 				}
 
-				const code = window.prompt('验证码已发送，请输入6位验证码（5分钟内有效）：');
+				const code = window.prompt(getVerifyPromptText('code'));
 				if (!code || !String(code).trim()) {
 					setStatus(actionName + ' cancelled: verification code is required.');
 					return null;
