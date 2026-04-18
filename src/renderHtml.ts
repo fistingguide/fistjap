@@ -1267,6 +1267,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Performers List</title>
+		<link rel="stylesheet" href="/assets/leaflet.css" />
 		<style>
 			:root {
 				color-scheme: dark;
@@ -1703,6 +1704,43 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			.community-article-link:hover {
 				filter: brightness(1.08);
 			}
+			.inline-map-card {
+				display: grid;
+				gap: 10px;
+				padding: 12px;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: var(--card);
+			}
+			.inline-map-toolbar {
+				display: grid;
+				grid-template-columns: 1fr auto 1fr;
+				gap: 8px;
+				align-items: center;
+			}
+			#inlineMapReloadBtn {
+				border: 0;
+				border-radius: 10px;
+				height: 36px;
+				padding: 0 12px;
+				background: var(--primary);
+				color: #FFFFFF;
+				font-weight: 600;
+				cursor: pointer;
+			}
+			#inlineMapStatus {
+				font-size: 12px;
+				color: var(--muted);
+				justify-self: end;
+				white-space: nowrap;
+			}
+			#inlineMap {
+				width: 100%;
+				height: 360px;
+				border-radius: 10px;
+				overflow: hidden;
+				border: 1px solid var(--line);
+			}
 			.social-link {
 				display: inline-flex;
 				align-items: center;
@@ -1975,6 +2013,22 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.mobile-inline-carousel-title {
 					font-size: 14px;
 				}
+				.inline-map-card {
+					padding: 8px 0;
+					border: 0;
+					border-radius: 0;
+					background: transparent;
+				}
+				.inline-map-toolbar {
+					grid-template-columns: 1fr auto;
+				}
+				#inlineMapStatus {
+					display: none;
+				}
+				#inlineMap {
+					height: 300px;
+					border-radius: 0;
+				}
 				.spotlight-label {
 					font-size: 10px;
 					margin-bottom: 2px;
@@ -2058,12 +2112,17 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</span>
 				</a>
 			</div>
+			<section class="inline-map-card" aria-label="Community Map">
+				<div class="inline-map-toolbar">
+					<div></div>
+					<button type="button" id="inlineMapReloadBtn">Update Map</button>
+					<div id="inlineMapStatus"></div>
+				</div>
+				<div id="inlineMap"></div>
+			</section>
 			<div class="community-article-link-wrap">
 				<a class="community-article-link" href="/admin" target="_self" aria-label="Open Add Edit Delete">
 					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
-				</a>
-				<a class="community-article-link" href="/dashboard" target="_self" aria-label="Open Member Map">
-					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/member_map.png" alt="Member Map" loading="lazy" decoding="async" />
 				</a>
 				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="View Articles">
 					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
@@ -2107,6 +2166,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			</ol>
 		</section>
 		${renderI18nScript("page_title_ranking")}
+		<script src="/assets/leaflet.js"></script>
 		<script>
 			(function () {
 				const initialRows = ${serializedRows};
@@ -2115,6 +2175,10 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				const navSelect = document.getElementById('mobilePageNav');
 				const countryCustom = document.getElementById('rankCountryFilterCustom');
 				const navCustom = document.getElementById('mobilePageNavCustom');
+				const inlineMapReloadBtn = document.getElementById('inlineMapReloadBtn');
+				const inlineMapStatusEl = document.getElementById('inlineMapStatus');
+				let inlineMap = null;
+				let inlineMapLayer = null;
 				let pinnedSpotlightEl = document.getElementById('pinnedSpotlight');
 				let pinnedCountdownEl = null;
 				let pinnedNextSwitchAt = null;
@@ -2140,6 +2204,67 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const numeric = Number(value || 0);
 					if (!Number.isFinite(numeric)) return '0';
 					return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\\.0$/, '');
+				}
+
+				function setInlineMapStatus(text) {
+					if (!inlineMapStatusEl) return;
+					inlineMapStatusEl.textContent = text || '';
+				}
+
+				function ensureInlineMap() {
+					if (inlineMap) return true;
+					const mount = document.getElementById('inlineMap');
+					if (!mount || typeof L === 'undefined') return false;
+					inlineMap = L.map('inlineMap').setView([35.6812, 139.7671], 5);
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						maxZoom: 18,
+						attribution: '&copy; OpenStreetMap contributors'
+					}).addTo(inlineMap);
+					inlineMapLayer = L.layerGroup().addTo(inlineMap);
+					return true;
+				}
+
+				function drawInlineMap(rows) {
+					if (!ensureInlineMap() || !inlineMapLayer) return;
+					inlineMapLayer.clearLayers();
+					const bounds = [];
+					const pointUsage = new Map();
+					for (const row of rows || []) {
+						const pLat = Number(row.lat);
+						const pLng = Number(row.lng);
+						if (!Number.isFinite(pLat) || !Number.isFinite(pLng)) continue;
+						const district = (row.district || row.city) || 'Itabashi';
+						const region = (row.region || row.province) || 'Tokyo';
+						const country = row.country || 'Japan';
+						const key = pLat.toFixed(5) + '|' + pLng.toFixed(5);
+						const used = pointUsage.get(key) || 0;
+						pointUsage.set(key, used + 1);
+						let lat = pLat;
+						let lng = pLng;
+						if (used > 0) {
+							const angle = (used * 55) * Math.PI / 180;
+							const r = 0.008 + used * 0.0015;
+							lat = pLat + Math.sin(angle) * r;
+							lng = pLng + Math.cos(angle) * r;
+						}
+						bounds.push([lat, lng]);
+						L.circleMarker([lat, lng], {
+							radius: 5,
+							color: '#ffffff',
+							weight: 2,
+							fillColor: '#1D9BF0',
+							fillOpacity: 0.9
+						})
+							.bindPopup('<strong>' + esc(row.name || 'Unnamed') + '</strong><br/>' + esc(row.handle || '') + '<br/>' + esc(district + ' / ' + region + ' / ' + country))
+							.addTo(inlineMapLayer);
+					}
+					if (bounds.length) {
+						inlineMap.fitBounds(bounds, { padding: [20, 20] });
+						setInlineMapStatus('');
+					} else {
+						inlineMap.setView([35.7512, 139.7093], 10);
+						setInlineMapStatus('No valid coordinates found.');
+					}
 				}
 
 				function renderRows(rows) {
@@ -2188,6 +2313,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					listEl.innerHTML = pinnedPlaceholder + rowsHtml;
 					pinnedSpotlightEl = listEl.querySelector('#pinnedSpotlight');
 					pinnedCountdownEl = null;
+					drawInlineMap(rows);
 					if (lastPinnedData) {
 						renderPinnedCard(lastPinnedData);
 					}
@@ -2370,9 +2496,35 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					}
 				}
 
+				async function runInlineGeoBackfill() {
+					if (!inlineMapReloadBtn) return;
+					inlineMapReloadBtn.disabled = true;
+					try {
+						setInlineMapStatus('Backfilling missing coordinates...');
+						const res = await fetch('/api/admin/backfill-geo?mode=missing', {
+							method: 'POST'
+						});
+						if (!res.ok) {
+							const msg = await res.text();
+							setInlineMapStatus('Backfill failed: ' + msg);
+							return;
+						}
+						await filterByCountry();
+						setInlineMapStatus('Backfill completed.');
+					} catch (error) {
+						setInlineMapStatus('Backfill failed: ' + String(error && error.message ? error.message : error));
+					} finally {
+						inlineMapReloadBtn.disabled = false;
+					}
+				}
+
 				if (countrySelect) {
 					countrySelect.addEventListener('change', filterByCountry);
 				}
+				if (inlineMapReloadBtn) {
+					inlineMapReloadBtn.addEventListener('click', runInlineGeoBackfill);
+				}
+				drawInlineMap(initialRows);
 				loadCountries();
 				loadPinnedProfile();
 				setInterval(updatePinnedCountdown, 1000);
@@ -2873,7 +3025,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 							<select id="adminPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 								<option value="/" data-i18n="nav_ranking">Performers List</option>
 								<option value="/admin" selected data-i18n="nav_add">Add new</option>
-								<option value="/dashboard" data-i18n="nav_star">Map</option>
 								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
@@ -2883,7 +3034,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 						<a class="nav-btn primary active" href="/admin" data-i18n="nav_add">Add new</a>
-						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
@@ -4239,7 +4389,6 @@ export function renderDashboardPage(): string {
 							<select id="dashboardPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 								<option value="/" data-i18n="nav_ranking">Performers List</option>
 								<option value="/admin" data-i18n="nav_add">Add new</option>
-								<option value="/dashboard" selected data-i18n="nav_star">Map</option>
 								<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 								<option value="/about" data-i18n="nav_about">About</option>
 							</select>
@@ -4249,7 +4398,6 @@ export function renderDashboardPage(): string {
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-						<a class="nav-btn primary active" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>
@@ -4828,7 +4976,6 @@ export function renderAboutPage(): string {
 						<select id="aboutPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 							<option value="/" data-i18n="nav_ranking">Performers List</option>
 							<option value="/admin" data-i18n="nav_add">Add new</option>
-							<option value="/dashboard" data-i18n="nav_star">Map</option>
 							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 							<option value="/about" selected data-i18n="nav_about">About</option>
 						</select>
@@ -4838,7 +4985,6 @@ export function renderAboutPage(): string {
 				<nav class="top-nav">
 					<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 					<a class="nav-btn primary active" href="/about" data-i18n="nav_about">About</a>
 				</nav>
@@ -5216,7 +5362,6 @@ export function renderListStarPage(): string {
 						<select id="listStarPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 							<option value="/" selected data-i18n="nav_ranking">Performers List</option>
 							<option value="/admin" data-i18n="nav_add">Add new</option>
-							<option value="/dashboard" data-i18n="nav_star">Map</option>
 							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 							<option value="/about" data-i18n="nav_about">About</option>
 						</select>
@@ -5226,7 +5371,6 @@ export function renderListStarPage(): string {
 				<nav class="top-nav">
 					<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 				</nav>
@@ -5613,7 +5757,6 @@ export function renderAuthorCallPage(): string {
 						<select id="authorCallPageNav" class="mobile-nav" aria-label="Page Navigation" onchange="if(this.value){window.location.href=this.value;}">
 							<option value="/" selected data-i18n="nav_ranking">Performers List</option>
 							<option value="/admin" data-i18n="nav_add">Add new</option>
-							<option value="/dashboard" data-i18n="nav_star">Map</option>
 							<option value="/wiki" data-i18n="nav_wiki">Fisting Wiki</option>
 							<option value="/about" data-i18n="nav_about">About</option>
 						</select>
@@ -5623,7 +5766,6 @@ export function renderAuthorCallPage(): string {
 				<nav class="top-nav">
 					<a class="nav-btn primary active" href="/" data-i18n="nav_ranking">Performers List</a>
 					<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-					<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 					<a class="nav-btn" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 					<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 				</nav>
@@ -6051,7 +6193,6 @@ export function renderWikiPage(): string {
 					<nav class="top-nav">
 						<a class="nav-btn" href="/" data-i18n="nav_ranking">Performers List</a>
 						<a class="nav-btn" href="/admin" data-i18n="nav_add">Add new</a>
-						<a class="nav-btn" href="/dashboard" data-i18n="nav_star">Map</a>
 						<a class="nav-btn primary active" href="/wiki" data-i18n="nav_wiki">Fisting Wiki</a>
 						<a class="nav-btn" href="/about" data-i18n="nav_about">About</a>
 					</nav>

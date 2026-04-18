@@ -2,7 +2,6 @@ import {
 	renderAdminPage,
 	renderAboutPage,
 	renderAuthorCallPage,
-	renderDashboardPage,
 	renderLeaderboardPage,
 	renderListStarPage,
 	type ProfileRecord,
@@ -591,7 +590,7 @@ function buildRobotsTxt(origin: string): string {
 }
 
 function buildSitemapXml(origin: string): string {
-	const staticPages = ["/", "/list-star", "/author-call", "/about", "/dashboard"];
+	const staticPages = ["/", "/list-star", "/author-call", "/about"];
 	const staticUrls = staticPages.map(
 		(pathname) =>
 			`  <url><loc>${escapeXml(new URL(pathname, origin).toString())}</loc><changefreq>daily</changefreq></url>`,
@@ -2039,6 +2038,10 @@ export default {
 			return Response.redirect(BLOG_URL, 301);
 		}
 
+		if (method === "GET" && pathname === "/dashboard") {
+			return Response.redirect(new URL("/", origin).toString(), 301);
+		}
+
 		if (pathname === "/api/wiki" || pathname.startsWith("/api/wiki/")) {
 			return json(
 				{
@@ -2059,7 +2062,6 @@ export default {
 			pathname === "/admin/create" ||
 			pathname === "/admin/edit" ||
 			pathname === "/admin/delete" ||
-			pathname === "/dashboard" ||
 			pathname === "/list-star" ||
 			pathname === "/author-call" ||
 			pathname === "/about" ||
@@ -2131,17 +2133,6 @@ export default {
 				description: seo.description,
 				pathname: "/admin/delete",
 				robots: "noindex,nofollow",
-				locale: toOgLocale(uiLang),
-				siteName: "Fisting Guide",
-			}, env);
-		}
-
-		if (method === "GET" && pathname === "/dashboard") {
-			const seo = pageSeo(uiLang, "dashboard");
-			return htmlResponse(renderDashboardPage(), origin, {
-				title: seo.title,
-				description: seo.description,
-				pathname: "/dashboard",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
 			}, env);
@@ -2305,8 +2296,6 @@ export default {
 		}
 
 		if (method === "POST" && pathname === "/api/admin/backfill-geo") {
-			const authError = verifyDeletePassword(request, env);
-			if (authError) return authError;
 			const mode = (url.searchParams.get("mode") || "all").trim().toLowerCase();
 			const rewriteAll = mode !== "missing";
 			const limitRaw = (url.searchParams.get("limit") || "").trim();
