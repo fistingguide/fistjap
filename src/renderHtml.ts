@@ -182,14 +182,14 @@ const TH_MESSAGES: Record<string, string> = {
 	event_title: "List Star",
 	event_description:
 		"โปรเจกต์ List Star เริ่มแล้ว! ตลอด 1 เดือน เราจะโปรโมตผู้ที่ชื่นชอบ Fisting ที่โดดเด่นฟรีบนเว็บไซต์และ X! เมื่อเป็น List Star คุณจะได้รับ\n1. ตำแหน่งเด่นบนลิสต์ทางการ\n2. โปสเตอร์พิเศษ 1 ใบ\n3. โปรโมตผ่านบัญชี X ทางการ\n\nวิธีเข้าร่วม?\nรูปครึ่งตัวท่อนบนที่ปิดบังใบหน้า 1 รูป, วิดีโอ fisting 1 คลิป และคำบรรยาย/คัดลอกเกี่ยวกับวิดีโอนั้น",
-	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X",
+	admin_search_placeholder: "ค้นหาด้วยแฮนเดิล X (เช่น @demo)",
 	admin_search_hint: "รองรับเฉพาะบัญชีที่มีอยู่ เพื่อแก้ไขข้อมูลที่เกี่ยวข้องหรือลบ",
 	admin_search_btn: "ค้นหา",
 	admin_reset_btn: "รีเซ็ต",
 	admin_label_display_name: "ชื่อที่แสดง",
 	admin_ph_display_name: "ชื่อที่แสดง",
 	admin_label_x_handle: "แฮนเดิล X",
-	admin_ph_x_handle: "แฮนเดิล (เช่น demo)",
+	admin_ph_x_handle: "แฮนเดิล (เช่น @demo)",
 	admin_label_orientation: "รสนิยมทางเพศ",
 	admin_ph_orientation: "รสนิยมทางเพศ",
 	admin_label_fans_count: "ผู้ติดตาม",
@@ -277,7 +277,7 @@ const VI_MESSAGES: Record<string, string> = {
 	event_title: "List Star",
 	event_description:
 		"Dự án List Star đã bắt đầu! Trong 1 tháng, chúng tôi sẽ quảng bá miễn phí những người đam mê Fisting nổi bật trên website và X! Khi trở thành List Star, bạn sẽ nhận được\n1. Vị trí nổi bật trên bảng List chính thức\n2. 1 poster độc quyền\n3. Quảng bá trên tài khoản X chính thức\n\nCách tham gia?\n1 ảnh nửa thân trên có che mặt, 1 video fisting, và 1 đoạn caption/copy về video đó.",
-	admin_search_placeholder: "Search by X handle",
+	admin_search_placeholder: "Search by X handle (e.g. @demo)",
 	admin_search_hint: "Only supports existing accounts for modifying related information or deleting.",
 	admin_mode_title_home: "Chon thao tac",
 	admin_mode_title_create: "Them nguoi bieu dien",
@@ -402,14 +402,14 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		event_title: "List Star",
 		event_description:
 			"List Star Project is live! For one month, we will promote outstanding Fisting enthusiasts for free on the website and X! As a List Star, you will receive\n1. Official List top placement\n2. One exclusive poster\n3. Promotion on the official X account\n\nHow to join?\nA photo of the upper body with the face obscured, a fisting video, and a caption/copy about the video.",
-		admin_search_placeholder: "Search by X handle",
+		admin_search_placeholder: "Search by X handle (e.g. @demo)",
 		admin_search_hint: "Only supports existing accounts for modifying their related information or deleting.",
 		admin_search_btn: "Search",
 		admin_reset_btn: "Reset",
 		admin_label_display_name: "Display Name",
 		admin_ph_display_name: "Display name",
 		admin_label_x_handle: "X Handle",
-		admin_ph_x_handle: "Handle (e.g. demo)",
+		admin_ph_x_handle: "Handle (e.g. @demo)",
 		admin_label_orientation: "Orientation",
 		admin_ph_orientation: "Orientation",
 		admin_label_fans_count: "Followers",
@@ -496,14 +496,14 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		event_title: "List Star",
 		event_description:
 			"List Star 拳星计划启动！为期一个月，我们将在网站和X上免费推广优秀 Fisting 爱好者！成为 List Star 可获得 \n1. 官方List排名置顶\n2. 一张专属海报\n3. 官方X平台宣传\n\n如何参与？\n1张上半身且遮挡面部的照片、1条fisting视频，以及一段关于该视频的文案。",
-		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22",
+		admin_search_placeholder: "\u6309 X \u8d26\u53f7\u641c\u7d22\uff08\u4f8b\u5982 @demo\uff09",
 		admin_search_hint: "\u4ec5\u652f\u6301\u5df2\u5b58\u5728\u8d26\u53f7\uff0c\u7528\u4e8e\u4fee\u6539\u5176\u76f8\u5173\u4fe1\u606f\u6216\u5220\u9664",
 		admin_search_btn: "\u641c\u7d22",
 		admin_reset_btn: "\u91cd\u7f6e",
 		admin_label_display_name: "\u663e\u793a\u540d\u79f0",
 		admin_ph_display_name: "\u663e\u793a\u540d\u79f0",
 		admin_label_x_handle: "X \u8d26\u53f7",
-		admin_ph_x_handle: "\u8d26\u53f7\uff08\u4f8b\u5982 demo\uff09",
+		admin_ph_x_handle: "\u8d26\u53f7\uff08\u4f8b\u5982 @demo\uff09",
 		admin_label_orientation: "\u53d6\u5411",
 		admin_ph_orientation: "\u53d6\u5411",
 		admin_label_fans_count: "\u5173\u6ce8\u8005",
@@ -591,14 +591,14 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		event_title: "List Star",
 		event_description:
 			"List Star 拳星計畫啟動！為期一個月，我們將在網站和X上免費推廣優秀 Fisting 愛好者！成為 List Star 可獲得 \n1. 官方List排名置頂\n2. 一張專屬海報\n3. 官方X平台宣傳\n\n如何參與？\n1張上半身且遮擋臉部的照片、1條fisting影片，以及一段關於該影片的文案。",
-		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b",
+		admin_search_placeholder: "\u4ee5 X \u5e33\u865f\u641c\u5c0b\uff08\u4f8b\u5982 @demo\uff09",
 		admin_search_hint: "\u50c5\u652f\u63f4\u5df2\u5b58\u5728\u5e33\u865f\uff0c\u7528\u65bc\u4fee\u6539\u5176\u76f8\u95dc\u8cc7\u8a0a\u6216\u522a\u9664",
 		admin_search_btn: "\u641c\u5c0b",
 		admin_reset_btn: "\u91cd\u8a2d",
 		admin_label_display_name: "\u986f\u793a\u540d\u7a31",
 		admin_ph_display_name: "\u986f\u793a\u540d\u7a31",
 		admin_label_x_handle: "X \u5e33\u865f",
-		admin_ph_x_handle: "\u5e33\u865f\uff08\u4f8b\u5982 demo\uff09",
+		admin_ph_x_handle: "\u5e33\u865f\uff08\u4f8b\u5982 @demo\uff09",
 		admin_label_orientation: "\u53d6\u5411",
 		admin_ph_orientation: "\u53d6\u5411",
 		admin_label_fans_count: "\u8ffd\u8e64\u8005",
@@ -686,14 +686,14 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		event_title: "List Star",
 		event_description:
 			"List Star \u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u958b\u59cb\uff01\u671f\u9593\u306f1\u304b\u6708\u3002\u30b5\u30a4\u30c8\u3068X\u3067\u512a\u79c0\u306aFisting\u611b\u597d\u5bb6\u3092\u7121\u6599\u3067\u7d39\u4ecb\u3057\u307e\u3059\uff01List Star \u306b\u306a\u308b\u3068\n1. \u516c\u5f0fList\u30e9\u30f3\u30ad\u30f3\u30b0\u306e\u4e0a\u4f4d\u63b2\u8f09\n2. \u5c02\u7528\u30dd\u30b9\u30bf\u30fc1\u679a\n3. \u516c\u5f0fX\u30a2\u30ab\u30a6\u30f3\u30c8\u3067\u306e\u5ba3\u4f1d\n\n\u53c2\u52a0\u65b9\u6cd5\uff1f\n\u9854\u3092\u96a0\u3057\u305f\u4e0a\u534a\u8eab\u306e\u5199\u771f1\u679a\u3001fisting\u52d5\u753b1\u672c\u3001\u305d\u3057\u3066\u305d\u306e\u52d5\u753b\u306b\u3064\u3044\u3066\u306e\u30ad\u30e3\u30d7\u30b7\u30e7\u30f3\u6587\u3002",
-		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22",
+		admin_search_placeholder: "X \u30cf\u30f3\u30c9\u30eb\u3067\u691c\u7d22\uff08\u4f8b @demo\uff09",
 		admin_search_hint: "\u65e2\u5b58\u30a2\u30ab\u30a6\u30f3\u30c8\u306e\u307f\u5bfe\u5fdc\u3001\u95a2\u9023\u60c5\u5831\u306e\u4fee\u6b63\u307e\u305f\u306f\u524a\u9664\u7528",
 		admin_search_btn: "\u691c\u7d22",
 		admin_reset_btn: "\u30ea\u30bb\u30c3\u30c8",
 		admin_label_display_name: "\u8868\u793a\u540d",
 		admin_ph_display_name: "\u8868\u793a\u540d",
 		admin_label_x_handle: "X \u30cf\u30f3\u30c9\u30eb",
-		admin_ph_x_handle: "\u30cf\u30f3\u30c9\u30eb\uff08\u4f8b demo\uff09",
+		admin_ph_x_handle: "\u30cf\u30f3\u30c9\u30eb\uff08\u4f8b @demo\uff09",
 		admin_label_orientation: "\u6307\u5411",
 		admin_ph_orientation: "\u6307\u5411",
 		admin_label_fans_count: "\u30d5\u30a9\u30ed\u30ef\u30fc",
@@ -781,14 +781,14 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		event_title: "List Star",
 		event_description:
 			"List Star \ud504\ub85c\uc81d\ud2b8 \uc2dc\uc791! \ud55c \ub2ec \ub3d9\uc548 \uc6f9\uc0ac\uc774\ud2b8\uc640 X\uc5d0\uc11c \uc6b0\uc218\ud55c Fisting \uc560\ud638\uac00\ub97c \ubb34\ub8cc\ub85c \ud64d\ubcf4\ud569\ub2c8\ub2e4! List Star\uac00 \ub418\uba74\n1. \uacf5\uc2dd List \ub7ad\ud0b9 \uc0c1\ub2e8 \uace0\uc815\n2. \uc804\uc6a9 \ud3ec\uc2a4\ud130 1\uc7a5\n3. \uacf5\uc2dd X \uacc4\uc815 \ud64d\ubcf4\n\n\ucc38\uc5ec \ubc29\ubc95?\n\uc5bc\uad74\uc744 \uac00\ub9b0 \uc0c1\ubc18\uc2e0 \uc0ac\uc9c4 1\uc7a5, fisting \uc601\uc0c1 1\uac1c, \uadf8\ub9ac\uace0 \ud574\ub2f9 \uc601\uc0c1\uc5d0 \ub300\ud55c \ucea1\uc158/\uce74\ud53c.",
-		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9",
+		admin_search_placeholder: "X \ud578\ub4e4\ub85c \uac80\uc0c9 (\uc608: @demo)",
 		admin_search_hint: "\uae30\uc874 \uacc4\uc815\ub9cc \uc9c0\uc6d0\ud558\uba70 \uad00\ub828 \uc815\ubcf4 \uc218\uc815 \ub610\ub294 \uc0ad\uc81c \uc6a9\ub3c4",
 		admin_search_btn: "\uac80\uc0c9",
 		admin_reset_btn: "\ucd08\uae30\ud654",
 		admin_label_display_name: "\ud45c\uc2dc \uc774\ub984",
 		admin_ph_display_name: "\ud45c\uc2dc \uc774\ub984",
 		admin_label_x_handle: "X \ud578\ub4e4",
-		admin_ph_x_handle: "\ud578\ub4e4(\uc608: demo)",
+		admin_ph_x_handle: "\ud578\ub4e4(\uc608: @demo)",
 		admin_label_orientation: "\uc131\ud5a5",
 		admin_ph_orientation: "\uc131\ud5a5",
 		admin_label_fans_count: "\ud314\ub85c\uc6cc",
@@ -876,14 +876,14 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		event_title: "List Star",
 		event_description:
 			"El proyecto List Star esta en marcha. Durante un mes, promocionaremos gratis a destacados entusiastas del Fisting en la web y en X. Si eres List Star, obtendras:\n1. Posicion destacada en el ranking oficial List\n2. Un poster exclusivo\n3. Promocion en la cuenta oficial de X\n\nComo participar?\nUna foto del torso superior con el rostro oculto, un video de fisting y un texto/copy sobre el video.",
-		admin_search_placeholder: "Buscar por handle de X",
+		admin_search_placeholder: "Buscar por handle de X (ej. @demo)",
 		admin_search_hint: "Solo admite cuentas existentes para modificar su informacion relacionada o eliminar.",
 		admin_search_btn: "Buscar",
 		admin_reset_btn: "Restablecer",
 		admin_label_display_name: "Nombre visible",
 		admin_ph_display_name: "Nombre visible",
 		admin_label_x_handle: "Handle de X",
-		admin_ph_x_handle: "Handle (ej. demo)",
+		admin_ph_x_handle: "Handle (ej. @demo)",
 		admin_label_orientation: "Orientacion",
 		admin_ph_orientation: "Orientacion",
 		admin_label_fans_count: "Seguidores",
@@ -3026,7 +3026,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 
 			<section class="card" id="searchSection">
 				<div class="toolbar">
-					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle" data-i18n-placeholder="admin_search_placeholder" />
+					<input id="handleSearch" list="handleSuggestions" placeholder="Search by X handle (e.g. @demo)" data-i18n-placeholder="admin_search_placeholder" />
 					<datalist id="handleSuggestions"></datalist>
 					<button id="searchBtn" data-i18n="admin_search_btn">Search</button>
 					<button id="resetBtn" class="secondary" data-i18n="admin_reset_btn">Reset</button>
@@ -3043,7 +3043,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					</div>
 					<div class="field identity-field">
 						<label for="handle" data-i18n="admin_label_x_handle">X Handle</label>
-						<input id="handle" placeholder="Handle (e.g. demo)" data-i18n-placeholder="admin_ph_x_handle" required />
+						<input id="handle" placeholder="Handle (e.g. @demo)" data-i18n-placeholder="admin_ph_x_handle" required />
 					</div>
 					<div class="field identity-field">
 						<label for="orientation" data-i18n="admin_label_orientation">Orientation</label>
