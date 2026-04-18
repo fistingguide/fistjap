@@ -130,8 +130,10 @@ function renderMarkdown(markdown: string): string {
 type LocaleCode = "en" | "zh-CN" | "zh-TW" | "ja" | "ko" | "es" | "pt" | "th" | "vi";
 
 const LOCALE_CODES: LocaleCode[] = ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "pt", "th", "vi"];
+const RANKING_NOTICE_EN =
+	"This site only lists male users. Accounts are rotated in the spotlight to ensure fair exposure. Map locations are blurred for illustration only and are not real addresses. Users can add themselves or request deletion through the Telegram group. The book icon is our blog. For any issue, contact X: @fistingguide.";
 const RANKING_NOTICE_ZH_CN =
-	"1. 本网站仅收录男性账号（包括 gay 用户以及对肛门扩张感兴趣的直男）。\n2. 为了保证公平性，网站每 10 分钟轮换一次置顶账号，以确保每位用户都有机会被更多人看到。\n3. 本网站地图上显示的所有位置仅为示意标注。这些位置可能参考公开信息进行大致标注，但已被刻意模糊化或随机设置，因此不会对应任何人的精确位置，仅用于展示社区的大致分布情况。若你不希望自己的名称或标注出现在地图上，可以随时联系我，我会将其删除或替换为一个完全随机的位置。本网站不会收集、存储或公开任何个人的具体地址信息。\n4. 每个人可以添加自己的账号和查看地图，手机端请点击汉堡按键查看更多操作。\n5. 任何信息请私信 @fistingguide。";
+	"本网站仅收录男性用户；账号轮换置顶以保证公平展示；地图位置为模糊示意，不涉及真实地址；用户可通过 TG 群组自行添加或申请删除信息；书籍图标是我们的博客；任何问题请联系 X: @fistingguide。";
 const TH_MESSAGES: Record<string, string> = {
 	page_title_ranking: "รายชื่อนักแสดง",
 	page_title_admin: "แผงผู้ดูแลฐานข้อมูล",
@@ -157,7 +159,7 @@ const TH_MESSAGES: Record<string, string> = {
 	view_articles: "ดูบทความ",
 	partner_qutoys: "QUTOYS (ส่วนลด 10%)",
 	ranking_location_notice:
-		"1. เว็บไซต์นี้รวบรวมเฉพาะบัญชีผู้ชาย (รวมผู้ใช้ gay และผู้ชายรักต่างเพศที่สนใจการขยายทวารหนัก)\n2. เพื่อความยุติธรรม เว็บไซต์จะสลับบัญชีปักหมุดทุก 10 นาที เพื่อให้ทุกคนมีโอกาสถูกมองเห็นมากขึ้น\n3. ตำแหน่งทั้งหมดบนแผนที่เป็นเพียงตำแหน่งเชิงสาธิต อาจอ้างอิงข้อมูลสาธารณะคร่าว ๆ แต่ถูกทำให้คลุมเครือหรือสุ่มโดยเจตนา จึงไม่ตรงกับตำแหน่งจริงของบุคคล ใช้เพื่อแสดงการกระจายของชุมชนเท่านั้น หากไม่ต้องการให้ชื่อหรือหมุดปรากฏบนแผนที่ ติดต่อฉันได้ตลอดเวลา ฉันจะลบหรือแทนที่ด้วยตำแหน่งสุ่มทั้งหมด เว็บไซต์นี้จะไม่เก็บรวบรวม จัดเก็บ หรือเผยแพร่ที่อยู่จริงของบุคคล\n4. ทุกคนสามารถเพิ่มบัญชีของตัวเองและดูแผนที่ได้ บนมือถือให้กดปุ่มแฮมเบอร์เกอร์เพื่อดูการทำงานเพิ่มเติม\n5. หากมีข้อมูลใด ๆ กรุณาส่งข้อความส่วนตัวถึง @fistingguide",
+		"เว็บไซต์นี้รวบรวมเฉพาะผู้ใช้ผู้ชายเท่านั้น บัญชีจะถูกสลับปักหมุดเพื่อให้แสดงผลอย่างเป็นธรรม ตำแหน่งบนแผนที่เป็นการแสดงแบบเบลอเพื่อประกอบเท่านั้นและไม่ใช่ที่อยู่จริง ผู้ใช้สามารถเพิ่มข้อมูลเองหรือขอลบข้อมูลผ่านกลุ่ม TG ได้ ไอคอนรูปหนังสือคือบล็อกของเรา หากมีปัญหาใด ๆ โปรดติดต่อ X: @fistingguide",
 	spotlight_title: "ไฮไลต์หมุนเวียน",
 	spotlight_next_switch: "สลับอีกใน {time}",
 	age_title: "ยืนยันอายุ",
@@ -251,7 +253,7 @@ const VI_MESSAGES: Record<string, string> = {
 	view_articles: "Xem bai viet",
 	partner_qutoys: "QUTOYS (giam 10%)",
 	ranking_location_notice:
-		"1. Website nay chi liet ke cac tai khoan nam (bao gom nguoi dung gay va nam thang quan tam den anal expansion).\n2. De dam bao cong bang, website se xoay tai khoan ghim moi 10 phut de moi nguoi deu co co hoi duoc nhieu nguoi thay hon.\n3. Tat ca vi tri tren ban do chi mang tinh minh hoa. Cac vi tri nay co the duoc danh dau dua tren thong tin cong khai o muc do tong quat, nhung da duoc lam mo hoac ngau nhien co chu dich, vi vay khong the hien vi tri chinh xac cua bat ky ai. Muc dich chi de hien thi phan bo tong quan cua cong dong. Neu ban khong muon ten hoac danh dau cua minh xuat hien tren ban do, hay lien he toi bat cu luc nao, toi se xoa hoac thay bang mot vi tri hoan toan ngau nhien. Website nay khong thu thap, luu tru hay cong khai dia chi cu the cua bat ky ca nhan nao.\n4. Moi nguoi deu co the them tai khoan cua minh va xem ban do. Tren dien thoai, hay bam nut hamburger de xem them thao tac.\n5. Moi thong tin vui long nhan tin @fistingguide.",
+		"Trang web nay chi liệt ke nguoi dung nam. Tai khoan duoc xoay ghim de dam bao hien thi cong bang. Vi tri ban do la vi tri mo phong da lam mo, khong phai dia chi thuc. Nguoi dung co the tu them thong tin hoac yeu cau xoa qua nhom TG. Bieu tuong sach la blog cua chung toi. Moi van de vui long lien he X: @fistingguide.",
 	spotlight_title: "Ghim luan phien",
 	spotlight_next_switch: "Se doi sau {time}",
 	age_title: "Xac nhan do tuoi",
@@ -313,7 +315,7 @@ const PT_MESSAGES: Record<string, string> = {
 	view_articles: "Ver artigos",
 	partner_qutoys: "QUTOYS (10% OFF)",
 	ranking_location_notice:
-		"1. Este site lista apenas contas masculinas (incluindo usuarios gays e homens heteros interessados em expansao anal).\n2. Para manter a justica, o site alterna o perfil em destaque a cada 10 minutos para que todos tenham chance de serem vistos.\n3. Todas as localizacoes no mapa sao apenas ilustrativas. Elas podem se basear em informacoes publicas de forma aproximada, mas sao intencionalmente desfocadas ou aleatorizadas, portanto nao correspondem a localizacao exata de nenhuma pessoa. Servem apenas para mostrar a distribuicao geral da comunidade. Se voce nao quiser que seu nome ou marcador apareca no mapa, entre em contato a qualquer momento e eu removo ou substituo por uma localizacao totalmente aleatoria. Este site nao coleta, armazena nem publica endereco especifico de ninguem.\n4. Qualquer pessoa pode adicionar a propria conta e visualizar o mapa. No celular, toque no botao hamburger para ver mais acoes.\n5. Para qualquer informacao, envie DM para @fistingguide.",
+		"Este site lista apenas usuarios masculinos. As contas sao alternadas no destaque para garantir exibicao justa. As posicoes no mapa sao apenas ilustracoes desfocadas e nao correspondem a enderecos reais. Os usuarios podem se adicionar ou solicitar exclusao pelo grupo TG. O icone de livro e o nosso blog. Em caso de qualquer problema, contate no X: @fistingguide.",
 	spotlight_title: "Destaque Rotativo",
 	spotlight_next_switch: "Proxima troca em {time}",
 	age_title: "Confirmacao de idade",
@@ -374,8 +376,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 		friendly_links: "Community Partners",
 	view_articles: "View Articles",
 		partner_qutoys: "QUTOYS (10% OFF)",
-		ranking_location_notice:
-			"1. This website only lists male accounts (including gay users and straight men interested in anal expansion).\n2. To keep things fair, the site rotates the pinned spotlight account every 10 minutes, so everyone gets a chance to be seen.\n3. All map locations on this site are illustrative markers. They may be roughly based on public info, but are intentionally blurred or randomized, so they do not match any person's exact location and are only used to show the community's general distribution. If you do not want your name or marker shown, contact me anytime and I will remove it or replace it with a fully random location. This site does not collect, store, or publish anyone's specific address information.\n4. Everyone can add their own account and view the map. On mobile, tap the hamburger button to see more actions.\n5. For any information, please DM @fistingguide.",
+		ranking_location_notice: RANKING_NOTICE_EN,
 		spotlight_title: "Rotating Spotlight",
 		spotlight_next_switch: "Next switch in {time}",
 		age_title: "Age Confirmation",
@@ -562,7 +563,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	view_articles: "查看文章",
 		partner_qutoys: "QUTOYS\uff0810%\u6298\u6263\uff09",
 		ranking_location_notice:
-			"1. 本網站僅收錄男性帳號（包含 gay 使用者，以及對肛門擴張感興趣的直男）。\n2. 為了維持公平性，網站每 10 分鐘輪換一次置頂帳號，確保每位使用者都有被更多人看到的機會。\n3. 本網站地圖上顯示的所有位置僅為示意標註。這些位置可能參考公開資訊進行大致標註，但已被刻意模糊化或隨機設定，因此不會對應任何人的精確位置，僅用於展示社群的大致分布情況。若你不希望自己的名稱或標註出現在地圖上，可以隨時聯絡我，我會將其刪除或替換為完全隨機的位置。本網站不會收集、儲存或公開任何個人的具體地址資訊。\n4. 每個人都可以新增自己的帳號並查看地圖，手機端請點擊漢堡按鈕查看更多操作。\n5. 任何資訊請私訊 @fistingguide。",
+			"本網站僅收錄男性用戶；帳號輪換置頂以保證公平展示；地圖位置為模糊示意，不涉及真實地址；用戶可透過 TG 群組自行添加或申請刪除資訊；書籍圖示是我們的部落格；任何問題請聯絡 X: @fistingguide。",
 		spotlight_title: "\u8f2a\u64ad\u7f6e\u9802",
 		spotlight_next_switch: "{time} \u5f8c\u5207\u63db",
 		age_title: "\u5e74\u9f61\u78ba\u8a8d",
@@ -656,7 +657,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	view_articles: "記事を見る",
 		partner_qutoys: "QUTOYS\uff0810%\u5272\u5f15\uff09",
 		ranking_location_notice:
-			"1. このサイトでは男性アカウントのみ掲載します（gayユーザー、および肛門拡張に関心のあるストレート男性を含む）。\n2. 公平性のため、サイトの置頂アカウントは10分ごとにローテーションし、全員に見られる機会を作ります。\n3. サイトの地図上の位置はすべて説明用の表示です。公開情報を参考に大まかに示す場合がありますが、意図的にぼかしやランダム化を行っているため、個人の正確な位置には対応しません。コミュニティの大まかな分布表示のみを目的としています。名前やマーカーの表示を希望しない場合は、いつでも連絡してください。削除または完全ランダム位置への置換に対応します。サイトは個人の具体的住所情報を収集・保存・公開しません。\n4. 誰でも自分のアカウントを追加し、地図を閲覧できます。モバイルではハンバーガーボタンから追加操作を確認してください。\n5. 連絡は @fistingguide へDMしてください。",
+			"このサイトは男性ユーザーのみを掲載します。公平な表示のため、アカウントはローテーションで上位表示されます。地図上の位置はぼかしたイメージ表示であり、実際の住所ではありません。ユーザーはTGグループから自分で追加、または削除申請ができます。本のアイコンは私たちのブログです。問題があればX: @fistingguide までご連絡ください。",
 		spotlight_title: "\u30ed\u30fc\u30c6\u30fc\u30b7\u30e7\u30f3\u8868\u793a",
 		spotlight_next_switch: "{time} \u5f8c\u306b\u5207\u308a\u66ff\u3048",
 		age_title: "\u5e74\u9f62\u78ba\u8a8d",
@@ -750,7 +751,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	view_articles: "게시글 보기",
 		partner_qutoys: "QUTOYS (10% \ud560\uc778)",
 		ranking_location_notice:
-			"1. 이 사이트는 남성 계정만 수록합니다(gay 사용자 및 항문 확장에 관심 있는 이성애 남성 포함).\n2. 공정성을 위해 사이트는 10분마다 상단 고정 계정을 순환 노출하여 모든 사용자가 더 많이 보일 기회를 갖게 합니다.\n3. 지도에 표시되는 모든 위치는 안내용 표기입니다. 공개 정보를 참고해 대략적으로 표시될 수 있지만 의도적으로 흐리게 처리되거나 무작위 설정되므로 개인의 정확한 위치와 일치하지 않습니다. 커뮤니티의 대략적 분포 표시 목적입니다. 이름/표시를 원하지 않으면 언제든지 연락해 주세요. 삭제하거나 완전 무작위 위치로 대체합니다. 이 사이트는 개인의 구체적 주소 정보를 수집, 저장, 공개하지 않습니다.\n4. 누구나 자신의 계정을 추가하고 지도를 볼 수 있습니다. 모바일에서는 햄버거 버튼을 눌러 더 많은 기능을 확인하세요.\n5. 문의는 @fistingguide 로 DM 주세요.",
+			"이 사이트는 남성 사용자만 수록합니다. 공정한 노출을 위해 계정은 순환 고정됩니다. 지도 위치는 흐림 처리된 예시이며 실제 주소가 아닙니다. 사용자는 TG 그룹에서 직접 추가하거나 삭제를 요청할 수 있습니다. 책 아이콘은 우리의 블로그입니다. 문의 사항은 X: @fistingguide 로 연락해 주세요.",
 		spotlight_title: "\uc21c\ud658 \uace0\uc815 \ub178\ucd9c",
 		spotlight_next_switch: "{time} \ud6c4 \uc804\ud658",
 		age_title: "\uc5f0\ub839 \ud655\uc778",
@@ -844,7 +845,7 @@ const I18N_MESSAGES: Record<LocaleCode, Record<string, string>> = {
 	view_articles: "Ver articulos",
 		partner_qutoys: "QUTOYS (10% de descuento)",
 		ranking_location_notice:
-			"1. Este sitio solo incluye cuentas masculinas (incluye usuarios gay y hombres heterosexuales interesados en la expansion anal).\n2. Para mantener la equidad, el sitio rota la cuenta fijada cada 10 minutos para que todos tengan oportunidad de ser vistos.\n3. Todas las ubicaciones del mapa son marcas ilustrativas. Pueden basarse de forma aproximada en informacion publica, pero se difuminan o aleatorizan de forma intencional, por lo que no corresponden a la ubicacion exacta de ninguna persona. Solo se usan para mostrar la distribucion general de la comunidad. Si no quieres que aparezcan tu nombre o marcador, contactame en cualquier momento y lo eliminare o lo reemplazare por una ubicacion totalmente aleatoria. Este sitio no recopila, almacena ni publica direcciones especificas de personas.\n4. Cualquiera puede agregar su propia cuenta y ver el mapa. En movil, pulsa el boton hamburguesa para ver mas acciones.\n5. Para cualquier informacion, envia DM a @fistingguide.",
+			"Este sitio solo incluye usuarios masculinos. Las cuentas se rotan en destacado para garantizar una exhibicion justa. Las ubicaciones del mapa son referencias difuminadas y no corresponden a direcciones reales. Los usuarios pueden agregarse o solicitar eliminacion mediante el grupo de TG. El icono de libro es nuestro blog. Cualquier problema, contacta en X: @fistingguide.",
 		spotlight_title: "Destacado Rotativo",
 		spotlight_next_switch: "Siguiente cambio en {time}",
 		age_title: "Confirmacion de edad",
@@ -1620,9 +1621,12 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				border-radius: 12px;
 				background: #0F1419;
 				color: var(--muted);
-				font-size: 20px;
+				font-size: 14px;
 				line-height: 1.5;
 				white-space: pre-line;
+			}
+			.top-disclaimer {
+				margin: 0 0 10px;
 			}
 			.event-promo {
 				margin: 10px 0 0;
@@ -1673,36 +1677,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				margin: 10px 0 0;
 				display: flex;
 				align-items: center;
+				flex-wrap: wrap;
 				gap: 12px;
-			}
-			.community-article-link-wrap {
-				margin: 8px 0 0;
-				display: grid;
-				grid-template-columns: repeat(3, minmax(0, 1fr));
-				gap: 10px;
-			}
-			.community-article-link {
-				display: grid;
-				justify-items: center;
-				align-content: center;
-				gap: 8px;
-				border: 0;
-				border-radius: 0;
-				overflow: visible;
-				background: transparent;
-				padding: 0;
-				text-decoration: none;
-				line-height: normal;
-			}
-			.community-article-image {
-				display: block;
-				width: 100%;
-				height: auto;
-				object-fit: contain;
-				margin: 0 auto;
-			}
-			.community-article-link:hover {
-				filter: brightness(1.08);
 			}
 			.inline-map-card {
 				display: grid;
@@ -1755,6 +1731,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			}
 			.discord-icon-wrap { background: #5865F2; }
 			.telegram-icon-wrap { background: #229ED9; }
+			.profile-icon-wrap { background: #2E7D32; }
+			.blog-icon-wrap { background: #EF6C00; }
 			.x-icon-wrap { background: #000000; }
 			.email-icon-wrap { background: #0F1419; }
 			.discord-promo-icon {
@@ -1950,11 +1928,12 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				}
 				.ranking-notice {
 					font-size: 12px;
-					padding: 9px 0;
-					border: 0;
-					border-radius: 0;
-					background: transparent;
+					padding: 8px 10px;
+					border: 1px solid var(--line);
+					border-radius: 8px;
+					background: #0F1419;
 				}
+				.top-disclaimer { margin: 0 0 8px; }
 				.event-promo {
 					padding: 10px 0;
 					border: 0;
@@ -1980,14 +1959,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				.social-links {
 					margin: 8px 0 0;
 					gap: 10px;
-				}
-				.community-article-link-wrap {
-					margin: 6px 0 0;
-					grid-template-columns: repeat(3, minmax(0, 1fr));
-					gap: 8px;
-				}
-				.community-article-link {
-					width: 100%;
 				}
 				.social-link {
 					padding: 6px 0;
@@ -2040,6 +2011,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		</div>
 		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<section class="panel">
+			<p class="ranking-notice top-disclaimer" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<header class="header">
 				<div class="header-main">
 					<div class="header-left">
@@ -2085,6 +2057,20 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						</svg>
 					</span>
 				</a>
+				<a class="social-link" href="/admin" target="_self" aria-label="Open Profile Management">
+					<span class="social-link-icon-wrap profile-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<path d="M12 12c2.76 0 5-2.46 5-5.5S14.76 1 12 1 7 3.46 7 6.5 9.24 12 12 12Zm0 2c-4.42 0-8 2.69-8 6v2h16v-2c0-3.31-3.58-6-8-6Z"></path>
+						</svg>
+					</span>
+				</a>
+				<a class="social-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="Open Blog">
+					<span class="social-link-icon-wrap blog-icon-wrap" aria-hidden="true">
+						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
+							<path d="M3 6a3 3 0 0 1 3-3h5v16H6a3 3 0 0 0-3 3V6Zm18 0v16a3 3 0 0 0-3-3h-5V3h5a3 3 0 0 1 3 3Zm-9-3h1v16h-1V3Z"></path>
+						</svg>
+					</span>
+				</a>
 				<a class="social-link" href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" aria-label="Open FistingGuide on X">
 					<span class="social-link-icon-wrap x-icon-wrap" aria-hidden="true">
 						<svg class="discord-promo-icon" viewBox="0 0 24 24" role="img" focusable="false">
@@ -2104,14 +2090,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			<section class="inline-map-card" aria-label="Community Map">
 				<div id="inlineMap"></div>
 			</section>
-			<div class="community-article-link-wrap">
-				<a class="community-article-link" href="/admin" target="_self" aria-label="Open Add Edit Delete">
-					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/add_edit_Delete.png" alt="Add Edit Delete" loading="lazy" decoding="async" />
-				</a>
-				<a class="community-article-link" href="https://blog.fistingguide.workers.dev/" target="_blank" rel="noopener noreferrer" aria-label="View Articles">
-					<img class="community-article-image" src="/r2-fg/assets/mobile-carousel/fgblog.png" alt="View Articles" loading="lazy" decoding="async" />
-				</a>
-			</div>
 			<div class="mobile-inline-carousel-title" data-i18n="friendly_links">社区合作</div>
 			<div class="mobile-inline-carousel" id="mobileInlineCarousel" aria-label="Brand Links">
 				<a class="mobile-inline-carousel-slide" href="https://x.com/kikuchi168" target="_self"><img src="/r2-fg/assets/mobile-carousel/1.png" alt="KIKUCHI" loading="eager" fetchpriority="high" decoding="async" /><span class="mobile-inline-carousel-label">KIKUCHI</span></a>
@@ -2143,7 +2121,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					</div>
 				</div>
 			</section>
-			<p class="ranking-notice" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 			<ol class="list">
 				<li class="leaderboard-item spotlight-item" id="pinnedSpotlight" hidden></li>
 				${renderLeaderboardRows(rows)}
