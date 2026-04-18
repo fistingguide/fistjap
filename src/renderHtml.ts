@@ -3188,6 +3188,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let reverseRequestSeq = 0;
 			let createHandleCheckTimer = null;
 			let lastCreateHandleChecked = '';
+			let verifyDialogState = null;
+			let verifyDialogHandlersBound = false;
 			const MODE_CREATE = 'create';
 			const MODE_EDIT = 'edit';
 			const MODE_DELETE = 'delete';
@@ -3505,6 +3507,58 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				const inputEl = els.verifyDialogInput;
 				const confirmEl = els.verifyDialogConfirm;
 				const cancelEl = els.verifyDialogCancel;
+				const closeDialog = function () {
+					dialog.hidden = true;
+					document.body.style.overflow = '';
+				};
+				const settleDialog = function (value) {
+					if (!verifyDialogState || typeof verifyDialogState.resolve !== 'function') {
+						closeDialog();
+						return;
+					}
+					const resolve = verifyDialogState.resolve;
+					verifyDialogState = null;
+					closeDialog();
+					resolve(value);
+				};
+
+				if (!verifyDialogHandlersBound) {
+					confirmEl.addEventListener('click', function () {
+						const value = String(inputEl.value || '').trim();
+						if (!value) return;
+						settleDialog(value);
+					});
+					cancelEl.addEventListener('click', function () {
+						settleDialog(null);
+					});
+					inputEl.addEventListener('keydown', function (event) {
+						if (event.key === 'Enter') {
+							event.preventDefault();
+							confirmEl.click();
+						}
+						if (event.key === 'Escape') {
+							event.preventDefault();
+							cancelEl.click();
+						}
+					});
+					window.addEventListener('pageshow', function () {
+						if (dialog && !dialog.hidden) {
+							verifyDialogState = null;
+							closeDialog();
+						}
+					});
+					document.addEventListener('visibilitychange', function () {
+						if (!document.hidden && dialog && !dialog.hidden && !verifyDialogState) {
+							closeDialog();
+						}
+					});
+					verifyDialogHandlersBound = true;
+				}
+
+				if (verifyDialogState && typeof verifyDialogState.resolve === 'function') {
+					verifyDialogState.resolve(null);
+					verifyDialogState = null;
+				}
 
 				titleEl.textContent = options.title || '';
 				descEl.textContent = options.description || '';
@@ -3519,35 +3573,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				document.body.style.overflow = 'hidden';
 
 				return new Promise(function (resolve) {
-					let done = false;
-					const finish = function (value) {
-						if (done) return;
-						done = true;
-						dialog.hidden = true;
-						document.body.style.overflow = '';
-						confirmEl.onclick = null;
-						cancelEl.onclick = null;
-						inputEl.onkeydown = null;
-						resolve(value);
-					};
-					confirmEl.onclick = function () {
-						const value = String(inputEl.value || '').trim();
-						if (!value) return;
-						finish(value);
-					};
-					cancelEl.onclick = function () {
-						finish(null);
-					};
-					inputEl.onkeydown = function (event) {
-						if (event.key === 'Enter') {
-							event.preventDefault();
-							confirmEl.click();
-						}
-						if (event.key === 'Escape') {
-							event.preventDefault();
-							cancelEl.click();
-						}
-					};
+					verifyDialogState = { resolve };
 					setTimeout(function () {
 						try { inputEl.focus(); } catch {}
 					}, 0);
