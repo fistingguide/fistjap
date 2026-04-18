@@ -12,8 +12,8 @@
 	country: string;
 	region: string;
 	district: string;
-	geo_lat?: number;
-	geo_lng?: number;
+	lat?: number;
+	lng?: number;
 	province?: string;
 	city?: string;
 	created_at: string;
@@ -3531,8 +3531,8 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				els.district.value = (row.district || row.city) || 'Itabashi';
 				els.locationSearch.value = [els.district.value, els.region.value, els.country.value].filter(Boolean).join(', ');
 				els.locationSelected.textContent = selectedText(els.district.value, els.region.value, els.country.value);
-				const rowLat = Number(row.geo_lat);
-				const rowLng = Number(row.geo_lng);
+				const rowLat = Number(row.lat);
+				const rowLng = Number(row.lng);
 				if (Number.isFinite(rowLat) && Number.isFinite(rowLng)) {
 					setSelectedPoint(rowLat, rowLng);
 					renderLocationPreview(rowLat, rowLng);
@@ -4368,8 +4368,8 @@ export function renderDashboardPage(): string {
 					const district = (row.district || row.city) || 'Itabashi';
 					const region = (row.region || row.province) || 'Tokyo';
 					const country = row.country || 'Japan';
-					const pLat = Number(row.geo_lat);
-					const pLon = Number(row.geo_lng);
+					const pLat = Number(row.lat);
+					const pLon = Number(row.lng);
 					if (!Number.isFinite(pLat) || !Number.isFinite(pLon)) continue;
 					const key = pLat.toFixed(5) + '|' + pLon.toFixed(5);
 					const used = pointUsage.get(key) || 0;

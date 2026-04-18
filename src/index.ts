@@ -17,6 +17,10 @@ type RuntimeEnv = Env & {
 	TEST_EMAIL_TOKEN?: string;
 	DELETE_PASSWORD?: string;
 	R2_FG?: R2Bucket;
+	ASSET_BASE_URL?: string;
+	ASSET_VERSION?: string;
+	ASSET_IMAGE_OPTIMIZE?: string;
+	ASSET_IMAGE_QUALITY?: string;
 };
 
 type GeoSuggestion = {
@@ -41,8 +45,6 @@ type ProfilePayload = {
 	followersCount?: unknown;
 	lat?: unknown;
 	lng?: unknown;
-	geoLat?: unknown;
-	geoLng?: unknown;
 	country?: unknown;
 	region?: unknown;
 	district?: unknown;
@@ -56,6 +58,7 @@ const DEFAULT_DISTRICT = "Itabashi";
 const PINNED_ROTATION_SECONDS = 600;
 const BLOG_URL = "https://blog.fistingguide.workers.dev/";
 const R2_ASSET_PREFIX = "/r2-fg/";
+const MOBILE_CAROUSEL_PREFIX = `${R2_ASSET_PREFIX}assets/mobile-carousel/`;
 
 type WikiPayload = {
 	title?: unknown;
@@ -542,8 +545,30 @@ function injectSeoTags(html: string, origin: string, seo: SeoOptions): string {
 	return html.replace("</head>", `${tags}\n\t</head>`);
 }
 
-function htmlResponse(html: string, origin: string, seo: SeoOptions): Response {
-	const output = injectSeoTags(html, origin, seo);
+function rewriteMobileCarouselAssetUrls(html: string, env: RuntimeEnv): string {
+	const base = String(env.ASSET_BASE_URL || "").trim().replace(/\/+$/, "");
+	if (!base) {
+		return html;
+	}
+
+	const version = String(env.ASSET_VERSION || "20260418").trim();
+	const optimize = String(env.ASSET_IMAGE_OPTIMIZE || "1").trim() !== "0";
+	const qualityRaw = Number(env.ASSET_IMAGE_QUALITY || "75");
+	const quality = Number.isFinite(qualityRaw) ? Math.min(95, Math.max(30, Math.floor(qualityRaw))) : 75;
+
+	const pathPattern = new RegExp(`${MOBILE_CAROUSEL_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([A-Za-z0-9._-]+\\.[A-Za-z0-9]+)`, "g");
+	return html.replace(pathPattern, (_match, fileName: string) => {
+		const sourceUrl = `${base}/assets/mobile-carousel/${fileName}${version ? `?v=${encodeURIComponent(version)}` : ""}`;
+		const compressible = /\.(png|jpe?g|webp|gif)$/i.test(fileName);
+		if (optimize && compressible) {
+			return `/cdn-cgi/image/format=auto,quality=${quality},metadata=none/${sourceUrl}`;
+		}
+		return sourceUrl;
+	});
+}
+
+function htmlResponse(html: string, origin: string, seo: SeoOptions, env: RuntimeEnv): Response {
+	const output = rewriteMobileCarouselAssetUrls(injectSeoTags(html, origin, seo), env);
 	const headers: Record<string, string> = {
 		"content-type": "text/html; charset=UTF-8",
 	};
@@ -867,7 +892,7 @@ async function proxyR2Asset(request: Request, env: RuntimeEnv, pathname: string)
 	if (!headers.get("content-type")) {
 		headers.set("content-type", inferContentTypeFromPath(key));
 	}
-	headers.set("cache-control", "public, max-age=86400, s-maxage=86400");
+	headers.set("cache-control", "public, max-age=31536000, s-maxage=31536000, immutable");
 
 	if (request.method.toUpperCase() === "HEAD") {
 		return new Response(null, { status: 200, headers });
@@ -1285,17 +1310,17 @@ async function backfillProfileGeoPoints(
 }> {
 	const rewriteAll = options?.rewriteAll !== false;
 	const limit = Number.isFinite(Number(options?.limit)) ? Math.max(1, Math.floor(Number(options?.limit))) : 0;
-	const whereClause = rewriteAll ? "" : " WHERE geo_lat IS NULL OR geo_lng IS NULL";
+	const whereClause = rewriteAll ? "" : " WHERE lat IS NULL OR lng IS NULL";
 	const limitSql = limit > 0 ? " LIMIT ?" : "";
 	const stmt =
 		limit > 0
 			? db.prepare(
-					`SELECT id, country, province AS region, city AS district, geo_lat, geo_lng
+					`SELECT id, country, province AS region, city AS district, lat, lng
 					 FROM profiles${whereClause}
 					 ORDER BY id ASC${limitSql}`,
 				).bind(limit)
 			: db.prepare(
-					`SELECT id, country, province AS region, city AS district, geo_lat, geo_lng
+					`SELECT id, country, province AS region, city AS district, lat, lng
 					 FROM profiles${whereClause}
 					 ORDER BY id ASC`,
 				);
@@ -1304,8 +1329,8 @@ async function backfillProfileGeoPoints(
 		country?: string;
 		region?: string;
 		district?: string;
-		geo_lat?: number;
-		geo_lng?: number;
+		lat?: number;
+		lng?: number;
 	}>();
 	const rows = results ?? [];
 	let processed = 0;
@@ -1323,8 +1348,8 @@ async function backfillProfileGeoPoints(
 				const row = rows[current];
 				if (!row) continue;
 				processed += 1;
-				const currentLat = Number(row.geo_lat);
-				const currentLng = Number(row.geo_lng);
+				const currentLat = Number(row.lat);
+				const currentLng = Number(row.lng);
 				const hasCoordinates = Number.isFinite(currentLat) && Number.isFinite(currentLng);
 				if (!rewriteAll && hasCoordinates) {
 					skipped += 1;
@@ -1343,7 +1368,7 @@ async function backfillProfileGeoPoints(
 					failed += 1;
 					continue;
 				}
-				await db.prepare("UPDATE profiles SET geo_lat = ?, geo_lng = ? WHERE id = ?")
+				await db.prepare("UPDATE profiles SET lat = ?, lng = ? WHERE id = ?")
 					.bind(point.lat, point.lon, row.id)
 					.run();
 				updated += 1;
@@ -1658,7 +1683,7 @@ async function queryProfiles(
 		typeof params.limit === "number" ? "\n\t\tLIMIT ?\n\t\tOFFSET ?" : "";
 	const sql = `
 		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, total_credit, country,
-			province AS region, city AS district, geo_lat, geo_lng, created_at
+			province AS region, city AS district, lat, lng, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY total_credit DESC, id ASC
@@ -1840,7 +1865,7 @@ async function queryPinnedProfile(
 	const { slot, index, nextSwitchAt } = computePinnedIndex(poolSize, nowUnixSeconds);
 	const pickSql = `
 		SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, total_credit, country,
-			province AS region, city AS district, geo_lat, geo_lng, created_at
+			province AS region, city AS district, lat, lng, created_at
 		FROM profiles
 		${whereClause}
 		ORDER BY total_credit DESC, id ASC
@@ -1957,8 +1982,8 @@ function normalizePayload(payload: ProfilePayload) {
 	if (!handle) {
 		throw new Error("handle is required");
 	}
-	const lat = toCoordinate(payload.lat ?? payload.geoLat);
-	const lng = toCoordinate(payload.lng ?? payload.geoLng);
+	const lat = toCoordinate(payload.lat);
+	const lng = toCoordinate(payload.lng);
 	if (lat === null || lng === null) {
 		throw new Error("lat and lng are required numbers");
 	}
@@ -2060,7 +2085,7 @@ export default {
 				pathname: "/",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/admin") {
@@ -2072,7 +2097,7 @@ export default {
 				robots: "noindex,nofollow",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/admin/create") {
@@ -2084,7 +2109,7 @@ export default {
 				robots: "noindex,nofollow",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/admin/edit") {
@@ -2096,7 +2121,7 @@ export default {
 				robots: "noindex,nofollow",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/admin/delete") {
@@ -2108,7 +2133,7 @@ export default {
 				robots: "noindex,nofollow",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/dashboard") {
@@ -2119,7 +2144,7 @@ export default {
 				pathname: "/dashboard",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/about") {
@@ -2130,7 +2155,7 @@ export default {
 				pathname: "/about",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/list-star") {
@@ -2140,7 +2165,7 @@ export default {
 				pathname: "/list-star",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/author-call") {
@@ -2150,7 +2175,7 @@ export default {
 				pathname: "/author-call",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
-			});
+			}, env);
 		}
 
 		if (method === "GET" && pathname === "/api/profiles") {
@@ -2321,7 +2346,7 @@ export default {
 			try {
 				await env.DB.prepare(
 					`INSERT INTO profiles (
-						name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city, geo_lat, geo_lng
+						name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province, city, lat, lng
 					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				)
 					.bind(
@@ -2346,7 +2371,7 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, geo_lat, geo_lng, followers_count
+					`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, lat, lng, followers_count
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
@@ -2389,7 +2414,7 @@ export default {
 				try {
 					const result = await env.DB.prepare(
 						`UPDATE profiles
-						 SET name = ?, handle = ?, telegram = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?, geo_lat = ?, geo_lng = ?
+						 SET name = ?, handle = ?, telegram = ?, bio = ?, profile_url = ?, avatar = ?, sexual_orientation = ?, followers_count = ?, country = ?, province = ?, city = ?, lat = ?, lng = ?
 						 WHERE id = ?`,
 					)
 						.bind(
@@ -2419,7 +2444,7 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, geo_lat, geo_lng, followers_count
+						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, lat, lng, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -2439,7 +2464,7 @@ export default {
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				const deletedRow = await env.DB
 					.prepare(
-						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, geo_lat, geo_lng, followers_count
+						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, lat, lng, followers_count
 						 FROM profiles
 						 WHERE id = ?`,
 					)
