@@ -4242,7 +4242,10 @@ export function renderAdminVerifyPage(): string {
 				}
 				const params = new URLSearchParams(window.location.search || '');
 				const requestedReturn = String(params.get('return') || '').trim();
-				const returnPath = /^\/admin(\/|$)/.test(requestedReturn) ? requestedReturn : '/admin';
+				const returnPath =
+					(requestedReturn === '/admin' || requestedReturn.startsWith('/admin/'))
+						? requestedReturn
+						: '/admin';
 
 				function languageKey() {
 					const rawLang =
