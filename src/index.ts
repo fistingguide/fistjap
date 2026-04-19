@@ -2214,7 +2214,7 @@ async function syncProfilesFromGetXApi(env: RuntimeEnv): Promise<XSyncSummary> {
 		try {
 			const xData = await fetchGetXApiUserInfo(handle, env);
 			if (!xData) {
-				summary.failed += 1;
+				summary.skipped += 1;
 				continue;
 			}
 
