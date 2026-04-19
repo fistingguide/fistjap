@@ -4096,7 +4096,9 @@ export function renderAdminVerifyPage(): string {
 				grid-template-columns: minmax(0, 1fr) auto;
 				gap: 10px;
 				align-items: center;
+				position: relative;
 			}
+			.row > * { min-width: 0; }
 			input, button {
 				font: inherit;
 				border-radius: 10px;
@@ -4108,6 +4110,8 @@ export function renderAdminVerifyPage(): string {
 				border: 1px solid var(--line);
 				background: #0B1118;
 				color: var(--text);
+				position: relative;
+				z-index: 1;
 			}
 			button {
 				height: 40px;
@@ -4116,7 +4120,11 @@ export function renderAdminVerifyPage(): string {
 				background: #0B1118;
 				color: #E7E9EA;
 				cursor: pointer;
+				position: relative;
+				z-index: 3;
+				pointer-events: auto;
 			}
+			#sendCodeBtn, #verifyCodeBtn { min-width: 112px; }
 			#verifyCodeBtn {
 				background: #B40000;
 				border-color: #B40000;
@@ -4580,6 +4588,7 @@ export function renderAdminVerifyPage(): string {
 					});
 				}
 				applyText();
+				setStatus(copy('sendFirst'), false);
 			})();
 		</script>
 	</body>
