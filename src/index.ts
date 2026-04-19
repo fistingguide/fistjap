@@ -2482,10 +2482,12 @@ export default {
 				return badRequest("invalid profile id");
 			}
 			const result = await env.DB.prepare(
-				`INSERT INTO profile_click_events (profile_id, source)
-				 SELECT id, 'website'
+				`INSERT INTO profile_click_events (profile_id, web_clicked_cnt, tg_clicked_cnt)
+				 SELECT id, 1, 0
 				 FROM profiles
-				 WHERE id = ?`,
+				 WHERE id = ?
+				 ON CONFLICT(profile_id) DO UPDATE SET
+				 	web_clicked_cnt = profile_click_events.web_clicked_cnt + 1`,
 			)
 				.bind(profileId)
 				.run();
