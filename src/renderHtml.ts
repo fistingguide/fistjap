@@ -2775,40 +2775,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				font-size: 12px;
 				margin-top: 8px;
 			}
-			.verify-grid {
-				display: grid;
-				grid-template-columns: minmax(0, 1fr) auto;
-				gap: 8px;
-				align-items: center;
-			}
-			.verify-grid input {
-				height: 40px;
-			}
-			.verify-grid button {
-				height: 40px;
-				padding: 0 12px;
-				border-radius: 10px;
-				background: #0F1419;
-				color: #E7E9EA;
-				border: 1px solid var(--line);
-			}
-			.verify-grid button.primary {
-				background: var(--primary);
-				color: #FFFFFF;
-				border: none;
-			}
-			.verify-note {
-				color: var(--muted);
-				font-size: 12px;
-				line-height: 1.5;
-				margin: 0;
-			}
-			.verify-status {
-				color: #28C76F;
-				font-size: 13px;
-				margin: 0;
-				white-space: pre-line;
-			}
 			.location-selected { color: var(--muted); font-size: 12px; }
 			.location-meta {
 				display: grid;
@@ -3011,9 +2977,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				.form .full { grid-column: 1 / -1; }
 				.form .identity-field { grid-column: auto; }
 				.location-meta { grid-template-columns: 1fr; }
-				.verify-grid {
-					grid-template-columns: 1fr;
-				}
 			}
 		</style>
 		<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "def0f01252734ae59676f95377aad23b"}'></script><!-- End Cloudflare Web Analytics -->
@@ -3073,25 +3036,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					<button id="resetBtn" class="secondary" data-i18n="admin_reset_btn">Reset</button>
 				</div>
 				<div class="search-hint" data-i18n="admin_search_hint">Only supports existing accounts for modifying their related information or deleting.</div>
-			</section>
-
-			<section class="card" id="verifySection"${adminMode === "home" ? " hidden" : ""}>
-				<div class="field full">
-					<label id="verifyEmailLabel">Verification Email</label>
-					<div class="verify-grid">
-						<input id="verifyEmailInput" type="email" autocomplete="email" />
-						<button type="button" id="sendVerifyCodeBtn"></button>
-					</div>
-				</div>
-				<p class="verify-note" id="verifyEmailNote"></p>
-				<div class="field full">
-					<label id="verifyCodeLabel">Verification Code</label>
-					<div class="verify-grid">
-						<input id="verifyCodeInput" inputmode="numeric" autocomplete="one-time-code" />
-						<button type="button" class="primary" id="confirmVerifyCodeBtn"></button>
-					</div>
-				</div>
-				<p class="verify-status" id="verifyStatus"></p>
 			</section>
 
 			<section class="card" id="formSection"${adminMode === "home" ? " hidden" : ""}>
@@ -3179,9 +3123,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			let reverseRequestSeq = 0;
 			let createHandleCheckTimer = null;
 			let lastCreateHandleChecked = '';
-			let adminSessionToken = '';
-			let adminSessionExpiresAt = 0;
-			let pendingVerificationId = '';
 			const MODE_CREATE = 'create';
 			const MODE_EDIT = 'edit';
 			const MODE_DELETE = 'delete';
@@ -3194,7 +3135,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				modeEditBtn: document.getElementById('modeEditBtn'),
 				modeDeleteBtn: document.getElementById('modeDeleteBtn'),
 				searchSection: document.getElementById('searchSection'),
-				verifySection: document.getElementById('verifySection'),
 				formSection: document.getElementById('formSection'),
 				deleteSection: document.getElementById('deleteSection'),
 				handleSearch: document.getElementById('handleSearch'),
@@ -3224,15 +3164,7 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				submitBtn: document.getElementById('submitBtn'),
 				cancelEditBtn: document.getElementById('cancelEditBtn'),
 				deleteOnlyBtn: document.getElementById('deleteOnlyBtn'),
-				deleteTargetText: document.getElementById('deleteTargetText'),
-				verifyEmailLabel: document.getElementById('verifyEmailLabel'),
-				verifyEmailInput: document.getElementById('verifyEmailInput'),
-				sendVerifyCodeBtn: document.getElementById('sendVerifyCodeBtn'),
-				verifyEmailNote: document.getElementById('verifyEmailNote'),
-				verifyCodeLabel: document.getElementById('verifyCodeLabel'),
-				verifyCodeInput: document.getElementById('verifyCodeInput'),
-				confirmVerifyCodeBtn: document.getElementById('confirmVerifyCodeBtn'),
-				verifyStatus: document.getElementById('verifyStatus')
+				deleteTargetText: document.getElementById('deleteTargetText')
 			};
 
 			function t(key, fallback) {
@@ -3292,7 +3224,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			function applyMode(mode) {
 				currentMode = mode;
 				if (els.searchSection) els.searchSection.hidden = (mode === MODE_CREATE || mode === MODE_HOME);
-				if (els.verifySection) els.verifySection.hidden = mode === MODE_HOME;
 				if (els.formSection) els.formSection.hidden = (mode === MODE_DELETE || mode === MODE_HOME);
 				if (els.deleteSection) els.deleteSection.hidden = mode !== MODE_DELETE;
 				if (els.locationSearch) {
@@ -3370,222 +3301,15 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				window.alert(message);
 			}
 
-			function getVerifyText(kind) {
-				const rawLang =
-					(window.__uiLang && String(window.__uiLang)) ||
-					document.documentElement.getAttribute('lang') ||
-					navigator.language ||
-					'en';
-				const lang = String(rawLang).toLowerCase();
-				const langKey = lang.startsWith('zh-cn') || lang.startsWith('zh-hans') ? 'zh-CN'
-					: (lang.startsWith('zh-tw') || lang.startsWith('zh-hk') || lang.startsWith('zh-hant')) ? 'zh-TW'
-					: lang.startsWith('ja') ? 'ja'
-					: lang.startsWith('ko') ? 'ko'
-					: lang.startsWith('es') ? 'es'
-					: lang.startsWith('pt') ? 'pt'
-					: lang.startsWith('th') ? 'th'
-					: lang.startsWith('vi') ? 'vi'
-					: 'en';
-
-				const copy = {
-					en: {
-						email: 'Enter the email address to receive the verification code:',
-						emailNotice: 'This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.',
-						emailPlaceholder: 'name@example.com',
-						code: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):',
-						codePlaceholder: '6-digit code',
-						send: 'Send Code',
-						verify: 'Verify Code',
-						sent: 'Verification code sent. Check your inbox.',
-						verified: 'Verification successful. You can now submit admin operations.',
-						expired: 'Verification has expired. Please verify again.'
-					},
-					'zh-CN': {
-						email: '请输入接收验证码的邮箱地址：',
-						emailNotice: '该邮箱仅用于接收验证码，以防止机器人和滥用行为，不会被收录。',
-						emailPlaceholder: 'name@example.com',
-						code: '验证码已发送，请输入6位验证码（5分钟内有效）：',
-						codePlaceholder: '6位验证码',
-						send: '发送验证码',
-						verify: '确认验证码',
-						sent: '验证码已发送，请查看邮箱。',
-						verified: '验证成功，现在可以执行管理操作。',
-						expired: '验证已过期，请重新验证。'
-					},
-					'zh-TW': {
-						email: '請輸入接收驗證碼的電子郵箱地址：',
-						emailNotice: '該郵箱僅用於接收驗證碼，以防止機器人與濫用行為，不會被收錄。',
-						emailPlaceholder: 'name@example.com',
-						code: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：',
-						codePlaceholder: '6位驗證碼',
-						send: '發送驗證碼',
-						verify: '確認驗證碼',
-						sent: '驗證碼已發送，請查看郵箱。',
-						verified: '驗證成功，現在可以執行管理操作。',
-						expired: '驗證已過期，請重新驗證。'
-					},
-					ja: {
-						email: '認証コードを受け取るメールアドレスを入力してください：',
-						emailNotice: 'このメールアドレスは認証コード送信のみに使用され、ボットや不正利用を防止し、保存されません。',
-						emailPlaceholder: 'name@example.com',
-						code: '認証コードを送信しました。6桁のコードを入力してください（有効期限5分）：',
-						codePlaceholder: '6桁のコード',
-						send: 'コード送信',
-						verify: 'コード確認',
-						sent: '認証コードを送信しました。メールを確認してください。',
-						verified: '認証成功。管理操作を実行できます。',
-						expired: '認証の有効期限が切れました。再認証してください。'
-					},
-					ko: {
-						email: '인증코드를 받을 이메일 주소를 입력하세요:',
-						emailNotice: '이 이메일 주소는 인증코드 수신과 봇/악용 방지에만 사용되며 저장되지 않습니다.',
-						emailPlaceholder: 'name@example.com',
-						code: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):',
-						codePlaceholder: '6자리 코드',
-						send: '코드 전송',
-						verify: '코드 확인',
-						sent: '인증코드를 전송했습니다. 이메일을 확인하세요.',
-						verified: '인증 성공. 이제 관리자 작업을 수행할 수 있습니다.',
-						expired: '인증이 만료되었습니다. 다시 인증해 주세요.'
-					},
-					es: {
-						email: 'Introduce el correo para recibir el código de verificación:',
-						emailNotice: 'Este correo solo se utiliza para enviar el código y prevenir bots y abusos, y no se guardará.',
-						emailPlaceholder: 'name@example.com',
-						code: 'Código enviado. Introduce el código de 6 dígitos (válido por 5 minutos):',
-						codePlaceholder: 'Código de 6 dígitos',
-						send: 'Enviar codigo',
-						verify: 'Confirmar codigo',
-						sent: 'Codigo enviado. Revisa tu correo.',
-						verified: 'Verificacion correcta. Ya puedes ejecutar operaciones de admin.',
-						expired: 'La verificacion ha caducado. Verifica de nuevo.'
-					},
-					pt: {
-						email: 'Digite o e-mail para receber o código de verificação:',
-						emailNotice: 'Este e-mail é usado apenas para receber o código e prevenir bots e abusos, e não será armazenado.',
-						emailPlaceholder: 'name@example.com',
-						code: 'Código enviado. Digite o código de 6 dígitos (válido por 5 minutos):',
-						codePlaceholder: 'Código de 6 dígitos',
-						send: 'Enviar codigo',
-						verify: 'Confirmar codigo',
-						sent: 'Codigo enviado. Verifique seu e-mail.',
-						verified: 'Verificacao concluida. Agora voce pode executar operacoes administrativas.',
-						expired: 'A verificacao expirou. Verifique novamente.'
-					},
-					th: {
-						email: 'กรุณากรอกอีเมลสำหรับรับรหัสยืนยัน:',
-						emailNotice: 'อีเมลนี้ใช้เพื่อรับรหัสยืนยันเท่านั้น เพื่อป้องกันบอทและการใช้งานในทางที่ผิด และจะไม่ถูกบันทึก',
-						emailPlaceholder: 'name@example.com',
-						code: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):',
-						codePlaceholder: 'รหัส 6 หลัก',
-						send: 'ส่งรหัส',
-						verify: 'ยืนยันรหัส',
-						sent: 'ส่งรหัสแล้ว โปรดตรวจสอบอีเมล',
-						verified: 'ยืนยันสำเร็จ ตอนนี้สามารถดำเนินการผู้ดูแลได้',
-						expired: 'การยืนยันหมดอายุแล้ว โปรดยืนยันใหม่'
-					},
-					vi: {
-						email: 'Nhap email de nhan ma xac minh:',
-						emailNotice: 'Email nay chi duoc dung de nhan ma xac minh nham ngan bot va hanh vi lam dung, va se khong duoc luu.',
-						emailPlaceholder: 'name@example.com',
-						code: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):',
-						codePlaceholder: 'Ma 6 so',
-						send: 'Gui ma',
-						verify: 'Xac nhan ma',
-						sent: 'Da gui ma. Vui long kiem tra email.',
-						verified: 'Xac minh thanh cong. Ban co the thuc hien thao tac quan tri.',
-						expired: 'Xac minh da het han. Vui long xac minh lai.'
-					}
-				};
-
-				const bucket = copy[langKey] || copy.en;
-				return bucket[kind] || '';
-			}
-
-			function applyVerificationCopy() {
-				if (!els.verifySection) return;
-				if (els.verifyEmailLabel) els.verifyEmailLabel.textContent = getVerifyText('email');
-				if (els.verifyEmailInput) els.verifyEmailInput.placeholder = getVerifyText('emailPlaceholder');
-				if (els.sendVerifyCodeBtn) els.sendVerifyCodeBtn.textContent = getVerifyText('send');
-				if (els.verifyEmailNote) els.verifyEmailNote.textContent = getVerifyText('emailNotice');
-				if (els.verifyCodeLabel) els.verifyCodeLabel.textContent = getVerifyText('code');
-				if (els.verifyCodeInput) els.verifyCodeInput.placeholder = getVerifyText('codePlaceholder');
-				if (els.confirmVerifyCodeBtn) els.confirmVerifyCodeBtn.textContent = getVerifyText('verify');
-			}
-
-			function setVerifyStatus(text, isError) {
-				if (!els.verifyStatus) return;
-				els.verifyStatus.textContent = String(text || '');
-				els.verifyStatus.style.color = isError ? '#F4212E' : '#28C76F';
-			}
-
-			function isAdminSessionActive() {
-				return Boolean(adminSessionToken) && adminSessionExpiresAt > Date.now();
-			}
-
-			function ensureAdminSessionActive() {
-				if (isAdminSessionActive()) return true;
-				adminSessionToken = '';
-				adminSessionExpiresAt = 0;
-				setVerifyStatus(getVerifyText('expired'), true);
-				return false;
-			}
-
-			async function sendVerificationCodeFromPage() {
-				const email = String((els.verifyEmailInput && els.verifyEmailInput.value) || '').trim();
-				if (!email) {
-					setVerifyStatus(getVerifyText('email'), true);
+			function queuePendingAdminOperation(operation) {
+				try {
+					sessionStorage.setItem('adminPendingOperation', JSON.stringify(operation));
+				} catch {
+					window.alert('Failed to store pending operation in this browser session.');
 					return;
 				}
-				setVerifyStatus(getVerifyText('send') + '...', false);
-				const sendRes = await fetch('/api/admin/verification-code/send', {
-					method: 'POST',
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify({ email: email })
-				});
-				if (!sendRes.ok) {
-					const sendErr = await readErrorMessage(sendRes);
-					setVerifyStatus(sendErr, true);
-					return;
-				}
-				const data = await sendRes.json();
-				pendingVerificationId = String(data && data.verificationId ? data.verificationId : '').trim();
-				adminSessionToken = '';
-				adminSessionExpiresAt = 0;
-				setVerifyStatus(getVerifyText('sent'), false);
-			}
-
-			async function confirmVerificationCodeFromPage() {
-				const code = String((els.verifyCodeInput && els.verifyCodeInput.value) || '').trim();
-				if (!pendingVerificationId) {
-					setVerifyStatus(getVerifyText('sent'), true);
-					return;
-				}
-				if (!code) {
-					setVerifyStatus(getVerifyText('code'), true);
-					return;
-				}
-				setVerifyStatus(getVerifyText('verify') + '...', false);
-				const verifyRes = await fetch('/api/admin/verification-code/confirm', {
-					method: 'POST',
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify({
-						verificationId: pendingVerificationId,
-						code: code
-					})
-				});
-				if (!verifyRes.ok) {
-					const err = await readErrorMessage(verifyRes);
-					setVerifyStatus(err, true);
-					return;
-				}
-				const data = await verifyRes.json();
-				adminSessionToken = String(data && data.sessionToken ? data.sessionToken : '').trim();
-				const expiresAtIso = String(data && data.expiresAt ? data.expiresAt : '').trim();
-				adminSessionExpiresAt = expiresAtIso ? Date.parse(expiresAtIso) : (Date.now() + 5 * 60 * 1000);
-				pendingVerificationId = '';
-				if (els.verifyCodeInput) els.verifyCodeInput.value = '';
-				setVerifyStatus(getVerifyText('verified'), false);
+				const returnPath = window.location.pathname || '/admin';
+				window.location.href = '/admin/verify?return=' + encodeURIComponent(returnPath);
 			}
 
 			async function readErrorMessage(res) {
@@ -3598,16 +3322,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					if (text && String(text).trim()) return String(text).trim();
 				} catch {}
 				return 'request failed';
-			}
-
-			function requestAdminVerificationHeaders(actionName) {
-				if (!ensureAdminSessionActive()) {
-					setStatus(actionName + ' cancelled: verification is required.');
-					return null;
-				}
-				return {
-					'x-admin-session-token': adminSessionToken
-				};
 			}
 
 			function updateAvatarPreview() {
@@ -4133,37 +3847,12 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 				const isUpdate = currentMode === MODE_EDIT;
 				const method = isUpdate ? 'PUT' : 'POST';
 				const url = isUpdate ? '/api/profiles/' + editingId : '/api/profiles';
-				const verificationHeaders = requestAdminVerificationHeaders(isUpdate ? 'Update' : 'Create');
-				if (!verificationHeaders) return;
-
-				setStatus(t('admin_status_submitting', 'Submitting...'));
-				const res = await fetch(url, {
-					method,
-					headers: {
-						'content-type': 'application/json',
-						'x-admin-session-token': verificationHeaders['x-admin-session-token']
-					},
-					body: JSON.stringify(payload)
+				queuePendingAdminOperation({
+					type: isUpdate ? 'update' : 'create',
+					method: method,
+					url: url,
+					body: payload
 				});
-
-				if (!res.ok) {
-					const msg = await readErrorMessage(res);
-					setStatus('Submit failed: ' + msg);
-					return;
-				}
-				const result = await res.json();
-
-				setStatus(isUpdate ? t('admin_status_updated_success', 'Updated successfully') : t('admin_status_created_success', 'Created successfully'));
-				const actionText = isUpdate
-					? t('admin_alert_updated_success', 'Profile updated successfully.')
-					: t('admin_alert_created_success', 'Profile created successfully.');
-				const summary = formatProfileSummary(result && result.profile ? result.profile : null, payload.handle);
-				showSuccessDialog(summary ? (actionText + '\\n\\n' + summary) : actionText);
-				resetForm();
-				if (currentMode === MODE_EDIT) {
-					els.handleSearch.value = payload.handle;
-					await loadSuggestions();
-				}
 			}
 
 			async function handleDelete() {
@@ -4173,27 +3862,11 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					return;
 				}
 				if (!confirm('Delete ID ' + editingId + '?')) return;
-				const verificationHeaders = requestAdminVerificationHeaders('Delete');
-				if (!verificationHeaders) return;
-
-				setStatus('Deleting...');
-				const res = await fetch('/api/profiles/' + editingId, {
+				queuePendingAdminOperation({
+					type: 'delete',
 					method: 'DELETE',
-					headers: {
-						'x-admin-session-token': verificationHeaders['x-admin-session-token']
-					}
+					url: '/api/profiles/' + editingId
 				});
-				if (!res.ok) {
-					const msg = await readErrorMessage(res);
-					setStatus('Delete failed: ' + msg);
-					return;
-				}
-				setStatus('Deleted successfully');
-				showSuccessDialog('Profile deleted successfully.');
-				const prev = els.handleSearch.value;
-				resetForm();
-				els.handleSearch.value = prev;
-				await loadSuggestions();
 			}
 
 			els.form.addEventListener('submit', submitForm);
@@ -4271,24 +3944,6 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			if (els.deleteOnlyBtn) {
 				els.deleteOnlyBtn.addEventListener('click', handleDelete);
 			}
-			if (els.sendVerifyCodeBtn) {
-				els.sendVerifyCodeBtn.addEventListener('click', function () {
-					void sendVerificationCodeFromPage();
-				});
-			}
-			if (els.confirmVerifyCodeBtn) {
-				els.confirmVerifyCodeBtn.addEventListener('click', function () {
-					void confirmVerificationCodeFromPage();
-				});
-			}
-			if (els.verifyCodeInput) {
-				els.verifyCodeInput.addEventListener('keydown', function (event) {
-					if (event.key === 'Enter') {
-						event.preventDefault();
-						void confirmVerificationCodeFromPage();
-					}
-				});
-			}
 			els.resetBtn.addEventListener('click', function () {
 				els.handleSearch.value = '';
 				renderSuggestions([]);
@@ -4301,18 +3956,9 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			});
 			els.cancelEditBtn.addEventListener('click', resetForm);
 
-			const langSwitchEl = document.getElementById('adminLangSwitch');
-			if (langSwitchEl) {
-				langSwitchEl.addEventListener('change', function () {
-					setTimeout(applyVerificationCopy, 0);
-				});
-			}
-
 			applyMode(getModeFromUrl());
-			applyVerificationCopy();
 			updateAvatarPreview();
 			renderLocationPreview(35.7512, 139.7093);
-			setVerifyStatus('', false);
 			setStatus('');
 		</script>
 <script>
@@ -4376,6 +4022,559 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 					const deniedText = (document.getElementById('ageDeniedText')?.textContent || 'Access denied. This website is for adults 18+ only.');
 					document.body.innerHTML = '<div style="padding:24px;font-family:Segoe UI,sans-serif;">' + deniedText + '</div>';
 				});
+			})();
+		</script>
+	</body>
+</html>
+`;
+}
+
+export function renderAdminVerifyPage(): string {
+	return `
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Admin Verification</title>
+		<style>
+			:root {
+				--bg: #000000;
+				--card: #16181C;
+				--line: #2F3336;
+				--text: #E7E9EA;
+				--muted: #71767B;
+				--primary: #1D9BF0;
+				--danger: #F4212E;
+				--success: #28C76F;
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				padding: 20px;
+			}
+			.wrap {
+				width: min(1080px, 96vw);
+				margin: 0 auto;
+				display: grid;
+				gap: 16px;
+			}
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: 16px;
+				padding: 16px;
+			}
+			.head {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 10px;
+			}
+			h1 { margin: 0; font-size: 24px; }
+			.lang-switch {
+				font: inherit;
+				border: 1px solid var(--line);
+				background: #16181C;
+				color: var(--text);
+				padding: 0 12px;
+				border-radius: 10px;
+				height: 42px;
+				width: 180px;
+			}
+			.label {
+				display: block;
+				font-size: 13px;
+				color: var(--muted);
+				margin-bottom: 6px;
+			}
+			.row {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 10px;
+				align-items: center;
+			}
+			input, button {
+				font: inherit;
+				border-radius: 10px;
+			}
+			input {
+				height: 40px;
+				width: 100%;
+				padding: 0 12px;
+				border: 1px solid var(--line);
+				background: #0B1118;
+				color: var(--text);
+			}
+			button {
+				height: 40px;
+				padding: 0 14px;
+				border: 1px solid var(--line);
+				background: #0B1118;
+				color: #E7E9EA;
+				cursor: pointer;
+			}
+			#verifyCodeBtn {
+				background: #B40000;
+				border-color: #B40000;
+				color: #FFFFFF;
+			}
+			.note {
+				margin: 8px 0 0;
+				font-size: 13px;
+				color: var(--muted);
+			}
+			.status {
+				margin: 12px 0 0;
+				font-size: 14px;
+				white-space: pre-line;
+			}
+			.status.error { color: var(--danger); }
+			.status.ok { color: var(--success); }
+			.result {
+				margin-top: 14px;
+				padding-top: 14px;
+				border-top: 1px solid var(--line);
+				font-size: 14px;
+				line-height: 1.6;
+				white-space: pre-line;
+			}
+			.return-row {
+				margin-top: 12px;
+				display: none;
+				gap: 10px;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+			.return-row.show { display: flex; }
+			.return-btn {
+				background: var(--primary);
+				border-color: var(--primary);
+				color: #FFFFFF;
+			}
+			@media (max-width: 900px) {
+				.row { grid-template-columns: 1fr; }
+				.lang-switch { width: 140px; height: 36px; }
+				h1 { font-size: 20px; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<section class="card">
+				<div class="head">
+					<h1 id="pageTitle">Email Verification</h1>
+					${renderLanguageSwitcher("verifyLangSwitch")}
+				</div>
+			</section>
+			<section class="card">
+				<label class="label" id="emailLabel"></label>
+				<div class="row">
+					<input id="emailInput" type="email" autocomplete="email" />
+					<button type="button" id="sendCodeBtn"></button>
+				</div>
+				<p class="note" id="emailNotice"></p>
+				<label class="label" id="codeLabel" style="margin-top:8px;"></label>
+				<div class="row">
+					<input id="codeInput" inputmode="numeric" autocomplete="one-time-code" />
+					<button type="button" id="verifyCodeBtn"></button>
+				</div>
+				<p class="status" id="statusText"></p>
+				<div class="result" id="resultText"></div>
+				<div class="return-row" id="returnRow">
+					<button type="button" class="return-btn" id="returnBtn"></button>
+					<span id="returnHint"></span>
+				</div>
+			</section>
+		</div>
+		${renderI18nScript("page_title_admin")}
+		<script>
+			(function () {
+				const els = {
+					pageTitle: document.getElementById('pageTitle'),
+					emailLabel: document.getElementById('emailLabel'),
+					emailInput: document.getElementById('emailInput'),
+					sendCodeBtn: document.getElementById('sendCodeBtn'),
+					emailNotice: document.getElementById('emailNotice'),
+					codeLabel: document.getElementById('codeLabel'),
+					codeInput: document.getElementById('codeInput'),
+					verifyCodeBtn: document.getElementById('verifyCodeBtn'),
+					statusText: document.getElementById('statusText'),
+					resultText: document.getElementById('resultText'),
+					returnRow: document.getElementById('returnRow'),
+					returnBtn: document.getElementById('returnBtn'),
+					returnHint: document.getElementById('returnHint')
+				};
+				let verificationId = '';
+				let returnTimer = null;
+				const pendingRaw = sessionStorage.getItem('adminPendingOperation');
+				const params = new URLSearchParams(window.location.search || '');
+				const requestedReturn = String(params.get('return') || '').trim();
+				const returnPath = /^\/admin(\/|$)/.test(requestedReturn) ? requestedReturn : '/admin';
+
+				function languageKey() {
+					const rawLang =
+						(window.__uiLang && String(window.__uiLang)) ||
+						document.documentElement.getAttribute('lang') ||
+						navigator.language ||
+						'en';
+					const lang = String(rawLang).toLowerCase();
+					if (lang.startsWith('zh-cn') || lang.startsWith('zh-hans')) return 'zh-CN';
+					if (lang.startsWith('zh-tw') || lang.startsWith('zh-hk') || lang.startsWith('zh-hant')) return 'zh-TW';
+					if (lang.startsWith('ja')) return 'ja';
+					if (lang.startsWith('ko')) return 'ko';
+					if (lang.startsWith('es')) return 'es';
+					if (lang.startsWith('pt')) return 'pt';
+					if (lang.startsWith('th')) return 'th';
+					if (lang.startsWith('vi')) return 'vi';
+					return 'en';
+				}
+
+				function copy(key) {
+					const map = {
+						en: {
+							title: 'Email Verification',
+							emailLabel: 'Enter the email address to receive the verification code:',
+							emailPlaceholder: 'name@example.com',
+							send: 'Send Code',
+							emailNotice: 'This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.',
+							codeLabel: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):',
+							codePlaceholder: '6-digit code',
+							verify: 'Verify Code',
+							statusSending: 'Sending verification code...',
+							statusVerifying: 'Verifying code...',
+							statusDone: 'Verification successful. Executing the operation...',
+							noPending: 'No pending operation found. Please return and submit again.',
+							sendFirst: 'Please send the verification code first.',
+							opSuccess: 'Operation completed successfully.',
+							opFailed: 'Operation failed: ',
+							returnBtn: 'Return Now',
+							returnHint: 'You can return now. Auto returning in {seconds}s...'
+						},
+						'zh-CN': {
+							title: '邮箱验证',
+							emailLabel: '请输入接收验证码的邮箱地址：',
+							emailPlaceholder: 'name@example.com',
+							send: '发送验证码',
+							emailNotice: '该邮箱仅用于接收验证码，以防止机器人和异常行为，不会被收录。',
+							codeLabel: '验证码已发送，请输入6位验证码（5分钟内有效）：',
+							codePlaceholder: '6位验证码',
+							verify: '确认验证码',
+							statusSending: '正在发送验证码...',
+							statusVerifying: '正在校验验证码...',
+							statusDone: '验证成功，正在执行操作...',
+							noPending: '未找到待执行的操作，请返回重新提交。',
+							sendFirst: '请先发送验证码。',
+							opSuccess: '操作执行成功。',
+							opFailed: '操作执行失败：',
+							returnBtn: '立即返回',
+							returnHint: '你可以手动返回；若未返回，将在 {seconds} 秒后自动返回。'
+						},
+						'zh-TW': {
+							title: '郵箱驗證',
+							emailLabel: '請輸入接收驗證碼的電子郵箱地址：',
+							emailPlaceholder: 'name@example.com',
+							send: '發送驗證碼',
+							emailNotice: '該郵箱僅用於接收驗證碼，以防止機器人和異常行為，不會被收錄。',
+							codeLabel: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：',
+							codePlaceholder: '6位驗證碼',
+							verify: '確認驗證碼',
+							statusSending: '正在發送驗證碼...',
+							statusVerifying: '正在校驗驗證碼...',
+							statusDone: '驗證成功，正在執行操作...',
+							noPending: '未找到待執行的操作，請返回重新提交。',
+							sendFirst: '請先發送驗證碼。',
+							opSuccess: '操作執行成功。',
+							opFailed: '操作執行失敗：',
+							returnBtn: '立即返回',
+							returnHint: '你可以手動返回；若未返回，將在 {seconds} 秒後自動返回。'
+						},
+						ja: {
+							title: 'メール認証',
+							emailLabel: '認証コードを受け取るメールアドレスを入力してください：',
+							emailPlaceholder: 'name@example.com',
+							send: 'コード送信',
+							emailNotice: 'このメールアドレスはボットや不正利用防止のための認証コード送信にのみ使用され、記録されません。',
+							codeLabel: 'コードを送信しました。6桁のコードを入力してください（有効期限5分）：',
+							codePlaceholder: '6桁コード',
+							verify: 'コード確認',
+							statusSending: '認証コードを送信中...',
+							statusVerifying: 'コードを検証中...',
+							statusDone: '認証成功。操作を実行しています...',
+							noPending: '保留中の操作が見つかりません。戻って再送信してください。',
+							sendFirst: '先に認証コードを送信してください。',
+							opSuccess: '操作が完了しました。',
+							opFailed: '操作に失敗しました: ',
+							returnBtn: '今すぐ戻る',
+							returnHint: '今すぐ戻れます。戻らない場合は {seconds} 秒後に自動で戻ります。'
+						},
+						ko: {
+							title: '이메일 인증',
+							emailLabel: '인증코드를 받을 이메일 주소를 입력하세요:',
+							emailPlaceholder: 'name@example.com',
+							send: '코드 전송',
+							emailNotice: '이 이메일은 봇 및 비정상 행위 방지를 위한 인증코드 전송에만 사용되며 저장되지 않습니다.',
+							codeLabel: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):',
+							codePlaceholder: '6자리 코드',
+							verify: '코드 확인',
+							statusSending: '인증코드 전송 중...',
+							statusVerifying: '코드 검증 중...',
+							statusDone: '인증 성공. 작업을 실행하는 중...',
+							noPending: '대기 중인 작업이 없습니다. 돌아가서 다시 제출하세요.',
+							sendFirst: '먼저 인증코드를 전송하세요.',
+							opSuccess: '작업이 성공적으로 완료되었습니다.',
+							opFailed: '작업 실패: ',
+							returnBtn: '지금 돌아가기',
+							returnHint: '지금 돌아갈 수 있습니다. 돌아가지 않으면 {seconds}초 후 자동으로 돌아갑니다.'
+						},
+						es: {
+							title: 'Verificacion por correo',
+							emailLabel: 'Introduce el correo para recibir el codigo de verificacion:',
+							emailPlaceholder: 'name@example.com',
+							send: 'Enviar codigo',
+							emailNotice: 'Este correo solo se usa para prevenir bots y abusos, y no sera registrado.',
+							codeLabel: 'Codigo enviado. Introduce el codigo de 6 digitos (valido por 5 minutos):',
+							codePlaceholder: 'Codigo de 6 digitos',
+							verify: 'Verificar codigo',
+							statusSending: 'Enviando codigo...',
+							statusVerifying: 'Verificando codigo...',
+							statusDone: 'Verificacion correcta. Ejecutando operacion...',
+							noPending: 'No hay operacion pendiente. Vuelve y envia de nuevo.',
+							sendFirst: 'Primero envia el codigo.',
+							opSuccess: 'Operacion completada correctamente.',
+							opFailed: 'Operacion fallida: ',
+							returnBtn: 'Volver ahora',
+							returnHint: 'Puedes volver ahora. Si no vuelves, regresaremos en {seconds}s.'
+						},
+						pt: {
+							title: 'Verificacao por e-mail',
+							emailLabel: 'Digite o e-mail para receber o codigo de verificacao:',
+							emailPlaceholder: 'name@example.com',
+							send: 'Enviar codigo',
+							emailNotice: 'Este e-mail e usado apenas para prevenir bots e abusos, e nao sera armazenado.',
+							codeLabel: 'Codigo enviado. Digite o codigo de 6 digitos (valido por 5 minutos):',
+							codePlaceholder: 'Codigo de 6 digitos',
+							verify: 'Verificar codigo',
+							statusSending: 'Enviando codigo...',
+							statusVerifying: 'Verificando codigo...',
+							statusDone: 'Verificacao concluida. Executando operacao...',
+							noPending: 'Nenhuma operacao pendente. Volte e envie novamente.',
+							sendFirst: 'Envie o codigo primeiro.',
+							opSuccess: 'Operacao concluida com sucesso.',
+							opFailed: 'Falha na operacao: ',
+							returnBtn: 'Voltar agora',
+							returnHint: 'Voce pode voltar agora. Se nao voltar, retornaremos em {seconds}s.'
+						},
+						th: {
+							title: 'ยืนยันอีเมล',
+							emailLabel: 'กรุณากรอกอีเมลสำหรับรับรหัสยืนยัน:',
+							emailPlaceholder: 'name@example.com',
+							send: 'ส่งรหัส',
+							emailNotice: 'อีเมลนี้ใช้เพื่อป้องกันบอทและพฤติกรรมผิดปกติเท่านั้น และจะไม่ถูกบันทึก',
+							codeLabel: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):',
+							codePlaceholder: 'รหัส 6 หลัก',
+							verify: 'ยืนยันรหัส',
+							statusSending: 'กำลังส่งรหัส...',
+							statusVerifying: 'กำลังตรวจสอบรหัส...',
+							statusDone: 'ยืนยันสำเร็จ กำลังดำเนินการ...',
+							noPending: 'ไม่พบงานที่รอดำเนินการ โปรดย้อนกลับและส่งใหม่',
+							sendFirst: 'กรุณาส่งรหัสก่อน',
+							opSuccess: 'ดำเนินการสำเร็จ',
+							opFailed: 'ดำเนินการล้มเหลว: ',
+							returnBtn: 'กลับทันที',
+							returnHint: 'คุณสามารถกลับได้ทันที หากไม่กลับ จะกลับอัตโนมัติใน {seconds} วินาที'
+						},
+						vi: {
+							title: 'Xac minh email',
+							emailLabel: 'Nhap email de nhan ma xac minh:',
+							emailPlaceholder: 'name@example.com',
+							send: 'Gui ma',
+							emailNotice: 'Email nay chi dung de ngan bot va hanh vi bat thuong, se khong duoc luu.',
+							codeLabel: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):',
+							codePlaceholder: 'Ma 6 so',
+							verify: 'Xac minh ma',
+							statusSending: 'Dang gui ma...',
+							statusVerifying: 'Dang xac minh ma...',
+							statusDone: 'Xac minh thanh cong. Dang thuc hien thao tac...',
+							noPending: 'Khong tim thay thao tac dang cho. Hay quay lai va gui lai.',
+							sendFirst: 'Vui long gui ma truoc.',
+							opSuccess: 'Thao tac hoan tat thanh cong.',
+							opFailed: 'Thao tac that bai: ',
+							returnBtn: 'Quay lai ngay',
+							returnHint: 'Ban co the quay lai ngay. Neu khong, he thong se tu dong quay lai sau {seconds}s.'
+						}
+					};
+					const lang = languageKey();
+					const bucket = map[lang] || map.en;
+					return bucket[key] || '';
+				}
+
+				function applyText() {
+					els.pageTitle.textContent = copy('title');
+					els.emailLabel.textContent = copy('emailLabel');
+					els.emailInput.placeholder = copy('emailPlaceholder');
+					els.sendCodeBtn.textContent = copy('send');
+					els.emailNotice.textContent = copy('emailNotice');
+					els.codeLabel.textContent = copy('codeLabel');
+					els.codeInput.placeholder = copy('codePlaceholder');
+					els.verifyCodeBtn.textContent = copy('verify');
+					els.returnBtn.textContent = copy('returnBtn');
+				}
+
+				function setStatus(text, isError) {
+					els.statusText.textContent = String(text || '');
+					els.statusText.className = 'status' + (isError ? ' error' : ' ok');
+				}
+
+				function setResult(text) {
+					els.resultText.textContent = String(text || '');
+				}
+
+				function parseError(res, bodyText) {
+					try {
+						const parsed = JSON.parse(bodyText || '{}');
+						if (parsed && typeof parsed.error === 'string' && parsed.error) return parsed.error;
+					} catch {}
+					return (bodyText || '').trim() || ('HTTP ' + res.status);
+				}
+
+				async function sendCode() {
+					const email = String(els.emailInput.value || '').trim();
+					if (!email) {
+						setStatus(copy('emailLabel'), true);
+						return;
+					}
+					setStatus(copy('statusSending'), false);
+					const res = await fetch('/api/admin/verification-code/send', {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify({ email: email })
+					});
+					const text = await res.text();
+					if (!res.ok) {
+						setStatus(parseError(res, text), true);
+						return;
+					}
+					try {
+						const data = JSON.parse(text || '{}');
+						verificationId = String(data.verificationId || '').trim();
+					} catch {
+						verificationId = '';
+					}
+					setStatus(copy('codeLabel'), false);
+				}
+
+				function startReturnCountdown() {
+					if (returnTimer) clearInterval(returnTimer);
+					let remain = 5;
+					els.returnRow.classList.add('show');
+					els.returnHint.textContent = copy('returnHint').replace('{seconds}', String(remain));
+					returnTimer = setInterval(function () {
+						remain -= 1;
+						if (remain <= 0) {
+							clearInterval(returnTimer);
+							window.location.href = returnPath;
+							return;
+						}
+						els.returnHint.textContent = copy('returnHint').replace('{seconds}', String(remain));
+					}, 1000);
+				}
+
+				async function verifyAndRun() {
+					if (!pendingRaw) {
+						setStatus(copy('noPending'), true);
+						setResult(copy('noPending'));
+						startReturnCountdown();
+						return;
+					}
+					if (!verificationId) {
+						setStatus(copy('sendFirst'), true);
+						return;
+					}
+					const code = String(els.codeInput.value || '').trim();
+					if (!code) {
+						setStatus(copy('codeLabel'), true);
+						return;
+					}
+					setStatus(copy('statusVerifying'), false);
+					const verifyRes = await fetch('/api/admin/verification-code/confirm', {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: JSON.stringify({ verificationId: verificationId, code: code })
+					});
+					const verifyText = await verifyRes.text();
+					if (!verifyRes.ok) {
+						setStatus(parseError(verifyRes, verifyText), true);
+						return;
+					}
+					let sessionToken = '';
+					try {
+						const parsed = JSON.parse(verifyText || '{}');
+						sessionToken = String(parsed.sessionToken || '').trim();
+					} catch {}
+					if (!sessionToken) {
+						setStatus('Missing session token', true);
+						return;
+					}
+
+					let op = null;
+					try {
+						op = JSON.parse(pendingRaw);
+					} catch {}
+					if (!op || !op.url || !op.method) {
+						setStatus(copy('noPending'), true);
+						setResult(copy('noPending'));
+						startReturnCountdown();
+						return;
+					}
+
+					setStatus(copy('statusDone'), false);
+					const headers = { 'x-admin-session-token': sessionToken };
+					if (op.body != null) headers['content-type'] = 'application/json';
+					const res = await fetch(String(op.url), {
+						method: String(op.method),
+						headers: headers,
+						body: op.body != null ? JSON.stringify(op.body) : undefined
+					});
+					const text = await res.text();
+					if (!res.ok) {
+						const err = parseError(res, text);
+						setStatus(copy('opFailed') + err, true);
+						setResult(copy('opFailed') + err);
+						startReturnCountdown();
+						return;
+					}
+					sessionStorage.removeItem('adminPendingOperation');
+					setStatus(copy('opSuccess'), false);
+					setResult(copy('opSuccess'));
+					startReturnCountdown();
+				}
+
+				els.sendCodeBtn.addEventListener('click', function () {
+					void sendCode();
+				});
+				els.verifyCodeBtn.addEventListener('click', function () {
+					void verifyAndRun();
+				});
+				els.codeInput.addEventListener('keydown', function (event) {
+					if (event.key === 'Enter') {
+						event.preventDefault();
+						void verifyAndRun();
+					}
+				});
+				els.returnBtn.addEventListener('click', function () {
+					window.location.href = returnPath;
+				});
+				const langSwitch = document.getElementById('verifyLangSwitch');
+				if (langSwitch) {
+					langSwitch.addEventListener('change', function () {
+						setTimeout(applyText, 0);
+					});
+				}
+				applyText();
 			})();
 		</script>
 	</body>

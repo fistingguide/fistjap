@@ -1,5 +1,6 @@
 import {
 	renderAdminPage,
+	renderAdminVerifyPage,
 	renderAboutPage,
 	renderAuthorCallPage,
 	renderLeaderboardPage,
@@ -2303,6 +2304,7 @@ export default {
 			pathname === "/admin/create" ||
 			pathname === "/admin/edit" ||
 			pathname === "/admin/delete" ||
+			pathname === "/admin/verify" ||
 			pathname === "/list-star" ||
 			pathname === "/author-call" ||
 			pathname === "/about" ||
@@ -2365,6 +2367,18 @@ export default {
 				title: seo.title,
 				description: seo.description,
 				pathname: "/admin/delete",
+				robots: "noindex,nofollow",
+				locale: toOgLocale(uiLang),
+				siteName: "Fisting Guide",
+			}, env);
+		}
+
+		if (method === "GET" && pathname === "/admin/verify") {
+			const seo = pageSeo(uiLang, "admin");
+			return adminHtmlResponse(renderAdminVerifyPage(), origin, {
+				title: seo.title,
+				description: seo.description,
+				pathname: "/admin/verify",
 				robots: "noindex,nofollow",
 				locale: toOgLocale(uiLang),
 				siteName: "Fisting Guide",
