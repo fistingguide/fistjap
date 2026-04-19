@@ -761,7 +761,7 @@ async function sendVerificationCodeEmail(
 		return { ok: false, status: 500, error: "SEND_VERITY_CODE is missing" };
 	}
 
-	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
+	const from = (env.RESEND_FROM || "FistingGuide <no-reply@www.fisting.guide>").trim();
 	const expiresAtIso = new Date(Date.now() + ADMIN_VERIFY_CODE_TTL_MS).toISOString();
 	const subject = "Admin verification code";
 	const text = [
@@ -1998,7 +1998,7 @@ async function sendAdminNotification(
 		return;
 	}
 
-	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
+	const from = (env.RESEND_FROM || "FistingGuide <no-reply@www.fisting.guide>").trim();
 
 	const subject = `[Admin Notice] ${action} profile #${String(row.id ?? "")}`;
 	const text = formatOperationSummary(action, row, operatorIp);
@@ -2076,7 +2076,7 @@ async function sendTestNotification(env: RuntimeEnv, triggerIp: string): Promise
 	const to = (env.ADMIN_NOTIFICATION_EMAIL || "fistingguide@proton.me").trim();
 	if (!to) return { ok: false, error: "ADMIN_NOTIFICATION_EMAIL is missing" };
 
-	const from = (env.RESEND_FROM || "FistingGuide <onboarding@resend.dev>").trim();
+	const from = (env.RESEND_FROM || "FistingGuide <no-reply@www.fisting.guide>").trim();
 
 	const subject = "[Admin Notice] TEST email";
 	const text = [
