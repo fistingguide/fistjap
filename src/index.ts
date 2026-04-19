@@ -2259,6 +2259,7 @@ export default {
 		const uiLang = pickUiLang(url, request);
 		const method = request.method.toUpperCase();
 		const idMatch = pathname.match(/^\/api\/profiles\/(\d+)$/);
+		const clickMatch = pathname.match(/^\/api\/profiles\/(\d+)\/click$/);
 
 		if (method === "GET" && pathname === "/robots.txt") {
 			return new Response(buildRobotsTxt(origin), {
@@ -2473,6 +2474,25 @@ export default {
 			});
 			ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
 			return response;
+		}
+
+		if (method === "POST" && clickMatch) {
+			const profileId = Number(clickMatch[1]);
+			if (!Number.isInteger(profileId) || profileId <= 0) {
+				return badRequest("invalid profile id");
+			}
+			const result = await env.DB.prepare(
+				`INSERT INTO profile_click_events (profile_id, source)
+				 SELECT id, 'website'
+				 FROM profiles
+				 WHERE id = ?`,
+			)
+				.bind(profileId)
+				.run();
+			if ((result.meta.changes ?? 0) === 0) {
+				return json({ error: "not found" }, 404);
+			}
+			return json({ ok: true });
 		}
 
 		if (method === "GET" && pathname === "/api/countries") {

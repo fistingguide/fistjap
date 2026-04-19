@@ -1244,7 +1244,7 @@ function renderLeaderboardRows(rows: ProfileRecord[]): string {
 
 			return `
 				<li class="leaderboard-item">
-					<a class="card-link" href="${safeUrl}" target="_self" aria-label="Open ${safeName} on X">
+					<a class="card-link" href="${safeUrl}" target="_self" data-profile-id="${row.id}" aria-label="Open ${safeName} on X">
 						<div class="card-top">
 							<div class="rank ${rankClass}">#${rank}</div>
 							<div class="badges">
@@ -2208,6 +2208,27 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\\.0$/, '');
 				}
 
+				function trackProfileClick(profileId) {
+					const numericId = Number(profileId);
+					if (!Number.isInteger(numericId) || numericId <= 0) return;
+					const endpoint = '/api/profiles/' + numericId + '/click';
+					try {
+						if (navigator.sendBeacon) {
+							const blob = new Blob(['{}'], { type: 'application/json' });
+							navigator.sendBeacon(endpoint, blob);
+							return;
+						}
+					} catch (_error) {}
+					try {
+						fetch(endpoint, {
+							method: 'POST',
+							headers: { 'content-type': 'application/json' },
+							body: '{}',
+							keepalive: true
+						}).catch(function () {});
+					} catch (_error) {}
+				}
+
 				function ensureInlineMap() {
 					if (inlineMap) return true;
 					const mount = document.getElementById('inlineMap');
@@ -2245,15 +2266,18 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							lng = pLng + Math.cos(angle) * r;
 						}
 						bounds.push([lat, lng]);
-						L.circleMarker([lat, lng], {
+						const marker = L.circleMarker([lat, lng], {
 							radius: 5,
 							color: '#ffffff',
 							weight: 2,
 							fillColor: '#1D9BF0',
 							fillOpacity: 0.9
 						})
-							.bindPopup('<strong>' + esc(row.name || 'Unnamed') + '</strong><br/>' + esc(row.handle || '') + '<br/>' + esc(district + ' / ' + region + ' / ' + country))
-							.addTo(inlineMapLayer);
+							.bindPopup('<strong>' + esc(row.name || 'Unnamed') + '</strong><br/>' + esc(row.handle || '') + '<br/>' + esc(district + ' / ' + region + ' / ' + country));
+						marker.on('click', function () {
+							trackProfileClick(row.id);
+						});
+						marker.addTo(inlineMapLayer);
 					}
 					if (bounds.length) {
 						inlineMap.fitBounds(bounds, { padding: [20, 20] });
@@ -2285,7 +2309,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 							: '<div class="avatar placeholder">N/A</div>';
 						return '' +
 							'<li class="leaderboard-item">' +
-								'<a class="card-link" href="' + safeUrl + '" target="_self" aria-label="Open ' + safeName + ' on X">' +
+								'<a class="card-link" href="' + safeUrl + '" target="_self" data-profile-id="' + Number(row.id || 0) + '" aria-label="Open ' + safeName + ' on X">' +
 									'<div class="card-top">' +
 									'<div class="rank ' + rankClass + '">#' + rank + '</div>' +
 										'<div class="badges">' +
@@ -2339,7 +2363,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						? '<img class="avatar" src="' + safeAvatar + '" alt="' + safeName + '" referrerpolicy="no-referrer" loading="lazy" />'
 						: '<div class="avatar placeholder">N/A</div>';
 					pinnedSpotlightEl.innerHTML =
-						'<a class="card-link" href="' + safeUrl + '" target="_self" aria-label="Open ' + safeName + ' on X">' +
+						'<a class="card-link" href="' + safeUrl + '" target="_self" data-profile-id="' + Number(row.id || 0) + '" aria-label="Open ' + safeName + ' on X">' +
 							'<div class="card-top">' +
 								'<div class="rank top-rank">' + esc(t('spotlight_title', 'Rotating Spotlight')) + '</div>' +
 								'<div class="badges">' +
@@ -2381,6 +2405,15 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const data = await res.json();
 					renderPinnedCard(data);
 				}
+
+				document.addEventListener('click', function (event) {
+					const target = event.target;
+					if (!(target instanceof Element)) return;
+					const link = target.closest('a.card-link[data-profile-id]');
+					if (!link) return;
+					const profileId = Number(link.getAttribute('data-profile-id') || '');
+					trackProfileClick(profileId);
+				});
 
 				function closeAllCustomSelects() {
 					document.querySelectorAll('.mobile-select-enhanced.open').forEach(function (node) {
