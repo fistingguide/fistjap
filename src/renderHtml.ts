@@ -2208,25 +2208,66 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\\.0$/, '');
 				}
 
-				function trackProfileClick(profileId) {
+				function trackProfileClick(profileId, forceFetch) {
 					const numericId = Number(profileId);
-					if (!Number.isInteger(numericId) || numericId <= 0) return;
+					if (!Number.isInteger(numericId) || numericId <= 0) return Promise.resolve(false);
 					const endpoint = '/api/profiles/' + numericId + '/click';
-					try {
-						if (navigator.sendBeacon) {
-							const blob = new Blob(['{}'], { type: 'application/json' });
-							navigator.sendBeacon(endpoint, blob);
-							return;
-						}
-					} catch (_error) {}
-					try {
-						fetch(endpoint, {
-							method: 'POST',
-							headers: { 'content-type': 'application/json' },
-							body: '{}',
-							keepalive: true
-						}).catch(function () {});
-					} catch (_error) {}
+					if (!forceFetch) {
+						try {
+							if (navigator.sendBeacon) {
+								const blob = new Blob(['{}'], { type: 'application/json' });
+								navigator.sendBeacon(endpoint, blob);
+								return Promise.resolve(true);
+							}
+						} catch (_error) {}
+					}
+					return fetch(endpoint, {
+						method: 'POST',
+						headers: { 'content-type': 'application/json' },
+						body: '{}',
+						keepalive: true
+					})
+						.then(function () { return true; })
+						.catch(function () { return false; });
+				}
+
+				function safeNavigate(url) {
+					if (!url || url === '#') return;
+					window.location.href = url;
+				}
+
+				function isModifiedClick(event) {
+					return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+				}
+
+				document.addEventListener('click', function (event) {
+					const rawTarget = event.target;
+					const target =
+						rawTarget instanceof Element
+							? rawTarget
+							: (rawTarget && rawTarget.parentElement ? rawTarget.parentElement : null);
+					if (!target) return;
+					const link = target.closest('a.card-link[data-profile-id]');
+					if (!link) return;
+					const profileId = Number(link.getAttribute('data-profile-id') || '');
+					if (!Number.isInteger(profileId) || profileId <= 0) return;
+					const href = String(link.getAttribute('href') || '').trim();
+					if (!href || href === '#') {
+						trackProfileClick(profileId);
+						return;
+					}
+					if (isModifiedClick(event)) {
+						trackProfileClick(profileId);
+						return;
+					}
+					event.preventDefault();
+					trackProfileClick(profileId, true).finally(function () {
+						safeNavigate(href);
+					});
+				});
+
+				function trackMapProfileClick(profileId) {
+					trackProfileClick(profileId);
 				}
 
 				function ensureInlineMap() {
@@ -2275,7 +2316,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 						})
 							.bindPopup('<strong>' + esc(row.name || 'Unnamed') + '</strong><br/>' + esc(row.handle || '') + '<br/>' + esc(district + ' / ' + region + ' / ' + country));
 						marker.on('click', function () {
-							trackProfileClick(row.id);
+							trackMapProfileClick(row.id);
 						});
 						marker.addTo(inlineMapLayer);
 					}
@@ -2405,15 +2446,6 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 					const data = await res.json();
 					renderPinnedCard(data);
 				}
-
-				document.addEventListener('click', function (event) {
-					const target = event.target;
-					if (!(target instanceof Element)) return;
-					const link = target.closest('a.card-link[data-profile-id]');
-					if (!link) return;
-					const profileId = Number(link.getAttribute('data-profile-id') || '');
-					trackProfileClick(profileId);
-				});
 
 				function closeAllCustomSelects() {
 					document.querySelectorAll('.mobile-select-enhanced.open').forEach(function (node) {
