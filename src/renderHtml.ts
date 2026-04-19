@@ -4091,6 +4091,18 @@ export function renderAdminVerifyPage(): string {
 				color: var(--muted);
 				margin-bottom: 6px;
 			}
+			.label-inline {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				align-items: baseline;
+				margin-bottom: 6px;
+			}
+			.label-inline .label { margin-bottom: 0; }
+			.inline-note {
+				font-size: 12px;
+				color: var(--muted);
+			}
 			.row {
 				display: grid;
 				grid-template-columns: minmax(0, 1fr) auto;
@@ -4130,10 +4142,10 @@ export function renderAdminVerifyPage(): string {
 				border-color: #B40000;
 				color: #FFFFFF;
 			}
-			.note {
+			.sent-tip {
 				margin: 8px 0 0;
 				font-size: 13px;
-				color: var(--muted);
+				color: #4DA3FF;
 			}
 			.status {
 				margin: 12px 0 0;
@@ -4179,12 +4191,15 @@ export function renderAdminVerifyPage(): string {
 				</div>
 			</section>
 			<section class="card">
-				<label class="label" id="emailLabel">Enter the email address to receive the verification code:</label>
+				<div class="label-inline">
+					<label class="label" id="emailLabel">Enter the email address to receive the verification code:</label>
+					<span class="inline-note" id="emailNotice">This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.</span>
+				</div>
 				<div class="row">
 					<input id="emailInput" type="email" autocomplete="email" placeholder="name@example.com" />
 					<button type="button" id="sendCodeBtn">Send Code</button>
 				</div>
-				<p class="note" id="emailNotice">This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.</p>
+				<p class="sent-tip" id="sentTip" hidden>Verification code has been sent.</p>
 				<label class="label" id="codeLabel" style="margin-top:8px;">Verification code sent. Enter the 6-digit code (valid for 5 minutes):</label>
 				<div class="row">
 					<input id="codeInput" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" />
@@ -4207,6 +4222,7 @@ export function renderAdminVerifyPage(): string {
 					emailInput: document.getElementById('emailInput'),
 					sendCodeBtn: document.getElementById('sendCodeBtn'),
 					emailNotice: document.getElementById('emailNotice'),
+					sentTip: document.getElementById('sentTip'),
 					codeLabel: document.getElementById('codeLabel'),
 					codeInput: document.getElementById('codeInput'),
 					verifyCodeBtn: document.getElementById('verifyCodeBtn'),
@@ -4254,6 +4270,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: 'Send Code',
 							emailNotice: 'This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.',
+							sentTip: 'Verification code has been sent.',
 							codeLabel: 'Verification code sent. Enter the 6-digit code (valid for 5 minutes):',
 							codePlaceholder: '6-digit code',
 							verify: 'Verify Code',
@@ -4273,6 +4290,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: '发送验证码',
 							emailNotice: '该邮箱仅用于接收验证码，以防止机器人和异常行为，不会被收录。',
+							sentTip: '验证码已经发送。',
 							codeLabel: '验证码已发送，请输入6位验证码（5分钟内有效）：',
 							codePlaceholder: '6位验证码',
 							verify: '确认验证码',
@@ -4292,6 +4310,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: '發送驗證碼',
 							emailNotice: '該郵箱僅用於接收驗證碼，以防止機器人和異常行為，不會被收錄。',
+							sentTip: '驗證碼已經發送。',
 							codeLabel: '驗證碼已發送，請輸入6位驗證碼（5分鐘內有效）：',
 							codePlaceholder: '6位驗證碼',
 							verify: '確認驗證碼',
@@ -4311,6 +4330,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: 'コード送信',
 							emailNotice: 'このメールアドレスはボットや不正利用防止のための認証コード送信にのみ使用され、記録されません。',
+							sentTip: '認証コードを送信しました。',
 							codeLabel: 'コードを送信しました。6桁のコードを入力してください（有効期限5分）：',
 							codePlaceholder: '6桁コード',
 							verify: 'コード確認',
@@ -4330,6 +4350,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: '코드 전송',
 							emailNotice: '이 이메일은 봇 및 비정상 행위 방지를 위한 인증코드 전송에만 사용되며 저장되지 않습니다.',
+							sentTip: '인증코드를 전송했습니다.',
 							codeLabel: '인증코드를 전송했습니다. 6자리 코드를 입력하세요(유효기간 5분):',
 							codePlaceholder: '6자리 코드',
 							verify: '코드 확인',
@@ -4349,6 +4370,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: 'Enviar codigo',
 							emailNotice: 'Este correo solo se usa para prevenir bots y abusos, y no sera registrado.',
+							sentTip: 'El codigo ya fue enviado.',
 							codeLabel: 'Codigo enviado. Introduce el codigo de 6 digitos (valido por 5 minutos):',
 							codePlaceholder: 'Codigo de 6 digitos',
 							verify: 'Verificar codigo',
@@ -4368,6 +4390,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: 'Enviar codigo',
 							emailNotice: 'Este e-mail e usado apenas para prevenir bots e abusos, e nao sera armazenado.',
+							sentTip: 'Codigo enviado.',
 							codeLabel: 'Codigo enviado. Digite o codigo de 6 digitos (valido por 5 minutos):',
 							codePlaceholder: 'Codigo de 6 digitos',
 							verify: 'Verificar codigo',
@@ -4387,6 +4410,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: 'ส่งรหัส',
 							emailNotice: 'อีเมลนี้ใช้เพื่อป้องกันบอทและพฤติกรรมผิดปกติเท่านั้น และจะไม่ถูกบันทึก',
+							sentTip: 'ส่งรหัสเรียบร้อยแล้ว',
 							codeLabel: 'ส่งรหัสแล้ว กรุณากรอกรหัส 6 หลัก (มีอายุ 5 นาที):',
 							codePlaceholder: 'รหัส 6 หลัก',
 							verify: 'ยืนยันรหัส',
@@ -4406,6 +4430,7 @@ export function renderAdminVerifyPage(): string {
 							emailPlaceholder: 'name@example.com',
 							send: 'Gui ma',
 							emailNotice: 'Email nay chi dung de ngan bot va hanh vi bat thuong, se khong duoc luu.',
+							sentTip: 'Da gui ma xac minh.',
 							codeLabel: 'Da gui ma. Vui long nhap ma 6 so (hieu luc 5 phut):',
 							codePlaceholder: 'Ma 6 so',
 							verify: 'Xac minh ma',
@@ -4431,6 +4456,7 @@ export function renderAdminVerifyPage(): string {
 					els.emailInput.placeholder = copy('emailPlaceholder');
 					els.sendCodeBtn.textContent = copy('send');
 					els.emailNotice.textContent = copy('emailNotice');
+					if (els.sentTip) els.sentTip.textContent = copy('sentTip') || copy('codeLabel');
 					els.codeLabel.textContent = copy('codeLabel');
 					els.codeInput.placeholder = copy('codePlaceholder');
 					els.verifyCodeBtn.textContent = copy('verify');
@@ -4477,7 +4503,8 @@ export function renderAdminVerifyPage(): string {
 					} catch {
 						verificationId = '';
 					}
-					setStatus(copy('codeLabel'), false);
+					if (els.sentTip) els.sentTip.hidden = false;
+					setStatus(copy('sentTip') || copy('codeLabel'), false);
 				}
 
 				function startReturnCountdown() {
