@@ -4171,16 +4171,16 @@ export function renderAdminVerifyPage(): string {
 				</div>
 			</section>
 			<section class="card">
-				<label class="label" id="emailLabel"></label>
+				<label class="label" id="emailLabel">Enter the email address to receive the verification code:</label>
 				<div class="row">
-					<input id="emailInput" type="email" autocomplete="email" />
-					<button type="button" id="sendCodeBtn"></button>
+					<input id="emailInput" type="email" autocomplete="email" placeholder="name@example.com" />
+					<button type="button" id="sendCodeBtn">Send Code</button>
 				</div>
-				<p class="note" id="emailNotice"></p>
-				<label class="label" id="codeLabel" style="margin-top:8px;"></label>
+				<p class="note" id="emailNotice">This email is only used to deliver the verification code to prevent bots and abuse, and will not be recorded.</p>
+				<label class="label" id="codeLabel" style="margin-top:8px;">Verification code sent. Enter the 6-digit code (valid for 5 minutes):</label>
 				<div class="row">
-					<input id="codeInput" inputmode="numeric" autocomplete="one-time-code" />
-					<button type="button" id="verifyCodeBtn"></button>
+					<input id="codeInput" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" />
+					<button type="button" id="verifyCodeBtn">Verify Code</button>
 				</div>
 				<p class="status" id="statusText"></p>
 				<div class="result" id="resultText"></div>
@@ -4210,7 +4210,12 @@ export function renderAdminVerifyPage(): string {
 				};
 				let verificationId = '';
 				let returnTimer = null;
-				const pendingRaw = sessionStorage.getItem('adminPendingOperation');
+				let pendingRaw = null;
+				try {
+					pendingRaw = sessionStorage.getItem('adminPendingOperation');
+				} catch {
+					pendingRaw = null;
+				}
 				const params = new URLSearchParams(window.location.search || '');
 				const requestedReturn = String(params.get('return') || '').trim();
 				const returnPath = /^\/admin(\/|$)/.test(requestedReturn) ? requestedReturn : '/admin';
