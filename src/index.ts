@@ -2481,18 +2481,29 @@ export default {
 			if (!Number.isInteger(profileId) || profileId <= 0) {
 				return badRequest("invalid profile id");
 			}
-			const result = await env.DB.prepare(
-				`INSERT INTO profile_click_events (profile_id, web_clicked_cnt, tg_clicked_cnt)
-				 SELECT id, 1, 0
-				 FROM profiles
-				 WHERE id = ?
-				 ON CONFLICT(profile_id) DO UPDATE SET
-				 	web_clicked_cnt = profile_click_events.web_clicked_cnt + 1`,
-			)
+			const exists = await env.DB
+				.prepare("SELECT 1 AS ok FROM profiles WHERE id = ?")
+				.bind(profileId)
+				.first<{ ok?: number }>();
+			if (!exists?.ok) {
+				return json({ error: "not found" }, 404);
+			}
+			const updated = await env.DB
+				.prepare(
+					`UPDATE profile_click_events
+					 SET web_clicked_cnt = web_clicked_cnt + 1
+					 WHERE profile_id = ?`,
+				)
 				.bind(profileId)
 				.run();
-			if ((result.meta.changes ?? 0) === 0) {
-				return json({ error: "not found" }, 404);
+			if ((updated.meta.changes ?? 0) === 0) {
+				await env.DB
+					.prepare(
+						`INSERT INTO profile_click_events (profile_id, web_clicked_cnt, tg_clicked_cnt)
+						 VALUES (?, 1, 0)`,
+					)
+					.bind(profileId)
+					.run();
 			}
 			return json({ ok: true });
 		}
