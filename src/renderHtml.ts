@@ -1308,6 +1308,14 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				gap: 14px;
 				margin: 0 auto;
 			}
+			.site-main-title {
+				margin: 0;
+				font-size: 48px;
+				line-height: 1.06;
+				font-weight: 800;
+				letter-spacing: -0.02em;
+				color: #FFFFFF;
+			}
 			.panel-sticky-top {
 				position: static;
 			}
@@ -1440,6 +1448,11 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 			.mobile-select-enhanced { display: none; width: 100%; position: relative; }
 			@media (max-width: 720px) {
 				body { font-size: 13px; }
+				.site-main-title {
+					font-size: 21px;
+					line-height: 1.12;
+					padding: 0 0 4px;
+				}
 				.top-nav { display: none; }
 				.header-main { flex-direction: column; align-items: flex-start; }
 				.header-left { width: 100%; }
@@ -2042,6 +2055,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		</div>
 		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<section class="panel">
+			<h1 class="site-main-title">A List for Fister and Fistees</h1>
 			<div class="panel-sticky-top">
 				<p class="ranking-notice top-disclaimer" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 				<header class="header">
