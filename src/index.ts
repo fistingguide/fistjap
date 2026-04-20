@@ -658,10 +658,18 @@ type GetXApiUserData = {
 	followers: number | null;
 };
 
-async function fetchGetXApiUserInfo(handle: string, env: RuntimeEnv): Promise<GetXApiUserData | null> {
-	const token = (env.GETXAPI_TOKEN || "").trim();
+type GetXApiErrorReason = "invalid_input" | "not_found" | "rate_limited" | "server_error" | "client_error" | "network_error";
+
+type GetXApiFetchResult =
+	| { ok: true; data: GetXApiUserData }
+	| {
+			ok: false;
+			reason: GetXApiErrorReason;
+	  };
+
+async function fetchGetXApiUserInfoOnce(handle: string, token: string): Promise<GetXApiFetchResult> {
 	const normalizedHandle = normalizeHandle(handle);
-	if (!token || !normalizedHandle) return null;
+	if (!token || !normalizedHandle) return { ok: false, reason: "invalid_input" };
 	try {
 		const endpoint = `https://api.getxapi.com/twitter/user/info?userName=${encodeURIComponent(normalizedHandle)}`;
 		const res = await fetch(endpoint, {
@@ -669,7 +677,12 @@ async function fetchGetXApiUserInfo(handle: string, env: RuntimeEnv): Promise<Ge
 				Authorization: `Bearer ${token}`,
 			},
 		});
-		if (!res.ok) return null;
+		if (!res.ok) {
+			if (res.status === 404) return { ok: false, reason: "not_found" };
+			if (res.status === 429) return { ok: false, reason: "rate_limited" };
+			if (res.status >= 500) return { ok: false, reason: "server_error" };
+			return { ok: false, reason: "client_error" };
+		}
 		const raw = (await res.json()) as {
 			status?: string;
 			data?: {
@@ -681,19 +694,51 @@ async function fetchGetXApiUserInfo(handle: string, env: RuntimeEnv): Promise<Ge
 				followers?: number | string;
 			};
 		};
-		if (String(raw?.status || "").toLowerCase() !== "success" || !raw?.data) return null;
+		if (String(raw?.status || "").toLowerCase() !== "success" || !raw?.data) {
+			return { ok: false, reason: "client_error" };
+		}
 		const followersParsed = Number(raw.data.followers);
 		return {
-			name: String(raw.data.name || "").trim(),
-			userName: String(raw.data.userName || "").trim(),
-			description: String(raw.data.description || "").trim(),
-			url: String(raw.data.url || "").trim(),
-			profilePicture: String(raw.data.profilePicture || "").trim(),
-			followers: Number.isFinite(followersParsed) && followersParsed >= 0 ? Math.floor(followersParsed) : null,
+			ok: true,
+			data: {
+				name: String(raw.data.name || "").trim(),
+				userName: String(raw.data.userName || "").trim(),
+				description: String(raw.data.description || "").trim(),
+				url: String(raw.data.url || "").trim(),
+				profilePicture: String(raw.data.profilePicture || "").trim(),
+				followers: Number.isFinite(followersParsed) && followersParsed >= 0 ? Math.floor(followersParsed) : null,
+			},
 		};
 	} catch {
-		return null;
+		return { ok: false, reason: "network_error" };
 	}
+}
+
+type GetXApiRetryOutcome = {
+	data: GetXApiUserData | null;
+	reason: GetXApiErrorReason | null;
+	attempts: 1 | 2;
+};
+
+async function fetchGetXApiUserInfoWithOneRetry(handle: string, env: RuntimeEnv): Promise<GetXApiRetryOutcome> {
+	const token = (env.GETXAPI_TOKEN || "").trim();
+	const first = await fetchGetXApiUserInfoOnce(handle, token);
+	if (first.ok) return { data: first.data, reason: null, attempts: 1 };
+
+	if (first.reason !== "rate_limited" && first.reason !== "server_error" && first.reason !== "network_error") {
+		return { data: null, reason: first.reason, attempts: 1 };
+	}
+
+	await sleep(250);
+	const second = await fetchGetXApiUserInfoOnce(handle, token);
+	if (second.ok) return { data: second.data, reason: null, attempts: 2 };
+
+	return { data: null, reason: second.reason, attempts: 2 };
+}
+
+async function fetchGetXApiUserInfo(handle: string, env: RuntimeEnv): Promise<GetXApiUserData | null> {
+	const result = await fetchGetXApiUserInfoWithOneRetry(handle, env);
+	return result.data;
 }
 
 function json(data: unknown, status = 200, extraHeaders?: HeadersInit): Response {
@@ -2192,12 +2237,13 @@ type XSyncSummary = {
 	unchanged: number;
 	failed: number;
 	skipped: number;
+	retried: number;
 };
 
 async function syncProfilesFromGetXApi(env: RuntimeEnv): Promise<XSyncSummary> {
 	const token = String(env.GETXAPI_TOKEN || "").trim();
 	if (!token) {
-		return { attempted: 0, updated: 0, unchanged: 0, failed: 0, skipped: 0 };
+		return { attempted: 0, updated: 0, unchanged: 0, failed: 0, skipped: 0, retried: 0 };
 	}
 
 	const tableInfo = await env.DB.prepare("PRAGMA table_info(profiles)").all<{ name?: string }>();
@@ -2207,7 +2253,7 @@ async function syncProfilesFromGetXApi(env: RuntimeEnv): Promise<XSyncSummary> {
 			.filter((name) => name.length > 0),
 	);
 	const followersColumn = columns.has("followers_cnt") ? "followers_cnt" : "followers_count";
-	const summary: XSyncSummary = { attempted: 0, updated: 0, unchanged: 0, failed: 0, skipped: 0 };
+	const summary: XSyncSummary = { attempted: 0, updated: 0, unchanged: 0, failed: 0, skipped: 0, retried: 0 };
 	type ProfileSyncRow = {
 		id: number;
 		handle?: string;
@@ -2219,6 +2265,7 @@ async function syncProfilesFromGetXApi(env: RuntimeEnv): Promise<XSyncSummary> {
 	};
 
 	const pageSize = 200;
+	const maxConcurrency = 4;
 	let lastSeenId = 0;
 	while (true) {
 		const pageResult = await env.DB
@@ -2234,48 +2281,69 @@ async function syncProfilesFromGetXApi(env: RuntimeEnv): Promise<XSyncSummary> {
 		const rows = Array.isArray(pageResult.results) ? pageResult.results : [];
 		if (rows.length === 0) break;
 
-		for (const row of rows) {
-			const handle = normalizeHandle(String(row.handle || ""));
-			if (!handle) {
-				summary.skipped += 1;
-				continue;
-			}
-			summary.attempted += 1;
-			try {
-				const xData = await fetchGetXApiUserInfo(handle, env);
-				if (!xData) {
+		let nextIndex = 0;
+		const workerCount = Math.min(maxConcurrency, rows.length);
+		const workers = Array.from({ length: workerCount }, async () => {
+			while (true) {
+				const index = nextIndex;
+				nextIndex += 1;
+				if (index >= rows.length) break;
+				const row = rows[index];
+
+				if (!row) break;
+				const handle = normalizeHandle(String(row.handle || ""));
+				if (!handle) {
 					summary.skipped += 1;
 					continue;
 				}
+				summary.attempted += 1;
+				try {
+					const lookup = await fetchGetXApiUserInfoWithOneRetry(handle, env);
+					summary.retried += Math.max(lookup.attempts - 1, 0);
+					const xData = lookup.data;
+					if (!xData) {
+						if (
+							lookup.reason === "rate_limited" ||
+							lookup.reason === "server_error" ||
+							lookup.reason === "network_error"
+						) {
+							summary.failed += 1;
+						} else {
+							summary.skipped += 1;
+						}
+						continue;
+					}
 
-				const userName = normalizeHandle(xData.userName || handle);
-				const nextName = String(xData.name || xData.userName || row.name || userName).trim() || userName;
-				const profileUrlCandidate = String(xData.url || "").trim();
-				const nextProfileUrl =
-					/^https?:\/\//i.test(profileUrlCandidate) && profileUrlCandidate
-						? profileUrlCandidate
-						: `https://x.com/${encodeURIComponent(userName)}`;
-				const nextAvatar = String(xData.profilePicture || row.avatar || "").trim();
-				const nextBio = String(xData.description || row.bio || "").trim();
-				const nextFollowers = toFollowers(xData.followers ?? row.followers_count ?? 20);
+					const userName = normalizeHandle(xData.userName || handle);
+					const nextName = String(xData.name || xData.userName || row.name || userName).trim() || userName;
+					const profileUrlCandidate = String(xData.url || "").trim();
+					const nextProfileUrl =
+						/^https?:\/\//i.test(profileUrlCandidate) && profileUrlCandidate
+							? profileUrlCandidate
+							: `https://x.com/${encodeURIComponent(userName)}`;
+					const nextAvatar = String(xData.profilePicture || row.avatar || "").trim();
+					const nextBio = String(xData.description || row.bio || "").trim();
+					const nextFollowers = toFollowers(xData.followers ?? row.followers_count ?? 20);
 
-				const updateResult = await env.DB
-					.prepare(
-						`UPDATE profiles
-						 SET name = ?, profile_url = ?, avatar = ?, bio = ?, ${followersColumn} = ?
-						 WHERE id = ?`,
-					)
-					.bind(nextName, nextProfileUrl, nextAvatar, nextBio, nextFollowers, row.id)
-					.run();
-				if ((updateResult.meta.changes ?? 0) > 0) {
-					summary.updated += 1;
-				} else {
-					summary.unchanged += 1;
+					const updateResult = await env.DB
+						.prepare(
+							`UPDATE profiles
+							 SET name = ?, profile_url = ?, avatar = ?, bio = ?, ${followersColumn} = ?
+							 WHERE id = ?`,
+						)
+						.bind(nextName, nextProfileUrl, nextAvatar, nextBio, nextFollowers, row.id)
+						.run();
+					if ((updateResult.meta.changes ?? 0) > 0) {
+						summary.updated += 1;
+					} else {
+						summary.unchanged += 1;
+					}
+				} catch {
+					summary.failed += 1;
 				}
-			} catch {
-				summary.failed += 1;
 			}
-		}
+		});
+		await Promise.all(workers);
 
 		lastSeenId = rows[rows.length - 1]?.id ?? lastSeenId;
 		if (!Number.isFinite(lastSeenId) || lastSeenId <= 0) break;
@@ -2937,7 +3005,7 @@ export default {
 			if (!isTuesdayOneAmInShanghai(now)) return;
 			const syncSummary = await syncProfilesFromGetXApi(env);
 			console.log(
-				`[cron] getxapi profile sync finished attempted=${syncSummary.attempted} updated=${syncSummary.updated} unchanged=${syncSummary.unchanged} failed=${syncSummary.failed} skipped=${syncSummary.skipped}`,
+				`[cron] getxapi profile sync finished attempted=${syncSummary.attempted} updated=${syncSummary.updated} unchanged=${syncSummary.unchanged} failed=${syncSummary.failed} skipped=${syncSummary.skipped} retried=${syncSummary.retried}`,
 			);
 		} catch (error) {
 			console.error("[cron] scheduled task failed", error);
