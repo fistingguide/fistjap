@@ -2126,6 +2126,7 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 		"tg_photo_cnt",
 		"tg_video_cnt",
 		"list_star_event_cnt",
+		"checkin_credit",
 		"super_credit",
 		"total_credit",
 		"rank",
@@ -2144,6 +2145,7 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 				(COALESCE(tg_photo_cnt, 0) * 2.0) +
 				(COALESCE(tg_video_cnt, 0) * 10.0) +
 				COALESCE(list_star_event_cnt, 0) +
+				COALESCE(checkin_credit, 0) +
 				COALESCE(super_credit, 0)`,
 		)
 		.run();
@@ -2167,6 +2169,21 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 function isTuesdayOneAmInShanghai(date: Date): boolean {
 	const shifted = new Date(date.getTime() + 8 * 60 * 60 * 1000);
 	return shifted.getUTCDay() === 2 && shifted.getUTCHours() === 1;
+}
+
+async function resetProfilesCheckedInTodayFlag(db: D1Database): Promise<number> {
+	const tableInfo = await db.prepare("PRAGMA table_info(profiles)").all<{ name?: string }>();
+	const columns = new Set(
+		(tableInfo.results || [])
+			.map((row) => String(row.name || "").trim())
+			.filter((name) => name.length > 0),
+	);
+	if (!columns.has("checked_in_today")) {
+		return 0;
+	}
+
+	const result = await db.prepare("UPDATE profiles SET checked_in_today = 0 WHERE checked_in_today != 0").run();
+	return Number(result.meta.changes ?? 0);
 }
 
 type XSyncSummary = {
@@ -2908,6 +2925,12 @@ export default {
 	},
 	async scheduled(controller: ScheduledController, env: RuntimeEnv): Promise<void> {
 		try {
+			if (controller.cron === "0 14 * * *") {
+				const changed = await resetProfilesCheckedInTodayFlag(env.DB);
+				console.log(`[cron] reset checked_in_today finished changed=${changed} (${controller.cron})`);
+				return;
+			}
+
 			await recomputeProfilesCreditAndRank(env.DB);
 			console.log(`[cron] rank recalculated (${controller.cron})`);
 			const now = new Date();

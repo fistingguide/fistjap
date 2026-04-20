@@ -1,0 +1,3 @@
+-- Migration number: 0021    2026-04-21T00:00:00.000Z
+ALTER TABLE profiles ADD COLUMN checkin_credit INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE profiles ADD COLUMN checked_in_today INTEGER NOT NULL DEFAULT 0;
