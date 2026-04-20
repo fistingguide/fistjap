@@ -2164,9 +2164,9 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 		.run();
 }
 
-function isTuesdayMidnightInShanghai(date: Date): boolean {
+function isTuesdayOneAmInShanghai(date: Date): boolean {
 	const shifted = new Date(date.getTime() + 8 * 60 * 60 * 1000);
-	return shifted.getUTCDay() === 2 && shifted.getUTCHours() === 0;
+	return shifted.getUTCDay() === 2 && shifted.getUTCHours() === 1;
 }
 
 type XSyncSummary = {
@@ -2190,61 +2190,78 @@ async function syncProfilesFromGetXApi(env: RuntimeEnv): Promise<XSyncSummary> {
 			.filter((name) => name.length > 0),
 	);
 	const followersColumn = columns.has("followers_cnt") ? "followers_cnt" : "followers_count";
-	const rowsResult = await env.DB
-		.prepare(`SELECT id, handle, name, bio, profile_url, avatar, ${followersColumn} AS followers_count FROM profiles ORDER BY id ASC`)
-		.all<{
-			id: number;
-			handle?: string;
-			name?: string;
-			bio?: string;
-			profile_url?: string;
-			avatar?: string;
-			followers_count?: number | null;
-		}>();
-	const rows = Array.isArray(rowsResult.results) ? rowsResult.results : [];
-
 	const summary: XSyncSummary = { attempted: 0, updated: 0, unchanged: 0, failed: 0, skipped: 0 };
-	for (const row of rows) {
-		const handle = normalizeHandle(String(row.handle || ""));
-		if (!handle) {
-			summary.skipped += 1;
-			continue;
-		}
-		summary.attempted += 1;
-		try {
-			const xData = await fetchGetXApiUserInfo(handle, env);
-			if (!xData) {
+	type ProfileSyncRow = {
+		id: number;
+		handle?: string;
+		name?: string;
+		bio?: string;
+		profile_url?: string;
+		avatar?: string;
+		followers_count?: number | null;
+	};
+
+	const pageSize = 200;
+	let lastSeenId = 0;
+	while (true) {
+		const pageResult = await env.DB
+			.prepare(
+				`SELECT id, handle, name, bio, profile_url, avatar, ${followersColumn} AS followers_count
+				 FROM profiles
+				 WHERE id > ?
+				 ORDER BY id ASC
+				 LIMIT ?`,
+			)
+			.bind(lastSeenId, pageSize)
+			.all<ProfileSyncRow>();
+		const rows = Array.isArray(pageResult.results) ? pageResult.results : [];
+		if (rows.length === 0) break;
+
+		for (const row of rows) {
+			const handle = normalizeHandle(String(row.handle || ""));
+			if (!handle) {
 				summary.skipped += 1;
 				continue;
 			}
+			summary.attempted += 1;
+			try {
+				const xData = await fetchGetXApiUserInfo(handle, env);
+				if (!xData) {
+					summary.skipped += 1;
+					continue;
+				}
 
-			const userName = normalizeHandle(xData.userName || handle);
-			const nextName = String(xData.name || xData.userName || row.name || userName).trim() || userName;
-			const profileUrlCandidate = String(xData.url || "").trim();
-			const nextProfileUrl =
-				/^https?:\/\//i.test(profileUrlCandidate) && profileUrlCandidate
-					? profileUrlCandidate
-					: `https://x.com/${encodeURIComponent(userName)}`;
-			const nextAvatar = String(xData.profilePicture || row.avatar || "").trim();
-			const nextBio = String(xData.description || row.bio || "").trim();
-			const nextFollowers = toFollowers(xData.followers ?? row.followers_count ?? 20);
+				const userName = normalizeHandle(xData.userName || handle);
+				const nextName = String(xData.name || xData.userName || row.name || userName).trim() || userName;
+				const profileUrlCandidate = String(xData.url || "").trim();
+				const nextProfileUrl =
+					/^https?:\/\//i.test(profileUrlCandidate) && profileUrlCandidate
+						? profileUrlCandidate
+						: `https://x.com/${encodeURIComponent(userName)}`;
+				const nextAvatar = String(xData.profilePicture || row.avatar || "").trim();
+				const nextBio = String(xData.description || row.bio || "").trim();
+				const nextFollowers = toFollowers(xData.followers ?? row.followers_count ?? 20);
 
-			const updateResult = await env.DB
-				.prepare(
-					`UPDATE profiles
-					 SET name = ?, profile_url = ?, avatar = ?, bio = ?, ${followersColumn} = ?
-					 WHERE id = ?`,
-				)
-				.bind(nextName, nextProfileUrl, nextAvatar, nextBio, nextFollowers, row.id)
-				.run();
-			if ((updateResult.meta.changes ?? 0) > 0) {
-				summary.updated += 1;
-			} else {
-				summary.unchanged += 1;
+				const updateResult = await env.DB
+					.prepare(
+						`UPDATE profiles
+						 SET name = ?, profile_url = ?, avatar = ?, bio = ?, ${followersColumn} = ?
+						 WHERE id = ?`,
+					)
+					.bind(nextName, nextProfileUrl, nextAvatar, nextBio, nextFollowers, row.id)
+					.run();
+				if ((updateResult.meta.changes ?? 0) > 0) {
+					summary.updated += 1;
+				} else {
+					summary.unchanged += 1;
+				}
+			} catch {
+				summary.failed += 1;
 			}
-		} catch {
-			summary.failed += 1;
 		}
+
+		lastSeenId = rows[rows.length - 1]?.id ?? lastSeenId;
+		if (!Number.isFinite(lastSeenId) || lastSeenId <= 0) break;
 	}
 
 	return summary;
@@ -2894,7 +2911,7 @@ export default {
 			await recomputeProfilesCreditAndRank(env.DB);
 			console.log(`[cron] rank recalculated (${controller.cron})`);
 			const now = new Date();
-			if (!isTuesdayMidnightInShanghai(now)) return;
+			if (!isTuesdayOneAmInShanghai(now)) return;
 			const syncSummary = await syncProfilesFromGetXApi(env);
 			console.log(
 				`[cron] getxapi profile sync finished attempted=${syncSummary.attempted} updated=${syncSummary.updated} unchanged=${syncSummary.unchanged} failed=${syncSummary.failed} skipped=${syncSummary.skipped}`,
