@@ -802,6 +802,7 @@ async function sendVerificationCodeEmail(
 	email: string,
 	verificationCode: string,
 	verificationId: string,
+	lang: UiLang,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
 	const apiKey = (env.SEND_VERITY_CODE || "").trim();
 	if (!apiKey) {
@@ -810,17 +811,179 @@ async function sendVerificationCodeEmail(
 
 	const from = (env.RESEND_FROM || "FistingGuide <no-reply@fisting.guide>").trim();
 	const expiresAtIso = new Date(Date.now() + ADMIN_VERIFY_CODE_TTL_MS).toISOString();
-	const subject = "Admin verification code";
+	const packByLang: Record<
+		UiLang,
+		{
+			subject: string;
+			title: string;
+			description: string;
+			codeLabel: string;
+			verificationIdLabel: string;
+			expiresAtLabel: string;
+			validForLabel: string;
+			ignoreHint: string;
+			signature: string;
+		}
+	> = {
+		en: {
+			subject: "Admin verification code",
+			title: "Admin Verification",
+			description: "Use the following verification code to continue:",
+			codeLabel: "Verification Code",
+			verificationIdLabel: "Verification ID",
+			expiresAtLabel: "Expires At",
+			validForLabel: "Valid for 5 minutes.",
+			ignoreHint: "If you did not request this code, please ignore this email.",
+			signature: "FistingGuide Community",
+		},
+		"zh-CN": {
+			subject: "管理员验证码",
+			title: "管理员验证",
+			description: "请使用以下验证码继续操作：",
+			codeLabel: "验证码",
+			verificationIdLabel: "验证 ID",
+			expiresAtLabel: "过期时间",
+			validForLabel: "5 分钟内有效。",
+			ignoreHint: "如果这不是你的操作，请忽略此邮件。",
+			signature: "FistingGuide Community",
+		},
+		"zh-TW": {
+			subject: "管理員驗證碼",
+			title: "管理員驗證",
+			description: "請使用以下驗證碼繼續操作：",
+			codeLabel: "驗證碼",
+			verificationIdLabel: "驗證 ID",
+			expiresAtLabel: "到期時間",
+			validForLabel: "5 分鐘內有效。",
+			ignoreHint: "若非本人操作，請忽略此郵件。",
+			signature: "FistingGuide Community",
+		},
+		ja: {
+			subject: "管理者認証コード",
+			title: "管理者認証",
+			description: "続行するには次の認証コードを使用してください:",
+			codeLabel: "認証コード",
+			verificationIdLabel: "認証 ID",
+			expiresAtLabel: "有効期限",
+			validForLabel: "有効時間は5分です。",
+			ignoreHint: "このコードを要求していない場合は、このメールを無視してください。",
+			signature: "FistingGuide Community",
+		},
+		ko: {
+			subject: "관리자 인증 코드",
+			title: "관리자 인증",
+			description: "계속하려면 아래 인증 코드를 입력하세요:",
+			codeLabel: "인증 코드",
+			verificationIdLabel: "인증 ID",
+			expiresAtLabel: "만료 시간",
+			validForLabel: "5분 동안 유효합니다.",
+			ignoreHint: "요청하지 않았다면 이 이메일을 무시하세요.",
+			signature: "FistingGuide Community",
+		},
+		es: {
+			subject: "Codigo de verificacion de administrador",
+			title: "Verificacion de Administrador",
+			description: "Usa el siguiente codigo para continuar:",
+			codeLabel: "Codigo de Verificacion",
+			verificationIdLabel: "ID de Verificacion",
+			expiresAtLabel: "Expira En",
+			validForLabel: "Valido por 5 minutos.",
+			ignoreHint: "Si no solicitaste este codigo, ignora este correo.",
+			signature: "FistingGuide Community",
+		},
+		pt: {
+			subject: "Codigo de verificacao do administrador",
+			title: "Verificacao de Administrador",
+			description: "Use o codigo abaixo para continuar:",
+			codeLabel: "Codigo de Verificacao",
+			verificationIdLabel: "ID de Verificacao",
+			expiresAtLabel: "Expira Em",
+			validForLabel: "Valido por 5 minutos.",
+			ignoreHint: "Se voce nao solicitou este codigo, ignore este email.",
+			signature: "FistingGuide Community",
+		},
+		th: {
+			subject: "รหัสยืนยันผู้ดูแลระบบ",
+			title: "การยืนยันผู้ดูแลระบบ",
+			description: "ใช้รหัสยืนยันด้านล่างเพื่อดำเนินการต่อ:",
+			codeLabel: "รหัสยืนยัน",
+			verificationIdLabel: "รหัสอ้างอิง",
+			expiresAtLabel: "หมดอายุเวลา",
+			validForLabel: "ใช้ได้ภายใน 5 นาที",
+			ignoreHint: "หากคุณไม่ได้ร้องขอรหัสนี้ โปรดละเว้นอีเมลนี้",
+			signature: "FistingGuide Community",
+		},
+		vi: {
+			subject: "Ma xac minh quan tri",
+			title: "Xac Minh Quan Tri",
+			description: "Su dung ma xac minh sau de tiep tuc:",
+			codeLabel: "Ma Xac Minh",
+			verificationIdLabel: "ID Xac Minh",
+			expiresAtLabel: "Het Han Luc",
+			validForLabel: "Co hieu luc trong 5 phut.",
+			ignoreHint: "Neu ban khong yeu cau ma nay, vui long bo qua email nay.",
+			signature: "FistingGuide Community",
+		},
+	};
+	const pack = packByLang[lang] || packByLang.en;
+	const subject = pack.subject;
 	const text = [
-		"Your admin verification code is:",
+		pack.description,
 		verificationCode,
 		"",
-		`Verification ID: ${verificationId}`,
-		`Expires at: ${expiresAtIso}`,
-		"Valid for 5 minutes.",
+		`${pack.verificationIdLabel}: ${verificationId}`,
+		`${pack.expiresAtLabel}: ${expiresAtIso}`,
+		pack.validForLabel,
 		"",
-		"If you did not request this code, please ignore this email.",
+		pack.ignoreHint,
+		"",
+		pack.signature,
 	].join("\n");
+	const html = `<!doctype html>
+<html>
+<body style="margin:0;padding:24px;background:#F4F6FB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
+		<tr>
+			<td style="padding:20px 24px;background:linear-gradient(135deg,#0F172A,#1E293B);color:#FFFFFF;">
+				<div style="font-size:12px;opacity:.82;letter-spacing:.35px;text-transform:uppercase;">FistingGuide</div>
+				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:22px 24px 8px;color:#111827;font-size:14px;line-height:1.6;">
+				${escapeHtml(pack.description)}
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:10px 24px 4px;">
+				<div style="font-size:12px;color:#6B7280;margin-bottom:8px;">${escapeHtml(pack.codeLabel)}</div>
+				<div style="font-size:42px;line-height:1.1;font-weight:800;letter-spacing:8px;color:#111827;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px 18px;text-align:center;">
+					${escapeHtml(verificationCode)}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:16px 24px 0;">
+				<div style="background:#F8FAFC;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;color:#374151;font-size:13px;line-height:1.7;">
+					<div><strong>${escapeHtml(pack.verificationIdLabel)}:</strong> ${escapeHtml(verificationId)}</div>
+					<div><strong>${escapeHtml(pack.expiresAtLabel)}:</strong> ${escapeHtml(expiresAtIso)}</div>
+					<div>${escapeHtml(pack.validForLabel)}</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:14px 24px 20px;color:#6B7280;font-size:12px;line-height:1.7;">
+				${escapeHtml(pack.ignoreHint)}
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 24px 24px;color:#374151;font-size:13px;">
+				${escapeHtml(pack.signature)}
+			</td>
+		</tr>
+	</table>
+</body>
+</html>`;
 
 	try {
 		const res = await fetch("https://api.resend.com/emails", {
@@ -834,6 +997,7 @@ async function sendVerificationCodeEmail(
 				to: [email],
 				subject,
 				text,
+				html,
 			}),
 		});
 		if (!res.ok) {
@@ -849,6 +1013,7 @@ async function sendVerificationCodeEmail(
 async function issueAdminVerificationChallenge(
 	env: RuntimeEnv,
 	email: string,
+	lang: UiLang,
 ): Promise<{ ok: true; verificationId: string } | { ok: false; status: number; error: string }> {
 	const normalizedEmail = normalizeEmail(email);
 	if (!isValidEmail(normalizedEmail)) {
@@ -876,7 +1041,7 @@ async function issueAdminVerificationChallenge(
 		return { ok: false, status: 500, error: `failed to create verification: ${(error as Error).message}` };
 	}
 
-	const sendResult = await sendVerificationCodeEmail(env, normalizedEmail, verificationCode, verificationId);
+	const sendResult = await sendVerificationCodeEmail(env, normalizedEmail, verificationCode, verificationId, lang);
 	if (!sendResult.ok) {
 		await env.DB.prepare("DELETE FROM admin_email_verifications WHERE id = ?").bind(verificationId).run();
 		return sendResult;
@@ -3112,7 +3277,7 @@ export default {
 			if (!email) return badRequest("email is required");
 			if (!isValidEmail(email)) return badRequest("invalid email");
 
-			const issued = await issueAdminVerificationChallenge(env, email);
+			const issued = await issueAdminVerificationChallenge(env, email, uiLang);
 			if (!issued.ok) {
 				return json({ error: issued.error }, issued.status);
 			}
