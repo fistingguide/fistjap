@@ -64,6 +64,8 @@ const ADMIN_VERIFY_SESSION_TTL_MS = 5 * 60 * 1000;
 const BLOG_URL = "https://blog.fistingguide.workers.dev/";
 const R2_ASSET_PREFIX = "/r2-fg/";
 const MOBILE_CAROUSEL_PREFIX = `${R2_ASSET_PREFIX}assets/mobile-carousel/`;
+const EMAIL_CTA_EN =
+	"Please join our Telegram group chat. You can increase your credits by sending messages, pictures, videos, and participating in campaigns within the group chat. Ranking is based on total credits.";
 
 type WikiPayload = {
 	title?: unknown;
@@ -2010,21 +2012,341 @@ function formatOperationSummary(
 	action: "CREATE" | "UPDATE" | "DELETE",
 	row: Record<string, unknown>,
 	operatorIp: string,
+	lang: UiLang,
 ): string {
+	const pack = emailLocalePack(lang);
+	const creditFields: Array<{ key: string; label: string }> = [
+		{ key: "total_credit", label: pack.labels.total_credit },
+		{ key: "super_credit", label: pack.labels.super_credit },
+		{ key: "checkin_credit", label: pack.labels.checkin_credit },
+		{ key: "author_credits", label: pack.labels.author_credits },
+		{ key: "list_star_event_cnt", label: pack.labels.list_star_event_cnt },
+		{ key: "tg_msg_cnt", label: pack.labels.tg_msg_cnt },
+		{ key: "tg_photo_cnt", label: pack.labels.tg_photo_cnt },
+		{ key: "tg_video_cnt", label: pack.labels.tg_video_cnt },
+	];
+	const creditLines = creditFields.map(({ key, label }) => `${label}: ${String(row[key] ?? 0)}`);
 	return [
-		`Action: ${action}`,
-		`ID: ${String(row.id ?? "")}`,
-		`Name: ${String(row.name ?? "")}`,
-		`Operator IP: ${operatorIp || "unknown"}`,
-		`Handle: ${String(row.handle ?? "")}`,
-		`Profile URL: ${String(row.profile_url ?? "")}`,
-		`Avatar URL: ${String(row.avatar ?? "")}`,
-		`Country: ${String(row.country ?? "")}`,
-		`Region: ${String(row.region ?? row.province ?? "")}`,
-		`District: ${String(row.district ?? row.city ?? "")}`,
-		`Fans: ${String(row.followers_count ?? "")}`,
-		`Time: ${new Date().toISOString()}`,
+		`${pack.labels.action}: ${action}`,
+		`${pack.labels.id}: ${String(row.id ?? "")}`,
+		`${pack.labels.name}: ${String(row.name ?? "")}`,
+		`${pack.labels.operatorIp}: ${operatorIp || "unknown"}`,
+		`${pack.labels.handle}: ${String(row.handle ?? "")}`,
+		`${pack.labels.telegram}: ${String(row.telegram ?? "")}`,
+		`${pack.labels.profileUrl}: ${String(row.profile_url ?? "")}`,
+		`${pack.labels.avatarUrl}: ${String(row.avatar ?? "")}`,
+		`${pack.labels.country}: ${String(row.country ?? "")}`,
+		`${pack.labels.region}: ${String(row.region ?? row.province ?? "")}`,
+		`${pack.labels.district}: ${String(row.district ?? row.city ?? "")}`,
+		`${pack.labels.fans}: ${String(row.followers_count ?? "")}`,
+		...creditLines,
+		"",
+		pack.cta,
+		...(pack.cta === EMAIL_CTA_EN ? [] : [EMAIL_CTA_EN]),
+		"",
+		pack.signature,
+		`${pack.labels.time}: ${new Date().toISOString()}`,
 	].join("\n");
+}
+
+function emailLocalePack(lang: UiLang): {
+	subjectPrefix: string;
+	title: string;
+	summaryTitle: string;
+	creditsTitle: string;
+	cta: string;
+	signature: string;
+	labels: Record<string, string>;
+} {
+	const labelsEn = {
+		action: "Action",
+		id: "ID",
+		name: "Name",
+		operatorIp: "Operator IP",
+		handle: "Handle",
+		telegram: "Telegram",
+		profileUrl: "Profile URL",
+		avatarUrl: "Avatar URL",
+		country: "Country",
+		region: "Region",
+		district: "District",
+		fans: "Fans",
+		total_credit: "Total Credit",
+		super_credit: "Super Credit",
+		checkin_credit: "Check-in Credit",
+		author_credits: "Author Credits",
+		list_star_event_cnt: "List Star Event Credit",
+		tg_msg_cnt: "TG Message Credit",
+		tg_photo_cnt: "TG Photo Credit",
+		tg_video_cnt: "TG Video Credit",
+		time: "Time",
+	};
+	const packs: Record<UiLang, { subjectPrefix: string; title: string; summaryTitle: string; creditsTitle: string; cta: string; signature: string; labels: Record<string, string> }> =
+		{
+			en: {
+				subjectPrefix: "[Admin Notice]",
+				title: "Profile Operation Notification",
+				summaryTitle: "Operation Summary",
+				creditsTitle: "Credits Breakdown",
+				cta: EMAIL_CTA_EN,
+				signature: "FistingGuide Community.",
+				labels: labelsEn,
+			},
+			"zh-CN": {
+				subjectPrefix: "[管理员通知]",
+				title: "档案操作通知",
+				summaryTitle: "操作摘要",
+				creditsTitle: "积分明细",
+				cta: "请加入我们的 Telegram 群聊。你可以通过在群内发送消息、图片、视频以及参与活动来增加积分。排名基于总积分。",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "操作",
+					name: "名称",
+					operatorIp: "操作人 IP",
+					handle: "句柄",
+					telegram: "Telegram 句柄",
+					country: "国家",
+					region: "地区",
+					district: "区县",
+					fans: "粉丝",
+					time: "时间",
+				},
+			},
+			"zh-TW": {
+				subjectPrefix: "[管理員通知]",
+				title: "檔案操作通知",
+				summaryTitle: "操作摘要",
+				creditsTitle: "積分明細",
+				cta: "請加入我們的 Telegram 群組。你可以透過在群內發送訊息、圖片、影片以及參與活動來增加積分。排名依總積分計算。",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "操作",
+					name: "名稱",
+					operatorIp: "操作人 IP",
+					handle: "帳號",
+					telegram: "Telegram 帳號",
+					country: "國家",
+					region: "地區",
+					district: "行政區",
+					fans: "粉絲",
+					time: "時間",
+				},
+			},
+			ja: {
+				subjectPrefix: "[管理通知]",
+				title: "プロフィール操作通知",
+				summaryTitle: "操作サマリー",
+				creditsTitle: "クレジット内訳",
+				cta: "Telegramグループチャットに参加してください。グループ内でメッセージ・画像・動画の投稿やキャンペーン参加でクレジットを増やせます。ランキングは総クレジットで決まります。",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "操作",
+					name: "名前",
+					operatorIp: "操作IP",
+					handle: "ハンドル",
+					telegram: "Telegramハンドル",
+					country: "国",
+					region: "地域",
+					district: "地区",
+					fans: "フォロワー",
+					time: "時刻",
+				},
+			},
+			ko: {
+				subjectPrefix: "[관리자 알림]",
+				title: "프로필 작업 알림",
+				summaryTitle: "작업 요약",
+				creditsTitle: "크레딧 상세",
+				cta: "Telegram 그룹 채팅에 참여해 주세요. 그룹에서 메시지, 사진, 영상 전송 및 캠페인 참여로 크레딧을 올릴 수 있습니다. 랭킹은 총 크레딧 기준입니다.",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "작업",
+					name: "이름",
+					operatorIp: "작업자 IP",
+					handle: "핸들",
+					telegram: "Telegram 핸들",
+					country: "국가",
+					region: "지역",
+					district: "구역",
+					fans: "팔로워",
+					time: "시간",
+				},
+			},
+			es: {
+				subjectPrefix: "[Aviso Admin]",
+				title: "Notificacion de Operacion de Perfil",
+				summaryTitle: "Resumen de Operacion",
+				creditsTitle: "Desglose de Creditos",
+				cta: "Unete a nuestro chat grupal de Telegram. Puedes aumentar tus creditos enviando mensajes, imagenes, videos y participando en campanas dentro del grupo. El ranking se basa en el total de creditos.",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "Accion",
+					name: "Nombre",
+					operatorIp: "IP del Operador",
+					handle: "Usuario",
+					telegram: "Usuario de Telegram",
+					country: "Pais",
+					region: "Region",
+					district: "Distrito",
+					fans: "Seguidores",
+					time: "Hora",
+				},
+			},
+			pt: {
+				subjectPrefix: "[Aviso Admin]",
+				title: "Notificacao de Operacao de Perfil",
+				summaryTitle: "Resumo da Operacao",
+				creditsTitle: "Detalhamento de Creditos",
+				cta: "Participe do nosso grupo no Telegram. Voce pode aumentar seus creditos enviando mensagens, fotos, videos e participando de campanhas no grupo. O ranking e baseado no total de creditos.",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "Acao",
+					name: "Nome",
+					operatorIp: "IP do Operador",
+					handle: "Handle",
+					telegram: "Handle do Telegram",
+					country: "Pais",
+					region: "Regiao",
+					district: "Distrito",
+					fans: "Seguidores",
+					time: "Hora",
+				},
+			},
+			th: {
+				subjectPrefix: "[แจ้งเตือนแอดมิน]",
+				title: "การแจ้งเตือนการแก้ไขโปรไฟล์",
+				summaryTitle: "สรุปการดำเนินการ",
+				creditsTitle: "รายละเอียดเครดิต",
+				cta: "โปรดเข้าร่วมกลุ่มแชต Telegram ของเรา คุณสามารถเพิ่มเครดิตได้ด้วยการส่งข้อความ รูปภาพ วิดีโอ และเข้าร่วมแคมเปญภายในกลุ่ม การจัดอันดับอ้างอิงจากเครดิตรวม",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "การดำเนินการ",
+					name: "ชื่อ",
+					operatorIp: "IP ผู้ดำเนินการ",
+					handle: "แฮนเดิล",
+					telegram: "แฮนเดิล Telegram",
+					country: "ประเทศ",
+					region: "ภูมิภาค",
+					district: "เขต",
+					fans: "ผู้ติดตาม",
+					time: "เวลา",
+				},
+			},
+			vi: {
+				subjectPrefix: "[Thong Bao Admin]",
+				title: "Thong Bao Thao Tac Ho So",
+				summaryTitle: "Tom Tat Thao Tac",
+				creditsTitle: "Chi Tiet Diem",
+				cta: "Hay tham gia nhom chat Telegram cua chung toi. Ban co the tang diem bang cach gui tin nhan, hinh anh, video va tham gia cac chien dich trong nhom. Xep hang dua tren tong diem.",
+				signature: "FistingGuide Community.",
+				labels: {
+					...labelsEn,
+					action: "Hanh dong",
+					name: "Ten",
+					operatorIp: "IP Nguoi Van Hanh",
+					handle: "Tai khoan",
+					telegram: "Tai khoan Telegram",
+					country: "Quoc gia",
+					region: "Khu vuc",
+					district: "Quan/Huyen",
+					fans: "Nguoi theo doi",
+					time: "Thoi gian",
+				},
+			},
+		};
+	return packs[lang] || packs.en;
+}
+
+function formatOperationSummaryHtml(
+	action: "CREATE" | "UPDATE" | "DELETE",
+	row: Record<string, unknown>,
+	operatorIp: string,
+	lang: UiLang,
+): string {
+	const pack = emailLocalePack(lang);
+	const creditRows: Array<{ label: string; value: unknown }> = [
+		{ label: pack.labels.total_credit, value: row.total_credit ?? 0 },
+		{ label: pack.labels.super_credit, value: row.super_credit ?? 0 },
+		{ label: pack.labels.checkin_credit, value: row.checkin_credit ?? 0 },
+		{ label: pack.labels.author_credits, value: row.author_credits ?? 0 },
+		{ label: pack.labels.list_star_event_cnt, value: row.list_star_event_cnt ?? 0 },
+		{ label: pack.labels.tg_msg_cnt, value: row.tg_msg_cnt ?? 0 },
+		{ label: pack.labels.tg_photo_cnt, value: row.tg_photo_cnt ?? 0 },
+		{ label: pack.labels.tg_video_cnt, value: row.tg_video_cnt ?? 0 },
+	];
+	const summaryRows: Array<{ label: string; value: unknown }> = [
+		{ label: pack.labels.action, value: action },
+		{ label: pack.labels.id, value: row.id ?? "" },
+		{ label: pack.labels.name, value: row.name ?? "" },
+		{ label: pack.labels.operatorIp, value: operatorIp || "unknown" },
+		{ label: pack.labels.handle, value: row.handle ?? "" },
+		{ label: pack.labels.telegram, value: row.telegram ?? "" },
+		{ label: pack.labels.profileUrl, value: row.profile_url ?? "" },
+		{ label: pack.labels.avatarUrl, value: row.avatar ?? "" },
+		{ label: pack.labels.country, value: row.country ?? "" },
+		{ label: pack.labels.region, value: row.region ?? row.province ?? "" },
+		{ label: pack.labels.district, value: row.district ?? row.city ?? "" },
+		{ label: pack.labels.fans, value: row.followers_count ?? "" },
+		{ label: pack.labels.time, value: new Date().toISOString() },
+	];
+	const summaryHtml = summaryRows
+		.map(
+			(item) =>
+				`<tr><td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:180px;">${escapeHtml(item.label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;word-break:break-word;">${escapeHtml(String(item.value ?? ""))}</td></tr>`,
+		)
+		.join("");
+	const creditsHtml = creditRows
+		.map(
+			(item) =>
+				`<tr><td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:180px;">${escapeHtml(item.label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;">${escapeHtml(String(item.value ?? 0))}</td></tr>`,
+		)
+		.join("");
+
+	return `<!doctype html>
+<html>
+<body style="margin:0;padding:24px;background:#F3F4F6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:760px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
+		<tr>
+			<td style="padding:20px 24px;background:linear-gradient(135deg,#111827,#1F2937);color:#FFFFFF;">
+				<div style="font-size:12px;letter-spacing:.4px;text-transform:uppercase;opacity:.8;">${escapeHtml(pack.subjectPrefix)}</div>
+				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:22px 24px;">
+				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.summaryTitle)}</div>
+				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${summaryHtml}</table>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 24px 22px;">
+				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.creditsTitle)}</div>
+				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${creditsHtml}</table>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 24px 24px;">
+				<div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 16px;color:#1E3A8A;font-size:13px;line-height:1.6;">
+					${escapeHtml(pack.cta)}
+					${pack.cta === EMAIL_CTA_EN ? "" : `<br /><br />${escapeHtml(EMAIL_CTA_EN)}`}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 24px 24px;color:#374151;font-size:13px;">
+				${escapeHtml(pack.signature)}
+			</td>
+		</tr>
+	</table>
+</body>
+</html>`;
 }
 
 async function sendAdminNotification(
@@ -2032,6 +2354,7 @@ async function sendAdminNotification(
 	action: "CREATE" | "UPDATE" | "DELETE",
 	row: Record<string, unknown>,
 	operatorIp: string,
+	lang: UiLang,
 ): Promise<void> {
 	const apiKey = (env.RESEND_API_KEY || "").trim();
 	if (!apiKey) {
@@ -2044,9 +2367,11 @@ async function sendAdminNotification(
 	}
 
 	const from = (env.RESEND_FROM || "FistingGuide <no-reply@fisting.guide>").trim();
+	const pack = emailLocalePack(lang);
 
-	const subject = `[Admin Notice] ${action} profile #${String(row.id ?? "")}`;
-	const text = formatOperationSummary(action, row, operatorIp);
+	const subject = `${pack.subjectPrefix} ${action} profile #${String(row.id ?? "")}`;
+	const text = formatOperationSummary(action, row, operatorIp, lang);
+	const html = formatOperationSummaryHtml(action, row, operatorIp, lang);
 
 	try {
 		const res = await fetch("https://api.resend.com/emails", {
@@ -2060,6 +2385,7 @@ async function sendAdminNotification(
 				to: [to],
 				subject,
 				text,
+				html,
 			}),
 		});
 		if (!res.ok) {
@@ -2879,14 +3205,16 @@ export default {
 
 			const inserted = await env.DB
 				.prepare(
-					`SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province AS region, city AS district, lat, lng
+					`SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count,
+						tg_msg_cnt, tg_photo_cnt, tg_video_cnt, list_star_event_cnt, checkin_credit, super_credit, author_credits, total_credit,
+						country, province AS region, city AS district, lat, lng
 					 FROM profiles
 					 WHERE handle = ?`,
 				)
 				.bind(input.handle)
 				.first<Record<string, unknown>>();
 			if (inserted) {
-				ctx.waitUntil(sendAdminNotification(env, "CREATE", inserted, operatorIp));
+				ctx.waitUntil(sendAdminNotification(env, "CREATE", inserted, operatorIp, uiLang));
 			}
 
 			return json({ ok: true, profile: inserted ?? null }, 201);
@@ -2953,14 +3281,16 @@ export default {
 
 				const updated = await env.DB
 					.prepare(
-						`SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count, country, province AS region, city AS district, lat, lng
+						`SELECT id, name, handle, telegram, bio, profile_url, avatar, sexual_orientation, followers_count,
+							tg_msg_cnt, tg_photo_cnt, tg_video_cnt, list_star_event_cnt, checkin_credit, super_credit, author_credits, total_credit,
+							country, province AS region, city AS district, lat, lng
 						 FROM profiles
 						 WHERE id = ?`,
 					)
 					.bind(id)
 					.first<Record<string, unknown>>();
 				if (updated) {
-					ctx.waitUntil(sendAdminNotification(env, "UPDATE", updated, operatorIp));
+					ctx.waitUntil(sendAdminNotification(env, "UPDATE", updated, operatorIp, uiLang));
 				}
 
 				return json({ ok: true, profile: updated ?? null });
@@ -2973,7 +3303,8 @@ export default {
 				const operatorIp = request.headers.get("CF-Connecting-IP") || "";
 				const deletedRow = await env.DB
 					.prepare(
-						`SELECT id, name, handle, profile_url, avatar, country, province AS region, city AS district, lat, lng, followers_count
+						`SELECT id, name, handle, telegram, profile_url, avatar, country, province AS region, city AS district, lat, lng,
+							followers_count, tg_msg_cnt, tg_photo_cnt, tg_video_cnt, list_star_event_cnt, checkin_credit, super_credit, author_credits, total_credit
 						 FROM profiles
 						 WHERE id = ?`,
 					)
@@ -2985,7 +3316,7 @@ export default {
 					return json({ error: "not found" }, 404);
 				}
 				if (deletedRow) {
-					ctx.waitUntil(sendAdminNotification(env, "DELETE", deletedRow, operatorIp));
+					ctx.waitUntil(sendAdminNotification(env, "DELETE", deletedRow, operatorIp, uiLang));
 				}
 				return json({ ok: true });
 			}
