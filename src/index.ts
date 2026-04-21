@@ -2173,6 +2173,7 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 		"list_star_event_cnt",
 		"checkin_credit",
 		"super_credit",
+		"author_credits",
 		"total_credit",
 		"rank",
 	];
@@ -2191,7 +2192,8 @@ async function recomputeProfilesCreditAndRank(db: D1Database): Promise<void> {
 				(COALESCE(tg_video_cnt, 0) * 10.0) +
 				COALESCE(list_star_event_cnt, 0) +
 				COALESCE(checkin_credit, 0) +
-				COALESCE(super_credit, 0)`,
+				COALESCE(super_credit, 0) +
+				COALESCE(author_credits, 0)`,
 		)
 		.run();
 
