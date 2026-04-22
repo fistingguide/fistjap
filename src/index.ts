@@ -456,6 +456,8 @@ function normalizeUiLang(value: string | null | undefined): UiLang | null {
 }
 
 function pickUiLang(url: URL, request: Request): UiLang {
+	const fromHeader = normalizeUiLang(request.headers.get("x-ui-lang"));
+	if (fromHeader) return fromHeader;
 	const fromUrl = normalizeUiLang(url.searchParams.get("lang"));
 	if (fromUrl) return fromUrl;
 	const acceptLanguage = request.headers.get("accept-language") || "";
@@ -1034,20 +1036,16 @@ async function sendVerificationCodeEmail(
 <body style="margin:0;padding:24px;background:#FFF6F6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
 		<tr>
-			<td style="padding:20px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
-				<div style="font-size:26px;font-weight:800;line-height:1.2;">${escapeHtml(pack.blogBannerTitle)}</div>
-				<div style="margin-top:8px;font-size:13px;line-height:1.6;opacity:.95;">${escapeHtml(pack.blogBannerDesc)}</div>
-				<div style="margin-top:14px;">
-					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:10px 14px;border-radius:9px;background:#FFFFFF;color:#7e0202;font-size:13px;font-weight:700;text-decoration:none;">
-						${escapeHtml(pack.blogButton)}
-					</a>
-				</div>
+			<td style="padding:14px 20px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
+				<div style="font-size:12px;opacity:.82;letter-spacing:.35px;text-transform:uppercase;">FistingGuide</div>
+				<div style="margin-top:6px;font-size:30px;font-weight:800;line-height:1.1;">${escapeHtml(pack.title)}</div>
 			</td>
 		</tr>
 		<tr>
-			<td style="padding:20px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;border-top:1px solid rgba(255,255,255,.18);">
-				<div style="font-size:12px;opacity:.82;letter-spacing:.35px;text-transform:uppercase;">FistingGuide</div>
-				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
+			<td style="padding:9px 20px;background:#FFF3F3;border-bottom:1px solid #F3B5B5;color:#7e0202;font-size:13px;line-height:1.45;">
+				<span style="font-weight:700;">${escapeHtml(pack.blogBannerTitle)}:</span>
+				<span style="opacity:.92;"> ${escapeHtml(pack.blogBannerDesc)}</span>
+				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(pack.blogButton)} →</a>
 			</td>
 		</tr>
 		<tr>
@@ -2670,20 +2668,16 @@ function formatOperationSummaryHtml(
 <body style="margin:0;padding:24px;background:#F3F4F6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:760px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
 		<tr>
-			<td style="padding:18px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
-				<div style="font-size:24px;font-weight:800;line-height:1.2;">${escapeHtml(ui.blogTitle)}</div>
-				<div style="margin-top:8px;font-size:13px;line-height:1.6;opacity:.95;">${escapeHtml(ui.blogDesc)}</div>
-				<div style="margin-top:12px;">
-					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:9px 14px;border-radius:9px;background:#FFFFFF;color:#7e0202;font-size:13px;font-weight:700;text-decoration:none;">
-						${escapeHtml(ui.blogBtn)}
-					</a>
-				</div>
+			<td style="padding:14px 20px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
+				<div style="font-size:12px;letter-spacing:.4px;text-transform:uppercase;opacity:.8;">${escapeHtml(pack.subjectPrefix)}</div>
+				<div style="margin-top:6px;font-size:30px;font-weight:800;line-height:1.1;">${escapeHtml(pack.title)}</div>
 			</td>
 		</tr>
 		<tr>
-			<td style="padding:20px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
-				<div style="font-size:12px;letter-spacing:.4px;text-transform:uppercase;opacity:.8;">${escapeHtml(pack.subjectPrefix)}</div>
-				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
+			<td style="padding:9px 20px;background:#FFF3F3;border-bottom:1px solid #F3B5B5;color:#7e0202;font-size:13px;line-height:1.45;">
+				<span style="font-weight:700;">${escapeHtml(ui.blogTitle)}:</span>
+				<span style="opacity:.92;"> ${escapeHtml(ui.blogDesc)}</span>
+				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(ui.blogBtn)} →</a>
 			</td>
 		</tr>
 		<tr>

@@ -4613,7 +4613,7 @@ export function renderAdminVerifyPage(): string {
 					setStatus(copy('statusSending'), false);
 					const res = await fetch(withLang('/api/admin/verification-code/send'), {
 						method: 'POST',
-						headers: { 'content-type': 'application/json' },
+						headers: { 'content-type': 'application/json', 'x-ui-lang': languageKey() },
 						body: JSON.stringify({ email: email })
 					});
 					const text = await res.text();
@@ -4666,7 +4666,7 @@ export function renderAdminVerifyPage(): string {
 					setStatus(copy('statusVerifying'), false);
 					const verifyRes = await fetch(withLang('/api/admin/verification-code/confirm'), {
 						method: 'POST',
-						headers: { 'content-type': 'application/json' },
+						headers: { 'content-type': 'application/json', 'x-ui-lang': languageKey() },
 						body: JSON.stringify({ verificationId: verificationId, code: code })
 					});
 					const verifyText = await verifyRes.text();
@@ -4696,7 +4696,7 @@ export function renderAdminVerifyPage(): string {
 					}
 
 					setStatus(copy('statusDone'), false);
-					const headers = { 'x-admin-session-token': sessionToken };
+					const headers = { 'x-admin-session-token': sessionToken, 'x-ui-lang': languageKey() };
 					if (op.body != null) headers['content-type'] = 'application/json';
 					const res = await fetch(withLang(String(op.url)), {
 						method: String(op.method),
