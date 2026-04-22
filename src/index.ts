@@ -2555,6 +2555,7 @@ function formatOperationSummaryHtml(
 	operatorIp: string,
 	lang: UiLang,
 ): string {
+	const effectiveLang = normalizeUiLang(String(lang)) || "en";
 	const uiByLang: Record<UiLang, { blogTitle: string; blogDesc: string; blogBtn: string; socialTitle: string }> = {
 		en: {
 			blogTitle: "Visit Our Blog",
@@ -2611,8 +2612,8 @@ function formatOperationSummaryHtml(
 			socialTitle: "Theo Doi Chung Toi",
 		},
 	};
-	const ui = uiByLang[lang] || uiByLang.en;
-	const pack = emailLocalePack(lang);
+	const ui = uiByLang[effectiveLang] || uiByLang.en;
+	const pack = emailLocalePack(effectiveLang);
 	const handleRaw = String(row.handle ?? "").trim();
 	const handleDisplay = handleRaw ? (handleRaw.startsWith("@") ? handleRaw : `@${handleRaw}`) : "";
 	const profileUrl = String(row.profile_url ?? "").trim();
@@ -2680,7 +2681,7 @@ function formatOperationSummaryHtml(
 			</td>
 		</tr>
 		<tr>
-			<td style="padding:20px 24px;background:linear-gradient(135deg,#111827,#1F2937);color:#FFFFFF;">
+			<td style="padding:20px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
 				<div style="font-size:12px;letter-spacing:.4px;text-transform:uppercase;opacity:.8;">${escapeHtml(pack.subjectPrefix)}</div>
 				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
 			</td>
@@ -2692,19 +2693,19 @@ function formatOperationSummaryHtml(
 						? `<div style="text-align:center;padding-bottom:14px;"><img src="${escapeHtml(safeAvatarUrl)}" alt="avatar" width="52" height="52" style="width:52px;height:52px;border-radius:999px;object-fit:cover;border:1px solid #E5E7EB;display:inline-block;" /></div>`
 						: ""
 				}
-				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.summaryTitle)}</div>
+				<div style="font-size:16px;font-weight:700;color:#7e0202;margin-bottom:10px;">${escapeHtml(pack.summaryTitle)}</div>
 				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${summaryHtml}</table>
 			</td>
 		</tr>
 		<tr>
 			<td style="padding:0 24px 22px;">
-				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.creditsTitle)}</div>
+				<div style="font-size:16px;font-weight:700;color:#7e0202;margin-bottom:10px;">${escapeHtml(pack.creditsTitle)}</div>
 				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${creditsHtml}</table>
 			</td>
 		</tr>
 		<tr>
 			<td style="padding:0 24px 24px;">
-				<div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 16px;color:#1E3A8A;font-size:13px;line-height:1.6;">
+				<div style="background:#FFF3F3;border:1px solid #F3B5B5;border-radius:10px;padding:14px 16px;color:#7e0202;font-size:13px;line-height:1.6;">
 					${escapeHtml(pack.cta)}
 					${pack.cta === EMAIL_CTA_EN ? "" : `<br /><br />${escapeHtml(EMAIL_CTA_EN)}`}
 				</div>
@@ -2712,8 +2713,8 @@ function formatOperationSummaryHtml(
 		</tr>
 		<tr>
 			<td style="padding:0 24px 18px;">
-				<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:8px;">${escapeHtml(ui.socialTitle)}</div>
-				<div style="background:#FAFAFA;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;color:#374151;font-size:13px;line-height:1.8;">
+				<div style="font-size:15px;font-weight:700;color:#7e0202;margin-bottom:8px;">${escapeHtml(ui.socialTitle)}</div>
+				<div style="background:#FFFBFB;border:1px solid #F3B5B5;border-radius:10px;padding:12px 14px;color:#374151;font-size:13px;line-height:1.8;">
 					<div>💬 <a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Telegram Bot</a></div>
 					<div>𝕏 <a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">X / Twitter</a></div>
 					<div>🧵 <a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Discord</a></div>
@@ -2723,7 +2724,7 @@ function formatOperationSummaryHtml(
 			</td>
 		</tr>
 		<tr>
-			<td style="padding:0 24px 24px;color:#374151;font-size:13px;">
+			<td style="padding:0 24px 24px;color:#7e0202;font-size:13px;">
 				${escapeHtml(pack.signature)}
 			</td>
 		</tr>
@@ -2750,11 +2751,12 @@ async function sendAdminNotification(
 	}
 
 	const from = (env.RESEND_FROM || "FistingGuide <no-reply@fisting.guide>").trim();
-	const pack = emailLocalePack(lang);
+	const effectiveLang = normalizeUiLang(String(lang)) || "en";
+	const pack = emailLocalePack(effectiveLang);
 
 	const subject = `${pack.subjectPrefix} ${action} profile #${String(row.id ?? "")}`;
-	const text = formatOperationSummary(action, row, operatorIp, lang);
-	const html = formatOperationSummaryHtml(action, row, operatorIp, lang);
+	const text = formatOperationSummary(action, row, operatorIp, effectiveLang);
+	const html = formatOperationSummaryHtml(action, row, operatorIp, effectiveLang);
 
 	try {
 		const res = await fetch("https://api.resend.com/emails", {
