@@ -1078,12 +1078,14 @@ async function sendVerificationCodeEmail(
 		<tr>
 			<td style="padding:0 24px 16px;">
 				<div style="font-size:14px;font-weight:700;color:#7e0202;margin-bottom:8px;">${escapeHtml(pack.socialTitle)}</div>
-				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.8;color:#3F3F46;">
-					<div>${escapeHtml(pack.discordLabel)}: <a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://t.co/RmDE2FA61Y</a></div>
-					<div>${escapeHtml(pack.telegramLabel)}: <a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://t.me/fistingguidebot</a></div>
-					<div>${escapeHtml(pack.blogLabel)}: <a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">${escapeHtml(BLOG_URL)}</a></div>
-					<div>${escapeHtml(pack.xLabel)}: <a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://x.com/FistingGuide</a></div>
-					<div>${escapeHtml(pack.emailLabel)}: <a href="mailto:fistingguide@proton.me" style="color:#7e0202;">fistingguide@proton.me</a></div>
+				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;">
+					<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+						<a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.discordLabel)}" aria-label="${escapeHtml(pack.discordLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">🧵</a>
+						<a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.telegramLabel)}" aria-label="${escapeHtml(pack.telegramLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">💬</a>
+						<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.blogLabel)}" aria-label="${escapeHtml(pack.blogLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">📖</a>
+						<a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.xLabel)}" aria-label="${escapeHtml(pack.xLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">𝕏</a>
+						<a href="mailto:fistingguide@proton.me" title="${escapeHtml(pack.emailLabel)}" aria-label="${escapeHtml(pack.emailLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">✉️</a>
+					</div>
 				</div>
 			</td>
 		</tr>
