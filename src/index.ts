@@ -2623,45 +2623,58 @@ function formatOperationSummaryHtml(
 	const location = [country, region, district].filter(Boolean).join("/");
 	const avatarUrl = String(row.avatar ?? "").trim();
 	const safeAvatarUrl = /^https?:\/\//i.test(avatarUrl) ? avatarUrl : "";
-	const creditRows: Array<{ label: string; value: unknown }> = [
-		{ label: pack.labels.total_credit, value: row.total_credit ?? 0 },
-		{ label: pack.labels.super_credit, value: row.super_credit ?? 0 },
-		{ label: pack.labels.checkin_credit, value: row.checkin_credit ?? 0 },
-		{ label: pack.labels.author_credits, value: row.author_credits ?? 0 },
-		{ label: pack.labels.list_star_event_cnt, value: row.list_star_event_cnt ?? 0 },
-		{ label: pack.labels.tg_msg_cnt, value: row.tg_msg_cnt ?? 0 },
-		{ label: pack.labels.tg_photo_cnt, value: row.tg_photo_cnt ?? 0 },
-		{ label: pack.labels.tg_video_cnt, value: row.tg_video_cnt ?? 0 },
+	const creditRows: Array<{ label: string; value: unknown; icon: string }> = [
+		{ label: pack.labels.total_credit, value: row.total_credit ?? 0, icon: "💯" },
+		{ label: pack.labels.super_credit, value: row.super_credit ?? 0, icon: "🚀" },
+		{ label: pack.labels.checkin_credit, value: row.checkin_credit ?? 0, icon: "✅" },
+		{ label: pack.labels.author_credits, value: row.author_credits ?? 0, icon: "✍️" },
+		{ label: pack.labels.list_star_event_cnt, value: row.list_star_event_cnt ?? 0, icon: "⭐" },
+		{ label: pack.labels.tg_msg_cnt, value: row.tg_msg_cnt ?? 0, icon: "💬" },
+		{ label: pack.labels.tg_photo_cnt, value: row.tg_photo_cnt ?? 0, icon: "🖼️" },
+		{ label: pack.labels.tg_video_cnt, value: row.tg_video_cnt ?? 0, icon: "🎬" },
 	];
-	const summaryRows: Array<{ label: string; value?: unknown; htmlValue?: string }> = [
-		{ label: pack.labels.action, value: action },
-		{ label: pack.labels.id, value: row.id ?? "" },
-		{ label: pack.labels.name, value: row.name ?? "" },
-		{ label: pack.labels.operatorIp, value: operatorIp || "unknown" },
+	const summaryRows: Array<{ label: string; value?: unknown; htmlValue?: string; icon: string }> = [
+		{ label: pack.labels.action, value: action, icon: "🛠️" },
+		{ label: pack.labels.id, value: row.id ?? "", icon: "🆔" },
+		{ label: pack.labels.name, value: row.name ?? "", icon: "👤" },
+		{ label: pack.labels.operatorIp, value: operatorIp || "unknown", icon: "🌐" },
 		{
 			label: pack.labels.profile,
 			value: profileDisplay,
+			icon: "🔗",
 			htmlValue: safeProfileUrl
 				? `<a href="${escapeHtml(safeProfileUrl)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;font-weight:600;">${escapeHtml(profileDisplay || safeProfileUrl)}</a>`
 				: undefined,
 		},
-		{ label: pack.labels.telegram, value: row.telegram ?? "" },
-		{ label: pack.labels.location, value: location },
-		{ label: pack.labels.fans, value: row.followers_count ?? "" },
-		{ label: pack.labels.time, value: new Date().toISOString() },
+		{ label: pack.labels.telegram, value: row.telegram ?? "", icon: "💬" },
+		{ label: pack.labels.location, value: location, icon: "📍" },
+		{ label: pack.labels.fans, value: row.followers_count ?? "", icon: "👥" },
+		{ label: pack.labels.time, value: new Date().toISOString(), icon: "⏱️" },
 	];
-	const summaryHtml = summaryRows
-		.map(
-			(item) =>
-				`<tr><td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:180px;">${escapeHtml(item.label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;word-break:break-word;">${item.htmlValue ?? escapeHtml(String(item.value ?? ""))}</td></tr>`,
-		)
-		.join("");
-	const creditsHtml = creditRows
-		.map(
-			(item) =>
-				`<tr><td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:180px;">${escapeHtml(item.label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;">${escapeHtml(String(item.value ?? 0))}</td></tr>`,
-		)
-		.join("");
+	function renderTwoColumnRows(
+		rows: Array<{ label: string; value?: unknown; htmlValue?: string; icon?: string }>,
+	): string {
+		const out: string[] = [];
+		for (let i = 0; i < rows.length; i += 2) {
+			const left = rows[i];
+			const right = rows[i + 1];
+			const leftValue = left?.htmlValue ?? escapeHtml(String(left?.value ?? ""));
+			const rightValue = right ? right.htmlValue ?? escapeHtml(String(right.value ?? "")) : "";
+			const leftLabel = `${left?.icon ? `${escapeHtml(left.icon)} ` : ""}${escapeHtml(left?.label || "")}`;
+			const rightLabel = `${right?.icon ? `${escapeHtml(right.icon)} ` : ""}${escapeHtml(right?.label || "")}`;
+			out.push(
+				`<tr>` +
+					`<td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:20%;">${leftLabel}</td>` +
+					`<td style="padding:8px 8px 8px 0;color:#111827;font-size:13px;word-break:break-word;width:30%;">${leftValue}</td>` +
+					`<td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:20%;">${rightLabel}</td>` +
+					`<td style="padding:8px 0;color:#111827;font-size:13px;word-break:break-word;width:30%;">${rightValue}</td>` +
+				`</tr>`,
+			);
+		}
+		return out.join("");
+	}
+	const summaryHtml = renderTwoColumnRows(summaryRows);
+	const creditsHtml = renderTwoColumnRows(creditRows);
 
 	return `<!doctype html>
 <html>
@@ -2669,8 +2682,7 @@ function formatOperationSummaryHtml(
 	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:760px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
 		<tr>
 			<td style="padding:14px 20px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
-				<div style="font-size:12px;letter-spacing:.4px;text-transform:uppercase;opacity:.8;">${escapeHtml(pack.subjectPrefix)}</div>
-				<div style="margin-top:6px;font-size:30px;font-weight:800;line-height:1.1;">${escapeHtml(pack.title)}</div>
+				<div style="font-size:30px;font-weight:800;line-height:1.1;">${escapeHtml(pack.title)}</div>
 			</td>
 		</tr>
 		<tr>
@@ -2678,6 +2690,25 @@ function formatOperationSummaryHtml(
 				<span style="font-weight:700;">${escapeHtml(ui.blogTitle)}:</span>
 				<span style="opacity:.92;"> ${escapeHtml(ui.blogDesc)}</span>
 				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(ui.blogBtn)} →</a>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:14px 20px 10px;">
+				<div style="background:#FFF3F3;border:1px solid #F3B5B5;border-radius:10px;padding:14px 16px;color:#7e0202;font-size:13px;line-height:1.6;">
+					${escapeHtml(pack.cta)}
+					${pack.cta === EMAIL_CTA_EN ? "" : `<br /><br />${escapeHtml(EMAIL_CTA_EN)}`}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 20px 14px;">
+				<div style="display:flex;gap:12px;align-items:center;">
+					<a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" title="Telegram Bot" aria-label="Telegram Bot" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">💬</a>
+					<a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" title="X / Twitter" aria-label="X / Twitter" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">𝕏</a>
+					<a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" title="Discord" aria-label="Discord" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">🧵</a>
+					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" title="Blog" aria-label="Blog" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">📖</a>
+					<a href="mailto:fistingguide@proton.me" title="Email" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">✉️</a>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -2695,26 +2726,6 @@ function formatOperationSummaryHtml(
 			<td style="padding:0 24px 22px;">
 				<div style="font-size:16px;font-weight:700;color:#7e0202;margin-bottom:10px;">${escapeHtml(pack.creditsTitle)}</div>
 				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${creditsHtml}</table>
-			</td>
-		</tr>
-		<tr>
-			<td style="padding:0 24px 24px;">
-				<div style="background:#FFF3F3;border:1px solid #F3B5B5;border-radius:10px;padding:14px 16px;color:#7e0202;font-size:13px;line-height:1.6;">
-					${escapeHtml(pack.cta)}
-					${pack.cta === EMAIL_CTA_EN ? "" : `<br /><br />${escapeHtml(EMAIL_CTA_EN)}`}
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td style="padding:0 24px 18px;">
-				<div style="font-size:15px;font-weight:700;color:#7e0202;margin-bottom:8px;">${escapeHtml(ui.socialTitle)}</div>
-				<div style="background:#FFFBFB;border:1px solid #F3B5B5;border-radius:10px;padding:12px 14px;color:#374151;font-size:13px;line-height:1.8;">
-					<div>💬 <a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Telegram Bot</a></div>
-					<div>𝕏 <a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">X / Twitter</a></div>
-					<div>🧵 <a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Discord</a></div>
-					<div>📖 <a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Blog</a></div>
-					<div>✉️ <a href="mailto:fistingguide@proton.me" style="color:#7e0202;text-decoration:none;">fistingguide@proton.me</a></div>
-				</div>
 			</td>
 		</tr>
 		<tr>
@@ -2748,7 +2759,7 @@ async function sendAdminNotification(
 	const effectiveLang = normalizeUiLang(String(lang)) || "en";
 	const pack = emailLocalePack(effectiveLang);
 
-	const subject = `${pack.subjectPrefix} ${action} profile #${String(row.id ?? "")}`;
+	const subject = `${action} profile #${String(row.id ?? "")}`;
 	const text = formatOperationSummary(action, row, operatorIp, effectiveLang);
 	const html = formatOperationSummaryHtml(action, row, operatorIp, effectiveLang);
 
