@@ -3381,14 +3381,40 @@ export function renderAdminPage(mode: "home" | "create" | "edit" | "delete" = "h
 			}
 
 			function queuePendingAdminOperation(operation) {
+				function currentLang() {
+					const fromUrl = new URL(window.location.href).searchParams.get('lang');
+					const raw = String(fromUrl || window.__uiLang || document.documentElement.getAttribute('lang') || 'en').trim();
+					const lower = raw.toLowerCase();
+					if (lower === 'zh-cn' || lower === 'zh-hans' || lower === 'zh') return 'zh-CN';
+					if (lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-hant') return 'zh-TW';
+					if (lower.startsWith('ja')) return 'ja';
+					if (lower.startsWith('ko')) return 'ko';
+					if (lower.startsWith('es')) return 'es';
+					if (lower.startsWith('pt')) return 'pt';
+					if (lower.startsWith('th')) return 'th';
+					if (lower.startsWith('vi')) return 'vi';
+					return 'en';
+				}
+				function withLang(raw, lang) {
+					if (!raw) return raw;
+					try {
+						const next = new URL(String(raw), window.location.origin);
+						next.searchParams.set('lang', lang);
+						return next.pathname + '?' + next.searchParams.toString();
+					} catch {
+						return raw;
+					}
+				}
+				const lang = currentLang();
+				const operationWithLang = Object.assign({}, operation, { url: withLang(operation.url, lang) });
 				try {
-					sessionStorage.setItem('adminPendingOperation', JSON.stringify(operation));
+					sessionStorage.setItem('adminPendingOperation', JSON.stringify(operationWithLang));
 				} catch {
 					window.alert('Failed to store pending operation in this browser session.');
 					return;
 				}
 				const returnPath = window.location.pathname || '/admin';
-				window.location.href = '/admin/verify?return=' + encodeURIComponent(returnPath);
+				window.location.href = '/admin/verify?return=' + encodeURIComponent(returnPath) + '&lang=' + encodeURIComponent(lang);
 			}
 
 			async function readErrorMessage(res) {
@@ -4325,15 +4351,9 @@ export function renderAdminVerifyPage(): string {
 					(requestedReturn === '/admin' || requestedReturn.startsWith('/admin/'))
 						? requestedReturn
 						: '/admin';
-
-				function languageKey() {
-					const rawLang =
-						(window.__uiLang && String(window.__uiLang)) ||
-						document.documentElement.getAttribute('lang') ||
-						navigator.language ||
-						'en';
-					const lang = String(rawLang).toLowerCase();
-					if (lang.startsWith('zh-cn') || lang.startsWith('zh-hans')) return 'zh-CN';
+				function normalizedLang(rawLang) {
+					const lang = String(rawLang || '').toLowerCase();
+					if (lang.startsWith('zh-cn') || lang.startsWith('zh-hans') || lang === 'zh') return 'zh-CN';
 					if (lang.startsWith('zh-tw') || lang.startsWith('zh-hk') || lang.startsWith('zh-hant')) return 'zh-TW';
 					if (lang.startsWith('ja')) return 'ja';
 					if (lang.startsWith('ko')) return 'ko';
@@ -4342,6 +4362,28 @@ export function renderAdminVerifyPage(): string {
 					if (lang.startsWith('th')) return 'th';
 					if (lang.startsWith('vi')) return 'vi';
 					return 'en';
+				}
+				function withLang(raw) {
+					if (!raw) return raw;
+					const lang = languageKey();
+					try {
+						const next = new URL(String(raw), window.location.origin);
+						next.searchParams.set('lang', lang);
+						return next.pathname + '?' + next.searchParams.toString();
+					} catch {
+						return raw;
+					}
+				}
+
+				function languageKey() {
+					const fromUrl = params.get('lang');
+					if (fromUrl) return normalizedLang(fromUrl);
+					const rawLang =
+						(window.__uiLang && String(window.__uiLang)) ||
+						document.documentElement.getAttribute('lang') ||
+						navigator.language ||
+						'en';
+					return normalizedLang(rawLang);
 				}
 
 				function copy(key) {
@@ -4569,7 +4611,7 @@ export function renderAdminVerifyPage(): string {
 						return;
 					}
 					setStatus(copy('statusSending'), false);
-					const res = await fetch('/api/admin/verification-code/send', {
+					const res = await fetch(withLang('/api/admin/verification-code/send'), {
 						method: 'POST',
 						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({ email: email })
@@ -4622,7 +4664,7 @@ export function renderAdminVerifyPage(): string {
 						return;
 					}
 					setStatus(copy('statusVerifying'), false);
-					const verifyRes = await fetch('/api/admin/verification-code/confirm', {
+					const verifyRes = await fetch(withLang('/api/admin/verification-code/confirm'), {
 						method: 'POST',
 						headers: { 'content-type': 'application/json' },
 						body: JSON.stringify({ verificationId: verificationId, code: code })
@@ -4656,7 +4698,7 @@ export function renderAdminVerifyPage(): string {
 					setStatus(copy('statusDone'), false);
 					const headers = { 'x-admin-session-token': sessionToken };
 					if (op.body != null) headers['content-type'] = 'application/json';
-					const res = await fetch(String(op.url), {
+					const res = await fetch(withLang(String(op.url)), {
 						method: String(op.method),
 						headers: headers,
 						body: op.body != null ? JSON.stringify(op.body) : undefined
@@ -4688,7 +4730,7 @@ export function renderAdminVerifyPage(): string {
 					}
 				});
 				els.returnBtn.addEventListener('click', function () {
-					window.location.href = returnPath;
+					window.location.href = withLang(returnPath);
 				});
 				const langSwitch = document.getElementById('verifyLangSwitch');
 				if (langSwitch) {

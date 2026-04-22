@@ -2555,6 +2555,63 @@ function formatOperationSummaryHtml(
 	operatorIp: string,
 	lang: UiLang,
 ): string {
+	const uiByLang: Record<UiLang, { blogTitle: string; blogDesc: string; blogBtn: string; socialTitle: string }> = {
+		en: {
+			blogTitle: "Visit Our Blog",
+			blogDesc: "Read the latest guides, stories, and community updates.",
+			blogBtn: "Open Blog",
+			socialTitle: "Follow Us",
+		},
+		"zh-CN": {
+			blogTitle: "访问我们的博客",
+			blogDesc: "查看最新指南、故事和社区更新。",
+			blogBtn: "打开博客",
+			socialTitle: "关注我们",
+		},
+		"zh-TW": {
+			blogTitle: "造訪我們的部落格",
+			blogDesc: "查看最新指南、故事與社群更新。",
+			blogBtn: "開啟部落格",
+			socialTitle: "追蹤我們",
+		},
+		ja: {
+			blogTitle: "公式ブログを見る",
+			blogDesc: "最新のガイド、ストーリー、コミュニティ更新をチェック。",
+			blogBtn: "ブログを開く",
+			socialTitle: "公式SNS",
+		},
+		ko: {
+			blogTitle: "공식 블로그 방문",
+			blogDesc: "최신 가이드, 스토리, 커뮤니티 업데이트를 확인하세요.",
+			blogBtn: "블로그 열기",
+			socialTitle: "공식 소셜",
+		},
+		es: {
+			blogTitle: "Visita Nuestro Blog",
+			blogDesc: "Lee las ultimas guias, historias y novedades de la comunidad.",
+			blogBtn: "Abrir Blog",
+			socialTitle: "Siguenos",
+		},
+		pt: {
+			blogTitle: "Visite Nosso Blog",
+			blogDesc: "Leia os ultimos guias, historias e atualizacoes da comunidade.",
+			blogBtn: "Abrir Blog",
+			socialTitle: "Siga-nos",
+		},
+		th: {
+			blogTitle: "เยี่ยมชมบล็อกของเรา",
+			blogDesc: "อ่านคู่มือ เรื่องราว และอัปเดตชุมชนล่าสุด",
+			blogBtn: "เปิดบล็อก",
+			socialTitle: "ติดตามเรา",
+		},
+		vi: {
+			blogTitle: "Ghe Tham Blog Cua Chung Toi",
+			blogDesc: "Doc huong dan, cau chuyen va cap nhat cong dong moi nhat.",
+			blogBtn: "Mo Blog",
+			socialTitle: "Theo Doi Chung Toi",
+		},
+	};
+	const ui = uiByLang[lang] || uiByLang.en;
 	const pack = emailLocalePack(lang);
 	const handleRaw = String(row.handle ?? "").trim();
 	const handleDisplay = handleRaw ? (handleRaw.startsWith("@") ? handleRaw : `@${handleRaw}`) : "";
@@ -2612,6 +2669,17 @@ function formatOperationSummaryHtml(
 <body style="margin:0;padding:24px;background:#F3F4F6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:760px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
 		<tr>
+			<td style="padding:18px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
+				<div style="font-size:24px;font-weight:800;line-height:1.2;">${escapeHtml(ui.blogTitle)}</div>
+				<div style="margin-top:8px;font-size:13px;line-height:1.6;opacity:.95;">${escapeHtml(ui.blogDesc)}</div>
+				<div style="margin-top:12px;">
+					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:9px 14px;border-radius:9px;background:#FFFFFF;color:#7e0202;font-size:13px;font-weight:700;text-decoration:none;">
+						${escapeHtml(ui.blogBtn)}
+					</a>
+				</div>
+			</td>
+		</tr>
+		<tr>
 			<td style="padding:20px 24px;background:linear-gradient(135deg,#111827,#1F2937);color:#FFFFFF;">
 				<div style="font-size:12px;letter-spacing:.4px;text-transform:uppercase;opacity:.8;">${escapeHtml(pack.subjectPrefix)}</div>
 				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
@@ -2619,13 +2687,13 @@ function formatOperationSummaryHtml(
 		</tr>
 		<tr>
 			<td style="padding:22px 24px;">
-				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.summaryTitle)}</div>
-				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${summaryHtml}</table>
 				${
 					safeAvatarUrl
-						? `<div style="text-align:center;padding-top:14px;"><img src="${escapeHtml(safeAvatarUrl)}" alt="avatar" width="42" height="42" style="width:42px;height:42px;border-radius:999px;object-fit:cover;border:1px solid #E5E7EB;display:inline-block;" /></div>`
+						? `<div style="text-align:center;padding-bottom:14px;"><img src="${escapeHtml(safeAvatarUrl)}" alt="avatar" width="52" height="52" style="width:52px;height:52px;border-radius:999px;object-fit:cover;border:1px solid #E5E7EB;display:inline-block;" /></div>`
 						: ""
 				}
+				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.summaryTitle)}</div>
+				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${summaryHtml}</table>
 			</td>
 		</tr>
 		<tr>
@@ -2639,6 +2707,18 @@ function formatOperationSummaryHtml(
 				<div style="background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;padding:14px 16px;color:#1E3A8A;font-size:13px;line-height:1.6;">
 					${escapeHtml(pack.cta)}
 					${pack.cta === EMAIL_CTA_EN ? "" : `<br /><br />${escapeHtml(EMAIL_CTA_EN)}`}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 24px 18px;">
+				<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:8px;">${escapeHtml(ui.socialTitle)}</div>
+				<div style="background:#FAFAFA;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;color:#374151;font-size:13px;line-height:1.8;">
+					<div>💬 <a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Telegram Bot</a></div>
+					<div>𝕏 <a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">X / Twitter</a></div>
+					<div>🧵 <a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Discord</a></div>
+					<div>📖 <a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;">Blog</a></div>
+					<div>✉️ <a href="mailto:fistingguide@proton.me" style="color:#7e0202;text-decoration:none;">fistingguide@proton.me</a></div>
 				</div>
 			</td>
 		</tr>
