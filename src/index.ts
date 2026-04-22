@@ -817,11 +817,20 @@ async function sendVerificationCodeEmail(
 			subject: string;
 			title: string;
 			description: string;
+			blogBannerTitle: string;
+			blogBannerDesc: string;
+			blogButton: string;
 			codeLabel: string;
 			verificationIdLabel: string;
 			expiresAtLabel: string;
 			validForLabel: string;
 			ignoreHint: string;
+			socialTitle: string;
+			discordLabel: string;
+			telegramLabel: string;
+			blogLabel: string;
+			xLabel: string;
+			emailLabel: string;
 			signature: string;
 		}
 	> = {
@@ -829,99 +838,180 @@ async function sendVerificationCodeEmail(
 			subject: "Admin verification code",
 			title: "Admin Verification",
 			description: "Use the following verification code to continue:",
+			blogBannerTitle: "Visit Our Blog",
+			blogBannerDesc: "Explore guides, stories, and community updates on the official FistingGuide blog.",
+			blogButton: "Open Blog",
 			codeLabel: "Verification Code",
 			verificationIdLabel: "Verification ID",
 			expiresAtLabel: "Expires At",
 			validForLabel: "Valid for 5 minutes.",
 			ignoreHint: "If you did not request this code, please ignore this email.",
+			socialTitle: "Our Social Media",
+			discordLabel: "Discord",
+			telegramLabel: "Telegram Bot",
+			blogLabel: "Blog",
+			xLabel: "X (Twitter)",
+			emailLabel: "Email",
 			signature: "FistingGuide Community",
 		},
 		"zh-CN": {
 			subject: "管理员验证码",
 			title: "管理员验证",
 			description: "请使用以下验证码继续操作：",
+			blogBannerTitle: "访问我们的博客",
+			blogBannerDesc: "在 FistingGuide 官方博客查看指南、故事和社区更新。",
+			blogButton: "打开博客",
 			codeLabel: "验证码",
 			verificationIdLabel: "验证 ID",
 			expiresAtLabel: "过期时间",
 			validForLabel: "5 分钟内有效。",
 			ignoreHint: "如果这不是你的操作，请忽略此邮件。",
+			socialTitle: "我们的社交媒体",
+			discordLabel: "Discord",
+			telegramLabel: "Telegram 机器人",
+			blogLabel: "博客",
+			xLabel: "X（Twitter）",
+			emailLabel: "邮箱",
 			signature: "FistingGuide Community",
 		},
 		"zh-TW": {
 			subject: "管理員驗證碼",
 			title: "管理員驗證",
 			description: "請使用以下驗證碼繼續操作：",
+			blogBannerTitle: "造訪我們的部落格",
+			blogBannerDesc: "在 FistingGuide 官方部落格查看指南、故事與社群更新。",
+			blogButton: "開啟部落格",
 			codeLabel: "驗證碼",
 			verificationIdLabel: "驗證 ID",
 			expiresAtLabel: "到期時間",
 			validForLabel: "5 分鐘內有效。",
 			ignoreHint: "若非本人操作，請忽略此郵件。",
+			socialTitle: "我們的社群媒體",
+			discordLabel: "Discord",
+			telegramLabel: "Telegram 機器人",
+			blogLabel: "部落格",
+			xLabel: "X（Twitter）",
+			emailLabel: "Email",
 			signature: "FistingGuide Community",
 		},
 		ja: {
 			subject: "管理者認証コード",
 			title: "管理者認証",
 			description: "続行するには次の認証コードを使用してください:",
+			blogBannerTitle: "公式ブログをチェック",
+			blogBannerDesc: "FistingGuide公式ブログでガイド、体験談、最新情報を確認してください。",
+			blogButton: "ブログを開く",
 			codeLabel: "認証コード",
 			verificationIdLabel: "認証 ID",
 			expiresAtLabel: "有効期限",
 			validForLabel: "有効時間は5分です。",
 			ignoreHint: "このコードを要求していない場合は、このメールを無視してください。",
+			socialTitle: "公式ソーシャルメディア",
+			discordLabel: "Discord",
+			telegramLabel: "Telegramボット",
+			blogLabel: "ブログ",
+			xLabel: "X (Twitter)",
+			emailLabel: "メール",
 			signature: "FistingGuide Community",
 		},
 		ko: {
 			subject: "관리자 인증 코드",
 			title: "관리자 인증",
 			description: "계속하려면 아래 인증 코드를 입력하세요:",
+			blogBannerTitle: "공식 블로그 방문",
+			blogBannerDesc: "FistingGuide 공식 블로그에서 가이드, 스토리, 커뮤니티 소식을 확인하세요.",
+			blogButton: "블로그 열기",
 			codeLabel: "인증 코드",
 			verificationIdLabel: "인증 ID",
 			expiresAtLabel: "만료 시간",
 			validForLabel: "5분 동안 유효합니다.",
 			ignoreHint: "요청하지 않았다면 이 이메일을 무시하세요.",
+			socialTitle: "공식 소셜 미디어",
+			discordLabel: "Discord",
+			telegramLabel: "Telegram 봇",
+			blogLabel: "블로그",
+			xLabel: "X (Twitter)",
+			emailLabel: "이메일",
 			signature: "FistingGuide Community",
 		},
 		es: {
 			subject: "Codigo de verificacion de administrador",
 			title: "Verificacion de Administrador",
 			description: "Usa el siguiente codigo para continuar:",
+			blogBannerTitle: "Visita Nuestro Blog",
+			blogBannerDesc: "Explora guias, historias y novedades de la comunidad en el blog oficial de FistingGuide.",
+			blogButton: "Abrir Blog",
 			codeLabel: "Codigo de Verificacion",
 			verificationIdLabel: "ID de Verificacion",
 			expiresAtLabel: "Expira En",
 			validForLabel: "Valido por 5 minutos.",
 			ignoreHint: "Si no solicitaste este codigo, ignora este correo.",
+			socialTitle: "Nuestras Redes Sociales",
+			discordLabel: "Discord",
+			telegramLabel: "Bot de Telegram",
+			blogLabel: "Blog",
+			xLabel: "X (Twitter)",
+			emailLabel: "Correo",
 			signature: "FistingGuide Community",
 		},
 		pt: {
 			subject: "Codigo de verificacao do administrador",
 			title: "Verificacao de Administrador",
 			description: "Use o codigo abaixo para continuar:",
+			blogBannerTitle: "Visite Nosso Blog",
+			blogBannerDesc: "Explore guias, historias e novidades da comunidade no blog oficial da FistingGuide.",
+			blogButton: "Abrir Blog",
 			codeLabel: "Codigo de Verificacao",
 			verificationIdLabel: "ID de Verificacao",
 			expiresAtLabel: "Expira Em",
 			validForLabel: "Valido por 5 minutos.",
 			ignoreHint: "Se voce nao solicitou este codigo, ignore este email.",
+			socialTitle: "Nossas Midias Sociais",
+			discordLabel: "Discord",
+			telegramLabel: "Bot do Telegram",
+			blogLabel: "Blog",
+			xLabel: "X (Twitter)",
+			emailLabel: "Email",
 			signature: "FistingGuide Community",
 		},
 		th: {
 			subject: "รหัสยืนยันผู้ดูแลระบบ",
 			title: "การยืนยันผู้ดูแลระบบ",
 			description: "ใช้รหัสยืนยันด้านล่างเพื่อดำเนินการต่อ:",
+			blogBannerTitle: "เยี่ยมชมบล็อกของเรา",
+			blogBannerDesc: "ดูคู่มือ เรื่องราว และอัปเดตชุมชนบนบล็อกทางการของ FistingGuide",
+			blogButton: "เปิดบล็อก",
 			codeLabel: "รหัสยืนยัน",
 			verificationIdLabel: "รหัสอ้างอิง",
 			expiresAtLabel: "หมดอายุเวลา",
 			validForLabel: "ใช้ได้ภายใน 5 นาที",
 			ignoreHint: "หากคุณไม่ได้ร้องขอรหัสนี้ โปรดละเว้นอีเมลนี้",
+			socialTitle: "โซเชียลมีเดียของเรา",
+			discordLabel: "Discord",
+			telegramLabel: "บอท Telegram",
+			blogLabel: "บล็อก",
+			xLabel: "X (Twitter)",
+			emailLabel: "อีเมล",
 			signature: "FistingGuide Community",
 		},
 		vi: {
 			subject: "Ma xac minh quan tri",
 			title: "Xac Minh Quan Tri",
 			description: "Su dung ma xac minh sau de tiep tuc:",
+			blogBannerTitle: "Ghe Tham Blog Cua Chung Toi",
+			blogBannerDesc: "Kham pha huong dan, cau chuyen va cap nhat cong dong tren blog chinh thuc cua FistingGuide.",
+			blogButton: "Mo Blog",
 			codeLabel: "Ma Xac Minh",
 			verificationIdLabel: "ID Xac Minh",
 			expiresAtLabel: "Het Han Luc",
 			validForLabel: "Co hieu luc trong 5 phut.",
 			ignoreHint: "Neu ban khong yeu cau ma nay, vui long bo qua email nay.",
+			socialTitle: "Mang Xa Hoi Cua Chung Toi",
+			discordLabel: "Discord",
+			telegramLabel: "Bot Telegram",
+			blogLabel: "Blog",
+			xLabel: "X (Twitter)",
+			emailLabel: "Email",
 			signature: "FistingGuide Community",
 		},
 	};
@@ -941,10 +1031,21 @@ async function sendVerificationCodeEmail(
 	].join("\n");
 	const html = `<!doctype html>
 <html>
-<body style="margin:0;padding:24px;background:#F4F6FB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+<body style="margin:0;padding:24px;background:#FFF6F6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 	<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;margin:0 auto;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;">
 		<tr>
-			<td style="padding:20px 24px;background:linear-gradient(135deg,#0F172A,#1E293B);color:#FFFFFF;">
+			<td style="padding:20px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;">
+				<div style="font-size:26px;font-weight:800;line-height:1.2;">${escapeHtml(pack.blogBannerTitle)}</div>
+				<div style="margin-top:8px;font-size:13px;line-height:1.6;opacity:.95;">${escapeHtml(pack.blogBannerDesc)}</div>
+				<div style="margin-top:14px;">
+					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:10px 14px;border-radius:9px;background:#FFFFFF;color:#7e0202;font-size:13px;font-weight:700;text-decoration:none;">
+						${escapeHtml(pack.blogButton)}
+					</a>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:20px 24px;background:linear-gradient(135deg,#7e0202,#a70707);color:#FFFFFF;border-top:1px solid rgba(255,255,255,.18);">
 				<div style="font-size:12px;opacity:.82;letter-spacing:.35px;text-transform:uppercase;">FistingGuide</div>
 				<div style="margin-top:8px;font-size:22px;font-weight:700;">${escapeHtml(pack.title)}</div>
 			</td>
@@ -957,14 +1058,14 @@ async function sendVerificationCodeEmail(
 		<tr>
 			<td style="padding:10px 24px 4px;">
 				<div style="font-size:12px;color:#6B7280;margin-bottom:8px;">${escapeHtml(pack.codeLabel)}</div>
-				<div style="font-size:42px;line-height:1.1;font-weight:800;letter-spacing:8px;color:#111827;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px 18px;text-align:center;">
+				<div style="font-size:44px;line-height:1.1;font-weight:900;letter-spacing:10px;color:#7e0202;background:#FFF1F2;border:1px solid #fecdd3;border-radius:12px;padding:14px 18px;text-align:center;">
 					${escapeHtml(verificationCode)}
 				</div>
 			</td>
 		</tr>
 		<tr>
 			<td style="padding:16px 24px 0;">
-				<div style="background:#F8FAFC;border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;color:#374151;font-size:13px;line-height:1.7;">
+				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;color:#3F3F46;font-size:13px;line-height:1.7;">
 					<div><strong>${escapeHtml(pack.verificationIdLabel)}:</strong> ${escapeHtml(verificationId)}</div>
 					<div><strong>${escapeHtml(pack.expiresAtLabel)}:</strong> ${escapeHtml(expiresAtIso)}</div>
 					<div>${escapeHtml(pack.validForLabel)}</div>
@@ -974,6 +1075,18 @@ async function sendVerificationCodeEmail(
 		<tr>
 			<td style="padding:14px 24px 20px;color:#6B7280;font-size:12px;line-height:1.7;">
 				${escapeHtml(pack.ignoreHint)}
+			</td>
+		</tr>
+		<tr>
+			<td style="padding:0 24px 16px;">
+				<div style="font-size:14px;font-weight:700;color:#7e0202;margin-bottom:8px;">${escapeHtml(pack.socialTitle)}</div>
+				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.8;color:#3F3F46;">
+					<div>${escapeHtml(pack.discordLabel)}: <a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://t.co/RmDE2FA61Y</a></div>
+					<div>${escapeHtml(pack.telegramLabel)}: <a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://t.me/fistingguidebot</a></div>
+					<div>${escapeHtml(pack.blogLabel)}: <a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">${escapeHtml(BLOG_URL)}</a></div>
+					<div>${escapeHtml(pack.xLabel)}: <a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://x.com/FistingGuide</a></div>
+					<div>${escapeHtml(pack.emailLabel)}: <a href="mailto:fistingguide@proton.me" style="color:#7e0202;">fistingguide@proton.me</a></div>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -2180,6 +2293,15 @@ function formatOperationSummary(
 	lang: UiLang,
 ): string {
 	const pack = emailLocalePack(lang);
+	const handleRaw = String(row.handle ?? "").trim();
+	const handleDisplay = handleRaw ? (handleRaw.startsWith("@") ? handleRaw : `@${handleRaw}`) : "";
+	const profileUrl = String(row.profile_url ?? "").trim();
+	const profileDisplay = handleDisplay || profileUrl;
+	const profileText = profileUrl ? `${profileDisplay} (${profileUrl})` : profileDisplay;
+	const country = String(row.country ?? "").trim();
+	const region = String(row.region ?? row.province ?? "").trim();
+	const district = String(row.district ?? row.city ?? "").trim();
+	const location = [country, region, district].filter(Boolean).join("/");
 	const creditFields: Array<{ key: string; label: string }> = [
 		{ key: "total_credit", label: pack.labels.total_credit },
 		{ key: "super_credit", label: pack.labels.super_credit },
@@ -2196,13 +2318,9 @@ function formatOperationSummary(
 		`${pack.labels.id}: ${String(row.id ?? "")}`,
 		`${pack.labels.name}: ${String(row.name ?? "")}`,
 		`${pack.labels.operatorIp}: ${operatorIp || "unknown"}`,
-		`${pack.labels.handle}: ${String(row.handle ?? "")}`,
+		`${pack.labels.profile}: ${profileText}`,
 		`${pack.labels.telegram}: ${String(row.telegram ?? "")}`,
-		`${pack.labels.profileUrl}: ${String(row.profile_url ?? "")}`,
-		`${pack.labels.avatarUrl}: ${String(row.avatar ?? "")}`,
-		`${pack.labels.country}: ${String(row.country ?? "")}`,
-		`${pack.labels.region}: ${String(row.region ?? row.province ?? "")}`,
-		`${pack.labels.district}: ${String(row.district ?? row.city ?? "")}`,
+		`${pack.labels.location}: ${location}`,
 		`${pack.labels.fans}: ${String(row.followers_count ?? "")}`,
 		...creditLines,
 		"",
@@ -2229,12 +2347,14 @@ function emailLocalePack(lang: UiLang): {
 		name: "Name",
 		operatorIp: "Operator IP",
 		handle: "Handle",
+		profile: "Profile",
 		telegram: "Telegram",
 		profileUrl: "Profile URL",
 		avatarUrl: "Avatar URL",
 		country: "Country",
 		region: "Region",
 		district: "District",
+		location: "Location",
 		fans: "Fans",
 		total_credit: "Total Credit",
 		super_credit: "Super Credit",
@@ -2436,6 +2556,17 @@ function formatOperationSummaryHtml(
 	lang: UiLang,
 ): string {
 	const pack = emailLocalePack(lang);
+	const handleRaw = String(row.handle ?? "").trim();
+	const handleDisplay = handleRaw ? (handleRaw.startsWith("@") ? handleRaw : `@${handleRaw}`) : "";
+	const profileUrl = String(row.profile_url ?? "").trim();
+	const profileDisplay = handleDisplay || profileUrl;
+	const safeProfileUrl = /^https?:\/\//i.test(profileUrl) ? profileUrl : "";
+	const country = String(row.country ?? "").trim();
+	const region = String(row.region ?? row.province ?? "").trim();
+	const district = String(row.district ?? row.city ?? "").trim();
+	const location = [country, region, district].filter(Boolean).join("/");
+	const avatarUrl = String(row.avatar ?? "").trim();
+	const safeAvatarUrl = /^https?:\/\//i.test(avatarUrl) ? avatarUrl : "";
 	const creditRows: Array<{ label: string; value: unknown }> = [
 		{ label: pack.labels.total_credit, value: row.total_credit ?? 0 },
 		{ label: pack.labels.super_credit, value: row.super_credit ?? 0 },
@@ -2446,25 +2577,27 @@ function formatOperationSummaryHtml(
 		{ label: pack.labels.tg_photo_cnt, value: row.tg_photo_cnt ?? 0 },
 		{ label: pack.labels.tg_video_cnt, value: row.tg_video_cnt ?? 0 },
 	];
-	const summaryRows: Array<{ label: string; value: unknown }> = [
+	const summaryRows: Array<{ label: string; value?: unknown; htmlValue?: string }> = [
 		{ label: pack.labels.action, value: action },
 		{ label: pack.labels.id, value: row.id ?? "" },
 		{ label: pack.labels.name, value: row.name ?? "" },
 		{ label: pack.labels.operatorIp, value: operatorIp || "unknown" },
-		{ label: pack.labels.handle, value: row.handle ?? "" },
+		{
+			label: pack.labels.profile,
+			value: profileDisplay,
+			htmlValue: safeProfileUrl
+				? `<a href="${escapeHtml(safeProfileUrl)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;text-decoration:none;font-weight:600;">${escapeHtml(profileDisplay || safeProfileUrl)}</a>`
+				: undefined,
+		},
 		{ label: pack.labels.telegram, value: row.telegram ?? "" },
-		{ label: pack.labels.profileUrl, value: row.profile_url ?? "" },
-		{ label: pack.labels.avatarUrl, value: row.avatar ?? "" },
-		{ label: pack.labels.country, value: row.country ?? "" },
-		{ label: pack.labels.region, value: row.region ?? row.province ?? "" },
-		{ label: pack.labels.district, value: row.district ?? row.city ?? "" },
+		{ label: pack.labels.location, value: location },
 		{ label: pack.labels.fans, value: row.followers_count ?? "" },
 		{ label: pack.labels.time, value: new Date().toISOString() },
 	];
 	const summaryHtml = summaryRows
 		.map(
 			(item) =>
-				`<tr><td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:180px;">${escapeHtml(item.label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;word-break:break-word;">${escapeHtml(String(item.value ?? ""))}</td></tr>`,
+				`<tr><td style="padding:8px 0;color:#6B7280;font-size:13px;vertical-align:top;width:180px;">${escapeHtml(item.label)}</td><td style="padding:8px 0;color:#111827;font-size:13px;word-break:break-word;">${item.htmlValue ?? escapeHtml(String(item.value ?? ""))}</td></tr>`,
 		)
 		.join("");
 	const creditsHtml = creditRows
@@ -2488,6 +2621,11 @@ function formatOperationSummaryHtml(
 			<td style="padding:22px 24px;">
 				<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:10px;">${escapeHtml(pack.summaryTitle)}</div>
 				<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${summaryHtml}</table>
+				${
+					safeAvatarUrl
+						? `<div style="text-align:center;padding-top:14px;"><img src="${escapeHtml(safeAvatarUrl)}" alt="avatar" width="42" height="42" style="width:42px;height:42px;border-radius:999px;object-fit:cover;border:1px solid #E5E7EB;display:inline-block;" /></div>`
+						: ""
+				}
 			</td>
 		</tr>
 		<tr>
