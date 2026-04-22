@@ -92,6 +92,121 @@ type SeoOptions = {
 type SeoPageKey = "ranking" | "admin" | "dashboard" | "about" | "wiki";
 type SeoLocalePack = Record<SeoPageKey, { title: string; description: string }>;
 
+const FEATURED_WIKI_ARTICLE_ID = 900001;
+const FEATURED_WIKI_ARTICLE: WikiArticleRecord & {
+	author_avatar?: string;
+	author_handle?: string;
+	author_url?: string;
+	is_fixed?: boolean;
+} = {
+	id: FEATURED_WIKI_ARTICLE_ID,
+	title: "拳交问题解答",
+	content: `1.如何正确灌肠：
+首先，酒店的淋浴头不推荐。淋浴头很脏而且金属头容易划破脆弱的肠道，建议用专用的灌肠喷头接到淋浴头上再进行灌肠。其次，我们要明确的是，并不是灌的越深越干净，初学者及不挑战深拳的不建议灌深，把二道口以下灌干净就好了。下面是推荐的灌肠过程：（1）脱掉裤子，排空粪便后，洗干净肛周。
+（2）在肛门周围用润滑油或者石蜡油润滑，把灌肠管轻轻插入肛门2-3cm，慢慢打开水龙头，用接近体温的温水进行灌肠。
+（3）感到肚子微微有点涨后，关闭水龙头，憋住3-5分钟，轻柔肚子，让水和粪便充分融合，再排出水和粪便。
+（4）重复以上步骤直至无粪便排出，排出的水为清澈。
+2.拳交推荐的润滑油：
+推荐魔术粉，淘宝店铺有卖。推荐玩的前一天配置好，静置一晚能溶解更充分。用热水冲泡，按照2个瓶盖的粉配1瓶500ml水来配比，一定要充分大力混匀，没有白色粉末结晶后，静置一晚待气泡排出后可以使用。不建议任何带有舒缓，薄荷添加等的润滑液，使用这些润滑液会刺激肛门和肠道，导致“辣屁股”。不建议使用带有麻醉性质的舒缓膏。痛是人体重要的防御感觉，拳交过程中感到痛应根据情况充分润滑扩张，或者停止拳交。不顾及痛感暴力继续的，很可能受伤流血，甚至肛裂。
+其他的食品级的起酥油，黑魂，云泥沙的也可以尝试。
+3.玩拳后会变松吗，老了会收不回去被护工打吗
+人的肛门受括约肌支配，成年人在未接受专业训练的情况下，肛门直径可以达到4.5cm，能进入4根手指，在进行专业训练扩肛后，局部括约肌可以达到10cm左右，一般小手拳攻的手直径在6.5cm-7cm，所以在充分扩张润滑后，进入一只手是不会损伤括约肌的。但是，括约肌就像一根橡皮筋，如果暴力进入，很容易把橡皮筋撑坏，导致肛裂，血流成河。正常玩拳不用担心，不玩的时候多做提肛训练，是不会导致肛门变松的。
+4.玩拳应该准备什么
+防水护理垫：避免油弄脏床单，方便清洁。
+合适尺寸的手套：这个因人而异，有些拳受会觉得手套会有异物感。但是拳前无论是否佩戴手套，指甲一定要剪短并且用锉刀修整平滑，用手指对着自己大腿划，以没有任何尖锐感为主。个人习惯佩戴手套，用小一码的手套使其和手更加贴合，也可以保证自己手上小的倒刺或指甲不划伤拳受肛门，更安全。
+灌肠：充分的肠道准备，干净的肠道是对彼此的尊重。粪便也会在后续拳交过程中产生很强的异物感，而且容易划伤肠道。
+粘稠的润滑油：拳的过程中肠道会分泌肠液冲淡润滑油，推荐使用稍粘的润滑油。过稀的润滑油起不到润滑效果，容易受伤。
+辅助用品（用来放松身体的）：按拳受个人体验选择。
+适宜的室温、柔和的灯光：适宜温暖的房间温度和灯光可以让拳受身体更容易放松下来，使拳交过程更顺利。
+尺寸合适的假阳具：可以作为扩张过程中的辅助。
+充分的前戏：拳交是个互动的过程，要在前面充分建立起拳攻拳受间的信任，同时通过前戏增加情趣，让拳受更好的放松下来。
+体位：扩开过程中，推荐胸膝位，就是在拳片中经常看到的跪着拳。双腿跪在床边，尽可能把屁股抬高，头贴到床上，手自然下垂。这个体位更容易使肛门放松。
+5.拳会传染艾滋等传染病吗
+不会。艾滋病毒在油里无法存活。
+那么另外的传染病比如尖锐湿疣，HPV病毒是有可能通过性接触传播的，包括但不限于性交，肛交和口交。在拳交过程中，无法避免会有肠道细小黏膜的破损，如果再加上拳攻手上有破损，是有几率感染上的，也提醒大家注意个人防护安全。
+
+作者简介是：玩拳十年的小手拳攻，也是一个刚毕业的医生。爱好rubber乳胶，喜欢穿着胶拳逼，另外还玩穿刺，深喉，喜欢玩有趣的，欢迎私信约拳。`,
+	author: "皮卡丘",
+	created_at: "2026-04-08T00:00:00.000Z",
+	updated_at: "2026-04-08T00:00:00.000Z",
+	author_avatar: "https://pbs.twimg.com/profile_images/1550105430507995138/nf8qq7c8_400x400.jpg",
+	author_handle: "@fisterloving",
+	author_url: "https://x.com/fisterloving",
+	is_fixed: true,
+};
+
+FEATURED_WIKI_ARTICLE.title = "拳交问题解答";
+FEATURED_WIKI_ARTICLE.author = "皮卡丘";
+FEATURED_WIKI_ARTICLE.content = `# 如何正确灌肠：
+首先，酒店的淋浴头不推荐。淋浴头很脏而且金属头容易划破脆弱的肠道，建议用专用的灌肠喷头接到淋浴头上再进行灌肠。其次，我们要明确的是，并不是灌的越深越干净，初学者及不挑战深拳的不建议灌深，把二道口以下灌干净就好了。下面是推荐的灌肠过程：
+1. 脱掉裤子，排空粪便后，洗干净肛周。
+2. 在肛门周围用润滑油或者石蜡油润滑，把灌肠管轻轻插入肛门2-3cm，慢慢打开水龙头，用接近体温的温水进行灌肠。
+3. 感到肚子微微有点涨后，关闭水龙头，憋住3-5分钟，轻柔肚子，让水和粪便充分融合，再排出水和粪便。
+4. 重复以上步骤直至无粪便排出，排出的水为清澈。
+
+# 拳交推荐的润滑油：
+推荐魔术粉，淘宝店铺有卖。推荐玩的前一天配置好，静置一晚能溶解更充分。用热水冲泡，按照2个瓶盖的粉配1瓶500ml水来配比，一定要充分大力混匀，没有白色粉末结晶后，静置一晚待气泡排出后可以使用。不建议任何带有舒缓，薄荷添加等的润滑液，使用这些润滑液会刺激肛门和肠道，导致“辣屁股”。不建议使用带有麻醉性质的舒缓膏。痛是人体重要的防御感觉，拳交过程中感到痛应根据情况充分润滑扩张，或者停止拳交。不顾及痛感暴力继续的，很可能受伤流血，甚至肛裂。
+其他的食品级的起酥油，黑魂，云泥沙的也可以尝试。
+
+# 玩拳后会变松吗，老了会收不回去被护工打吗
+人的肛门受括约肌支配，成年人在未接受专业训练的情况下，肛门直径可以达到4.5cm，能进入4根手指，在进行专业训练扩肛后，局部括约肌可以达到10cm左右，一般小手拳攻的手直径在6.5cm-7cm，所以在充分扩张润滑后，进入一只手是不会损伤括约肌的。但是，括约肌就像一根橡皮筋，如果暴力进入，很容易把橡皮筋撑坏，导致肛裂，血流成河。正常玩拳不用担心，不玩的时候多做提肛训练，是不会导致肛门变松的。
+
+# 玩拳应该准备什么
+1. 防水护理垫：避免油弄脏床单，方便清洁。
+2. 合适尺寸的手套：这个因人而异，有些拳受会觉得手套会有异物感。但是拳前无论是否佩戴手套，指甲一定要剪短并且用锉刀修整平滑，用手指对着自己大腿划，以没有任何尖锐感为主。个人习惯佩戴手套，用小一码的手套使其和手更加贴合，也可以保证自己手上小的倒刺或指甲不划伤拳受肛门，更安全。
+3. 灌肠：充分的肠道准备，干净的肠道是对彼此的尊重。粪便也会在后续拳交过程中产生很强的异物感，而且容易划伤肠道。
+4. 粘稠的润滑油：拳的过程中肠道会分泌肠液冲淡润滑油，推荐使用稍粘的润滑油。过稀的润滑油起不到润滑效果，容易受伤。
+5. 辅助用品（用来放松身体的）：按拳受个人体验选择。
+6. 适宜的室温、柔和的灯光：适宜温暖的房间温度和灯光可以让拳受身体更容易放松下来，使拳交过程更顺利。
+7. 尺寸合适的假阳具：可以作为扩张过程中的辅助。
+8. 充分的前戏：拳交是个互动的过程，要在前面充分建立起拳攻拳受间的信任，同时通过前戏增加情趣，让拳受更好的放松下来。
+9. 体位：扩开过程中，推荐胸膝位，就是在拳片中经常看到的跪着拳。双腿跪在床边，尽可能把屁股抬高，头贴到床上，手自然下垂。这个体位更容易使肛门放松。
+
+# 拳会传染艾滋等传染病吗
+不会。艾滋病毒在油里无法存活。
+那么另外的传染病比如尖锐湿疣，HPV病毒是有可能通过性接触传播的，包括但不限于性交，肛交和口交。在拳交过程中，无法避免会有肠道细小黏膜的破损，如果再加上拳攻手上有破损，是有几率感染上的，也提醒大家注意个人防护安全。
+
+作者简介是：玩拳十年的小手拳攻，也是一个刚毕业的医生。爱好rubber乳胶，喜欢穿着胶拳逼，另外还玩穿刺，深喉，喜欢玩有趣的，欢迎私信约拳。`;
+
+const LONG_GAME_WIKI_ARTICLE_ID = 900002;
+const LONG_GAME_WIKI_ARTICLE: WikiArticleRecord & {
+	author_avatar?: string;
+	author_handle?: string;
+	author_url?: string;
+	is_fixed?: boolean;
+} = {
+	id: LONG_GAME_WIKI_ARTICLE_ID,
+	title: "The Long Game",
+	content: `# The Long Game:
+What 20 Years of Fisting Taught Me About Safety, Patience, and Myself
+
+People ask me all the time how I got started. The honest answer is that I got started badly. No guidance, no community, no one telling me to slow down. I learned through trial and error, and some of those errors left marks.
+
+That's why I talk about this stuff now. On my podcast Brolapse, in interviews, in my book Deeper: An Anti-Memoir, and in every conversation I have with someone who's curious. Because the information I didn't have could have saved me a lot of pain, and not the fun kind.
+
+Here's what I wish someone had told me on day one: this is not a race. Fisting rewards patience more than any other sexual practice I know. Your body is not a problem to be solved. It's a partner in the experience, and it will tell you everything you need to know if you listen.
+
+Start with good lube, and lots of it. J-Lube, X-Lube, or a quality water-based gel. Silicone has its place, but for depth work, nothing beats a thick water-based formula you can reapply freely. Never use numbing agents. Pain is information. If something hurts, that's your body saying stop, reassess, add more lube, or try a different angle. Numbing that signal is how injuries happen.
+
+Preparation matters. A clean body is a confident body, and confidence is half the game. Take your time with your enema routine. Warm water, not hot. Go slow. Don't rush it because you're eager to get to the main event. The prep is part of the practice.
+
+And breathe. I cannot say this enough. Deep, steady breathing is the single most important technique in fisting. More than any trick with your hands, more than any toy progression, your breath is what opens you up. When you hold your breath, your body tenses. When you breathe, it yields.
+
+I've been doing this for over two decades. I've been on Howard Stern. I've been called names I wear with pride. I wrote an entire book about the life that this practice shaped. And after all of it, the advice I come back to every single time is the simplest: slow down, breathe, communicate, and respect the body you're in.
+
+Whether you're just starting out or you've been at this for years, the fundamentals never change. Safety is not the opposite of intensity. It's what makes real intensity possible.
+
+作者简介：Brolapse  • Legends of Fisting  • Sound Initiative
+Deeper  • Massive blooms  & pig-level ruin`,
+	author: "HungerFF",
+	created_at: "2026-04-09T00:00:00.000Z",
+	updated_at: "2026-04-09T00:00:00.000Z",
+	author_avatar: "https://pbs.twimg.com/profile_images/2019665387885834240/UqcDa_6b_400x400.jpg",
+	author_handle: "@HungerFF",
+	author_url: "https://x.com/HungerFF",
+	is_fixed: true,
+};
+
 const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 	en: {
 		ranking: {
@@ -118,90 +233,90 @@ const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 	},
 	"zh-CN": {
 		ranking: {
-			title: "创作者排�?,
-			description: "面向全球成年社群的创作者目录与排行，支持多语言浏览与社�?Wiki�?,
+			title: "创作者排行",
+			description: "面向全球成年社群的创作者目录与排行，支持多语言浏览与社区 Wiki。",
 		},
 		admin: {
-			title: "数据库管理面�?,
-			description: "用于管理资料�?Wiki 内容的后台页面�?,
+			title: "数据库管理面板",
+			description: "用于管理资料与 Wiki 内容的后台页面。",
 		},
 		dashboard: {
 			title: "数据地图",
-			description: "查看全球成年社群创作者资料分布地图�?,
+			description: "查看全球成年社群创作者资料分布地图。",
 		},
 		about: {
 			title: "关于",
-			description: "了解这个多语言成年社群项目及联系方式�?,
+			description: "了解这个多语言成年社群项目及联系方式。",
 		},
 		wiki: {
 			title: "Fisting Wiki",
-			description: "多语言成年社群 Wiki，聚合安全与知识内容�?,
+			description: "多语言成年社群 Wiki，聚合安全与知识内容。",
 		},
 	},
 	"zh-TW": {
 		ranking: {
-			title: "創作者排�?,
-			description: "面向全球成年社群的創作者目錄與排行，支援多語言瀏覽與社�?Wiki�?,
+			title: "創作者排行",
+			description: "面向全球成年社群的創作者目錄與排行，支援多語言瀏覽與社群 Wiki。",
 		},
 		admin: {
-			title: "資料庫管理面�?,
-			description: "用於管理資料�?Wiki 內容的後台頁面�?,
+			title: "資料庫管理面板",
+			description: "用於管理資料與 Wiki 內容的後台頁面。",
 		},
 		dashboard: {
 			title: "資料地圖",
-			description: "查看全球成年社群創作者資料分佈地圖�?,
+			description: "查看全球成年社群創作者資料分佈地圖。",
 		},
 		about: {
 			title: "關於",
-			description: "了解這個多語言成年社群專案與聯絡方式�?,
+			description: "了解這個多語言成年社群專案與聯絡方式。",
 		},
 		wiki: {
 			title: "Fisting Wiki",
-			description: "多語言成年社群 Wiki，彙整安全與知識內容�?,
+			description: "多語言成年社群 Wiki，彙整安全與知識內容。",
 		},
 	},
 	ja: {
 		ranking: {
-			title: "\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u30e9\u30f3\u30ad\u30f3\u30b0",
-			description: "\u6210\u4eba\u5411\u3051\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u306e\u30b0\u30ed\u30fc\u30d0\u30eb\u306a\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u30c7\u30a3\u30ec\u30af\u30c8\u30ea\u3068\u30e9\u30f3\u30ad\u30f3\u30b0\u3002",
+			title: "クリエイターランキング",
+			description: "成人向けコミュニティのグローバルなクリエイターディレクトリとランキング。",
 		},
 		admin: {
-			title: "\u7ba1\u7406\u30d1\u30cd\u30eb",
-			description: "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u3068Wiki\u8a18\u4e8b\u3092\u7ba1\u7406\u3059\u308b\u305f\u3081\u306e\u7ba1\u7406\u30da\u30fc\u30b8\u3002",
+			title: "管理パネル",
+			description: "プロフィールと Wiki 記事を管理するための管理ページ。",
 		},
 		dashboard: {
-			title: "\u30c7\u30fc\u30bf\u30de\u30c3\u30d7",
-			description: "\u4e16\u754c\u306e\u6210\u4eba\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u5206\u5e03\u3092\u5730\u56f3\u3067\u78ba\u8a8d\u3067\u304d\u307e\u3059\u3002",
+			title: "データマップ",
+			description: "世界の成人コミュニティプロフィール分布を地図で確認できます。",
 		},
 		about: {
-			title: "\u3053\u306e\u30b5\u30a4\u30c8\u306b\u3064\u3044\u3066",
-			description: "\u591a\u8a00\u8a9e\u5bfe\u5fdc\u306e\u6210\u4eba\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u306e\u7d39\u4ecb\u3068\u9023\u7d61\u5148\u3002",
+			title: "このサイトについて",
+			description: "多言語対応の成人コミュニティプロジェクトの紹介と連絡先。",
 		},
 		wiki: {
 			title: "Fisting Wiki",
-			description: "\u6210\u4eba\u5411\u3051\u306e\u5b89\u5168\u60c5\u5831\u3068\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u77e5\u8b58\u3092\u307e\u3068\u3081\u305f\u591a\u8a00\u8a9eWiki\u3002",
+			description: "成人向けの安全情報とコミュニティ知識をまとめた多言語 Wiki。",
 		},
 	},
 	ko: {
 		ranking: {
-			title: "크리에이�?랭킹",
-			description: "성인 커뮤니티�?위한 글로벌 크리에이�?디렉터리 �?랭킹.",
+			title: "크리에이터 랭킹",
+			description: "성인 커뮤니티를 위한 글로벌 크리에이터 디렉터리 및 랭킹.",
 		},
 		admin: {
-			title: "관�?패널",
-			description: "프로필과 위키 콘텐츠를 관리하�?관리자 페이지입니�?",
+			title: "관리 패널",
+			description: "프로필과 위키 콘텐츠를 관리하는 관리자 페이지입니다.",
 		},
 		dashboard: {
-			title: "데이�?지�?,
-			description: "글로벌 성인 커뮤니티 프로�?분포�?지도에�?확인하세�?",
+			title: "데이터 지도",
+			description: "글로벌 성인 커뮤니티 프로필 분포를 지도에서 확인하세요.",
 		},
 		about: {
 			title: "소개",
-			description: "다국�?성인 커뮤니티 프로젝트 소개 �?연락 정보.",
+			description: "다국어 성인 커뮤니티 프로젝트 소개 및 연락 정보.",
 		},
 		wiki: {
 			title: "Fisting Wiki",
-			description: "성인 안전 정보와 커뮤니티 지식을 담은 다국�?위키.",
+			description: "성인 안전 정보와 커뮤니티 지식을 담은 다국어 위키.",
 		},
 	},
 	es: {
@@ -251,7 +366,7 @@ const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 	th: {
 		ranking: {
 			title: "อันดับครีเอเตอร์",
-			description: "ไดเรกทอรีและอันดับครีเอเตอร์สำหรับชุมชนผู้ใหญ่แบบหลายภาษาในระดับโล�?,
+			description: "ไดเรกทอรีและอันดับครีเอเตอร์สำหรับชุมชนผู้ใหญ่แบบหลายภาษาในระดับโลก",
 		},
 		admin: {
 			title: "แผงผู้ดูแลระบบ",
@@ -263,33 +378,33 @@ const SEO_I18N: Record<UiLang, SeoLocalePack> = {
 		},
 		about: {
 			title: "เกี่ยวกับ",
-			description: "ข้อมูลโครงการชุมชนผู้ใหญ่หลายภาษาและช่องทางติดต่�?,
+			description: "ข้อมูลโครงการชุมชนผู้ใหญ่หลายภาษาและช่องทางติดต่อ",
 		},
 		wiki: {
 			title: "Fisting Wiki",
-			description: "วิกิหลายภาษาสำหรับความรู้ชุมชนและข้อมูลความปลอดภัยสำหรับผู้ใหญ�?,
+			description: "วิกิหลายภาษาสำหรับความรู้ชุมชนและข้อมูลความปลอดภัยสำหรับผู้ใหญ่",
 		},
 	},
 	vi: {
 		ranking: {
 			title: "Bảng xếp hạng Creator",
-			description: "Danh b�?và bảng xếp hạng toàn cầu cho cộng đồng người lớn, h�?tr�?đa ngôn ng�?và wiki.",
+			description: "Danh bạ và bảng xếp hạng toàn cầu cho cộng đồng người lớn, hỗ trợ đa ngôn ngữ và wiki.",
 		},
 		admin: {
-			title: "Bảng quản tr�?,
-			description: "Trang quản tr�?đ�?quản lý h�?sơ và nội dung wiki.",
+			title: "Bảng quản trị",
+			description: "Trang quản trị để quản lý hồ sơ và nội dung wiki.",
 		},
 		dashboard: {
-			title: "Bản đ�?d�?liệu",
-			description: "Khám phá bản đ�?phân b�?h�?sơ cộng đồng người lớn trên toàn cầu.",
+			title: "Bản đồ dữ liệu",
+			description: "Khám phá bản đồ phân bố hồ sơ cộng đồng người lớn trên toàn cầu.",
 		},
 		about: {
 			title: "Giới thiệu",
-			description: "Thông tin v�?d�?án cộng đồng người lớn đa ngôn ng�?và liên h�?",
+			description: "Thông tin về dự án cộng đồng người lớn đa ngôn ngữ và liên hệ.",
 		},
 		wiki: {
 			title: "Fisting Wiki",
-			description: "Wiki đa ngôn ng�?v�?kiến thức cộng đồng và nội dung an toàn cho người lớn.",
+			description: "Wiki đa ngôn ngữ về kiến thức cộng đồng và nội dung an toàn cho người lớn.",
 		},
 	},
 };
@@ -384,13 +499,13 @@ function normalizeTextSnippet(value: string, maxLen: number): string {
 function articleFallbackDescription(lang: UiLang): string {
 	const fallbackByLang: Record<UiLang, string> = {
 		en: "Adult community wiki article.",
-		"zh-CN": "成人社群 Wiki 文章�?,
-		"zh-TW": "成人社群 Wiki 文章�?,
-		ja: "成人コミュニティ向け�?Wiki 記事です�?,
-		ko: "성인 커뮤니티 위키 문서입니�?",
+		"zh-CN": "成人社群 Wiki 文章。",
+		"zh-TW": "成人社群 Wiki 文章。",
+		ja: "成人コミュニティ向けの Wiki 記事です。",
+		ko: "성인 커뮤니티 위키 문서입니다.",
 		es: "Artículo de la wiki de la comunidad adulta.",
 		pt: "Artigo da wiki da comunidade adulta.",
-		th: "บทความวิกิของชุมชนผู้ใหญ�?,
+		th: "บทความวิกิของชุมชนผู้ใหญ่",
 		vi: "Bài viết wiki của cộng đồng người lớn.",
 	};
 	return fallbackByLang[lang] || fallbackByLang.en;
@@ -743,82 +858,82 @@ async function sendVerificationCodeEmail(
 		},
 		"zh-CN": {
 			subject: "管理员验证码",
-			title: "管理员验�?,
-			description: "请使用以下验证码继续操作�?,
-			blogBannerTitle: "访问我们的博�?,
-			blogBannerDesc: "�?FistingGuide 官方博客查看指南、故事和社区更新�?,
+			title: "管理员验证",
+			description: "请使用以下验证码继续操作：",
+			blogBannerTitle: "访问我们的博客",
+			blogBannerDesc: "在 FistingGuide 官方博客查看指南、故事和社区更新。",
 			blogButton: "打开博客",
-			codeLabel: "验证�?,
+			codeLabel: "验证码",
 			verificationIdLabel: "验证 ID",
 			expiresAtLabel: "过期时间",
-			validForLabel: "5 分钟内有效�?,
-			ignoreHint: "如果这不是你的操作，请忽略此邮件�?,
-			socialTitle: "我们的社交媒�?,
+			validForLabel: "5 分钟内有效。",
+			ignoreHint: "如果这不是你的操作，请忽略此邮件。",
+			socialTitle: "我们的社交媒体",
 			discordLabel: "Discord",
-			telegramLabel: "Telegram 机器�?,
+			telegramLabel: "Telegram 机器人",
 			blogLabel: "博客",
-			xLabel: "X（Twitter�?,
+			xLabel: "X（Twitter）",
 			emailLabel: "邮箱",
 			signature: "FistingGuide Community",
 		},
 		"zh-TW": {
 			subject: "管理員驗證碼",
-			title: "管理員驗�?,
-			description: "請使用以下驗證碼繼續操作�?,
-			blogBannerTitle: "造訪我們的部落�?,
-			blogBannerDesc: "�?FistingGuide 官方部落格查看指南、故事與社群更新�?,
-			blogButton: "開啟部落�?,
-			codeLabel: "驗證�?,
+			title: "管理員驗證",
+			description: "請使用以下驗證碼繼續操作：",
+			blogBannerTitle: "造訪我們的部落格",
+			blogBannerDesc: "在 FistingGuide 官方部落格查看指南、故事與社群更新。",
+			blogButton: "開啟部落格",
+			codeLabel: "驗證碼",
 			verificationIdLabel: "驗證 ID",
 			expiresAtLabel: "到期時間",
-			validForLabel: "5 分鐘內有效�?,
-			ignoreHint: "若非本人操作，請忽略此郵件�?,
+			validForLabel: "5 分鐘內有效。",
+			ignoreHint: "若非本人操作，請忽略此郵件。",
 			socialTitle: "我們的社群媒體",
 			discordLabel: "Discord",
-			telegramLabel: "Telegram 機器�?,
-			blogLabel: "部落�?,
-			xLabel: "X（Twitter�?,
+			telegramLabel: "Telegram 機器人",
+			blogLabel: "部落格",
+			xLabel: "X（Twitter）",
 			emailLabel: "Email",
 			signature: "FistingGuide Community",
 		},
 		ja: {
 			subject: "管理者認証コード",
-			title: "管理者認�?,
+			title: "管理者認証",
 			description: "続行するには次の認証コードを使用してください:",
 			blogBannerTitle: "公式ブログをチェック",
-			blogBannerDesc: "FistingGuide公式ブログでガイド、体験談、最新情報を確認してください�?,
+			blogBannerDesc: "FistingGuide公式ブログでガイド、体験談、最新情報を確認してください。",
 			blogButton: "ブログを開く",
-			codeLabel: "認証コー�?,
+			codeLabel: "認証コード",
 			verificationIdLabel: "認証 ID",
 			expiresAtLabel: "有効期限",
-			validForLabel: "有効時間�?分です�?,
-			ignoreHint: "このコードを要求していない場合は、このメールを無視してください�?,
-			socialTitle: "公式ソーシャルメディ�?,
+			validForLabel: "有効時間は5分です。",
+			ignoreHint: "このコードを要求していない場合は、このメールを無視してください。",
+			socialTitle: "公式ソーシャルメディア",
 			discordLabel: "Discord",
-			telegramLabel: "Telegramボッ�?,
-			blogLabel: "ブロ�?,
+			telegramLabel: "Telegramボット",
+			blogLabel: "ブログ",
 			xLabel: "X (Twitter)",
-			emailLabel: "メー�?,
+			emailLabel: "メール",
 			signature: "FistingGuide Community",
 		},
 		ko: {
 			subject: "관리자 인증 코드",
 			title: "관리자 인증",
-			description: "계속하려�?아래 인증 코드�?입력하세�?",
-			blogBannerTitle: "공식 블로�?방문",
-			blogBannerDesc: "FistingGuide 공식 블로그에�?가이드, 스토�? 커뮤니티 소식�?확인하세�?",
-			blogButton: "블로�?열기",
+			description: "계속하려면 아래 인증 코드를 입력하세요:",
+			blogBannerTitle: "공식 블로그 방문",
+			blogBannerDesc: "FistingGuide 공식 블로그에서 가이드, 스토리, 커뮤니티 소식을 확인하세요.",
+			blogButton: "블로그 열기",
 			codeLabel: "인증 코드",
 			verificationIdLabel: "인증 ID",
 			expiresAtLabel: "만료 시간",
-			validForLabel: "5�?동안 유효합니�?",
-			ignoreHint: "요청하지 않았다면 �?이메일을 무시하세�?",
-			socialTitle: "공식 소셜 미디�?,
+			validForLabel: "5분 동안 유효합니다.",
+			ignoreHint: "요청하지 않았다면 이 이메일을 무시하세요.",
+			socialTitle: "공식 소셜 미디어",
 			discordLabel: "Discord",
-			telegramLabel: "Telegram �?,
-			blogLabel: "블로�?,
+			telegramLabel: "Telegram 봇",
+			blogLabel: "블로그",
 			xLabel: "X (Twitter)",
-			emailLabel: "이메�?,
+			emailLabel: "이메일",
 			signature: "FistingGuide Community",
 		},
 		es: {
@@ -862,21 +977,21 @@ async function sendVerificationCodeEmail(
 			signature: "FistingGuide Community",
 		},
 		th: {
-			subject: "รหัสยืนยันผู้ดูแลระบ�?,
+			subject: "รหัสยืนยันผู้ดูแลระบบ",
 			title: "การยืนยันผู้ดูแลระบบ",
-			description: "ใช้รหัสยืนยันด้านล่างเพื่อดำเนินการต่�?",
+			description: "ใช้รหัสยืนยันด้านล่างเพื่อดำเนินการต่อ:",
 			blogBannerTitle: "เยี่ยมชมบล็อกของเรา",
-			blogBannerDesc: "ดูคู่มือ เรื่องราว และอัปเดตชุมชนบนบล็อกทางการขอ�?FistingGuide",
+			blogBannerDesc: "ดูคู่มือ เรื่องราว และอัปเดตชุมชนบนบล็อกทางการของ FistingGuide",
 			blogButton: "เปิดบล็อก",
 			codeLabel: "รหัสยืนยัน",
-			verificationIdLabel: "รหัสอ้างอิ�?,
-			expiresAtLabel: "หมดอายุเวล�?,
-			validForLabel: "ใช้ได้ภายใ�?5 นาที",
-			ignoreHint: "หากคุณไม่ได้ร้องขอรหัสนี�?โปรดละเว้นอีเมลนี�?,
+			verificationIdLabel: "รหัสอ้างอิง",
+			expiresAtLabel: "หมดอายุเวลา",
+			validForLabel: "ใช้ได้ภายใน 5 นาที",
+			ignoreHint: "หากคุณไม่ได้ร้องขอรหัสนี้ โปรดละเว้นอีเมลนี้",
 			socialTitle: "โซเชียลมีเดียของเรา",
 			discordLabel: "Discord",
-			telegramLabel: "บอ�?Telegram",
-			blogLabel: "บล็อ�?,
+			telegramLabel: "บอท Telegram",
+			blogLabel: "บล็อก",
 			xLabel: "X (Twitter)",
 			emailLabel: "อีเมล",
 			signature: "FistingGuide Community",
@@ -930,7 +1045,7 @@ async function sendVerificationCodeEmail(
 			<td style="padding:9px 20px;background:#FFF3F3;border-bottom:1px solid #F3B5B5;color:#7e0202;font-size:13px;line-height:1.45;">
 				<span style="font-weight:700;">${escapeHtml(pack.blogBannerTitle)}:</span>
 				<span style="opacity:.92;"> ${escapeHtml(pack.blogBannerDesc)}</span>
-				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(pack.blogButton)} �?/a>
+				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(pack.blogButton)} →</a>
 			</td>
 		</tr>
 		<tr>
@@ -963,12 +1078,22 @@ async function sendVerificationCodeEmail(
 		<tr>
 			<td style="padding:0 24px 16px;">
 				<div style="font-size:14px;font-weight:700;color:#7e0202;margin-bottom:8px;">${escapeHtml(pack.socialTitle)}</div>
-				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:12px 10px;text-align:center;">
-					<a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.discordLabel)}" aria-label="${escapeHtml(pack.discordLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 5px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">&#127918;</a>
-					<a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.telegramLabel)}" aria-label="${escapeHtml(pack.telegramLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 5px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">&#9992;&#65039;</a>
-					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.blogLabel)}" aria-label="${escapeHtml(pack.blogLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 5px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">&#128214;</a>
-					<a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.xLabel)}" aria-label="${escapeHtml(pack.xLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 5px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">&#120143;</a>
-					<a href="mailto:fistingguide@proton.me" title="${escapeHtml(pack.emailLabel)}" aria-label="${escapeHtml(pack.emailLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 5px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">&#9993;&#65039;</a>
+				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;">
+					<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+						<a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.discordLabel)}" aria-label="${escapeHtml(pack.discordLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;">
+							<svg viewBox="0 0 24 24" width="22" height="22" role="img" focusable="false" aria-hidden="true" style="display:block;fill:#7e0202;">
+								<path d="M20.3 4.37A17.6 17.6 0 0 0 15.9 3l-.22.45a16.4 16.4 0 0 1 4.12 1.35A13.6 13.6 0 0 0 12 2.4a13.6 13.6 0 0 0-7.8 2.4 16.4 16.4 0 0 1 4.12-1.35L8.1 3a17.6 17.6 0 0 0-4.4 1.37C1.2 8.1.5 11.74.84 15.34a17.8 17.8 0 0 0 5.36 2.67l1.16-1.58c-.62-.23-1.2-.52-1.74-.88.15.11.3.22.46.31 3.25 1.88 6.78 1.88 10.02 0 .16-.09.31-.2.46-.31-.54.36-1.12.65-1.74.88l1.16 1.58a17.8 17.8 0 0 0 5.36-2.67c.4-4.17-.68-7.78-3.05-10.97ZM9.6 13.83c-.92 0-1.67-.85-1.67-1.9 0-1.06.74-1.9 1.67-1.9.93 0 1.68.84 1.67 1.9 0 1.05-.75 1.9-1.67 1.9Zm4.8 0c-.92 0-1.67-.85-1.67-1.9 0-1.06.74-1.9 1.67-1.9.93 0 1.68.84 1.67 1.9 0 1.05-.75 1.9-1.67 1.9Z"></path>
+							</svg>
+						</a>
+						<a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.telegramLabel)}" aria-label="${escapeHtml(pack.telegramLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;">
+							<svg viewBox="0 0 24 24" width="22" height="22" role="img" focusable="false" aria-hidden="true" style="display:block;fill:#7e0202;">
+								<path d="M21.05 3.17 2.95 10.02c-1.23.48-1.22 1.16-.22 1.47l4.64 1.45 1.79 5.57c.22.62.11.87.77.87.51 0 .74-.23 1.02-.5l2.23-2.17 4.64 3.42c.86.47 1.47.23 1.68-.8l3.08-14.53c.31-1.26-.48-1.83-1.53-1.35ZM8.1 12.6l10.77-6.8c.54-.33 1.04-.15.63.22l-8.95 8.08-.35 3.76-2.1-5.26Z"></path>
+							</svg>
+						</a>
+						<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.blogLabel)}" aria-label="${escapeHtml(pack.blogLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">📖</a>
+						<a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" title="${escapeHtml(pack.xLabel)}" aria-label="${escapeHtml(pack.xLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">𝕏</a>
+						<a href="mailto:fistingguide@proton.me" title="${escapeHtml(pack.emailLabel)}" aria-label="${escapeHtml(pack.emailLabel)}" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:22px;line-height:1;">✉️</a>
+					</div>
 				</div>
 			</td>
 		</tr>
@@ -2265,13 +2390,13 @@ function emailLocalePack(lang: UiLang): {
 				title: "档案操作通知",
 				summaryTitle: "操作摘要",
 				creditsTitle: "积分明细",
-				cta: "请加入我们的 Telegram 群聊。你可以通过在群内发送消息、图片、视频以及参与活动来增加积分。排名基于总积分�?,
+				cta: "请加入我们的 Telegram 群聊。你可以通过在群内发送消息、图片、视频以及参与活动来增加积分。排名基于总积分。",
 				signature: "FistingGuide Community.",
 				labels: {
 					...labelsEn,
 					action: "操作",
 					name: "名称",
-					operatorIp: "操作�?IP",
+					operatorIp: "操作人 IP",
 					handle: "句柄",
 					telegram: "Telegram 句柄",
 					country: "国家",
@@ -2286,13 +2411,13 @@ function emailLocalePack(lang: UiLang): {
 				title: "檔案操作通知",
 				summaryTitle: "操作摘要",
 				creditsTitle: "積分明細",
-				cta: "請加入我們的 Telegram 群組。你可以透過在群內發送訊息、圖片、影片以及參與活動來增加積分。排名依總積分計算�?,
+				cta: "請加入我們的 Telegram 群組。你可以透過在群內發送訊息、圖片、影片以及參與活動來增加積分。排名依總積分計算。",
 				signature: "FistingGuide Community.",
 				labels: {
 					...labelsEn,
 					action: "操作",
 					name: "名稱",
-					operatorIp: "操作�?IP",
+					operatorIp: "操作人 IP",
 					handle: "帳號",
 					telegram: "Telegram 帳號",
 					country: "國家",
@@ -2306,8 +2431,8 @@ function emailLocalePack(lang: UiLang): {
 				subjectPrefix: "[管理通知]",
 				title: "プロフィール操作通知",
 				summaryTitle: "操作サマリー",
-				creditsTitle: "クレジット内�?,
-				cta: "Telegramグループチャットに参加してください。グループ内でメッセージ・画像・動画の投稿やキャンペーン参加でクレジットを増やせます。ランキングは総クレジットで決まります�?,
+				creditsTitle: "クレジット内訳",
+				cta: "Telegramグループチャットに参加してください。グループ内でメッセージ・画像・動画の投稿やキャンペーン参加でクレジットを増やせます。ランキングは総クレジットで決まります。",
 				signature: "FistingGuide Community.",
 				labels: {
 					...labelsEn,
@@ -2316,31 +2441,31 @@ function emailLocalePack(lang: UiLang): {
 					operatorIp: "操作IP",
 					handle: "ハンドル",
 					telegram: "Telegramハンドル",
-					country: "�?,
+					country: "国",
 					region: "地域",
 					district: "地区",
-					fans: "フォロワ�?,
+					fans: "フォロワー",
 					time: "時刻",
 				},
 			},
 			ko: {
 				subjectPrefix: "[관리자 알림]",
-				title: "프로�?작업 알림",
+				title: "프로필 작업 알림",
 				summaryTitle: "작업 요약",
-				creditsTitle: "크레�?상세",
-				cta: "Telegram 그룹 채팅�?참여�?주세�? 그룹에서 메시지, 사진, 영상 전송 �?캠페�?참여�?크레딧을 올릴 �?있습니다. 랭킹은 �?크레�?기준입니�?",
+				creditsTitle: "크레딧 상세",
+				cta: "Telegram 그룹 채팅에 참여해 주세요. 그룹에서 메시지, 사진, 영상 전송 및 캠페인 참여로 크레딧을 올릴 수 있습니다. 랭킹은 총 크레딧 기준입니다.",
 				signature: "FistingGuide Community.",
 				labels: {
 					...labelsEn,
 					action: "작업",
 					name: "이름",
-					operatorIp: "작업�?IP",
+					operatorIp: "작업자 IP",
 					handle: "핸들",
 					telegram: "Telegram 핸들",
 					country: "국가",
-					region: "지�?,
+					region: "지역",
 					district: "구역",
-					fans: "팔로�?,
+					fans: "팔로워",
 					time: "시간",
 				},
 			},
@@ -2388,23 +2513,23 @@ function emailLocalePack(lang: UiLang): {
 			},
 			th: {
 				subjectPrefix: "[แจ้งเตือนแอดมิน]",
-				title: "การแจ้งเตือนการแก้ไขโปรไฟล�?,
+				title: "การแจ้งเตือนการแก้ไขโปรไฟล์",
 				summaryTitle: "สรุปการดำเนินการ",
-				creditsTitle: "รายละเอียดเครดิ�?,
-				cta: "โปรดเข้าร่วมกลุ่มแช�?Telegram ของเรา คุณสามารถเพิ่มเครดิตได้ด้วยการส่งข้อควา�?รูปภาพ วิดีโอ และเข้าร่วมแคมเปญภายในกลุ่ม การจัดอันดับอ้างอิงจากเครดิตรวม",
+				creditsTitle: "รายละเอียดเครดิต",
+				cta: "โปรดเข้าร่วมกลุ่มแชต Telegram ของเรา คุณสามารถเพิ่มเครดิตได้ด้วยการส่งข้อความ รูปภาพ วิดีโอ และเข้าร่วมแคมเปญภายในกลุ่ม การจัดอันดับอ้างอิงจากเครดิตรวม",
 				signature: "FistingGuide Community.",
 				labels: {
 					...labelsEn,
 					action: "การดำเนินการ",
 					name: "ชื่อ",
 					operatorIp: "IP ผู้ดำเนินการ",
-					handle: "แฮนเดิ�?,
-					telegram: "แฮนเดิ�?Telegram",
+					handle: "แฮนเดิล",
+					telegram: "แฮนเดิล Telegram",
 					country: "ประเทศ",
-					region: "ภูมิภา�?,
+					region: "ภูมิภาค",
 					district: "เขต",
-					fans: "ผู้ติดตา�?,
-					time: "เวล�?,
+					fans: "ผู้ติดตาม",
+					time: "เวลา",
 				},
 			},
 			vi: {
@@ -2447,27 +2572,27 @@ function formatOperationSummaryHtml(
 			socialTitle: "Follow Us",
 		},
 		"zh-CN": {
-			blogTitle: "访问我们的博�?,
-			blogDesc: "查看最新指南、故事和社区更新�?,
+			blogTitle: "访问我们的博客",
+			blogDesc: "查看最新指南、故事和社区更新。",
 			blogBtn: "打开博客",
 			socialTitle: "关注我们",
 		},
 		"zh-TW": {
-			blogTitle: "造訪我們的部落�?,
-			blogDesc: "查看最新指南、故事與社群更新�?,
-			blogBtn: "開啟部落�?,
-			socialTitle: "追蹤我�?,
+			blogTitle: "造訪我們的部落格",
+			blogDesc: "查看最新指南、故事與社群更新。",
+			blogBtn: "開啟部落格",
+			socialTitle: "追蹤我們",
 		},
 		ja: {
 			blogTitle: "公式ブログを見る",
-			blogDesc: "最新のガイド、ストーリー、コミュニティ更新をチェック�?,
+			blogDesc: "最新のガイド、ストーリー、コミュニティ更新をチェック。",
 			blogBtn: "ブログを開く",
 			socialTitle: "公式SNS",
 		},
 		ko: {
-			blogTitle: "공식 블로�?방문",
-			blogDesc: "최신 가이드, 스토�? 커뮤니티 업데이트�?확인하세�?",
-			blogBtn: "블로�?열기",
+			blogTitle: "공식 블로그 방문",
+			blogDesc: "최신 가이드, 스토리, 커뮤니티 업데이트를 확인하세요.",
+			blogBtn: "블로그 열기",
 			socialTitle: "공식 소셜",
 		},
 		es: {
@@ -2484,7 +2609,7 @@ function formatOperationSummaryHtml(
 		},
 		th: {
 			blogTitle: "เยี่ยมชมบล็อกของเรา",
-			blogDesc: "อ่านคู่มือ เรื่องราว และอัปเดตชุมชนล่าสุ�?,
+			blogDesc: "อ่านคู่มือ เรื่องราว และอัปเดตชุมชนล่าสุด",
 			blogBtn: "เปิดบล็อก",
 			socialTitle: "ติดตามเรา",
 		},
@@ -2511,15 +2636,15 @@ function formatOperationSummaryHtml(
 	const creditRows: Array<{ label: string; value: unknown; icon: string }> = [
 		{ label: pack.labels.total_credit, value: row.total_credit ?? 0, icon: "💯" },
 		{ label: pack.labels.super_credit, value: row.super_credit ?? 0, icon: "🚀" },
-		{ label: pack.labels.checkin_credit, value: row.checkin_credit ?? 0, icon: "�? },
+		{ label: pack.labels.checkin_credit, value: row.checkin_credit ?? 0, icon: "✅" },
 		{ label: pack.labels.author_credits, value: row.author_credits ?? 0, icon: "✍️" },
-		{ label: pack.labels.list_star_event_cnt, value: row.list_star_event_cnt ?? 0, icon: "�? },
+		{ label: pack.labels.list_star_event_cnt, value: row.list_star_event_cnt ?? 0, icon: "⭐" },
 		{ label: pack.labels.tg_msg_cnt, value: row.tg_msg_cnt ?? 0, icon: "💬" },
-		{ label: pack.labels.tg_photo_cnt, value: row.tg_photo_cnt ?? 0, icon: "🖼�? },
+		{ label: pack.labels.tg_photo_cnt, value: row.tg_photo_cnt ?? 0, icon: "🖼️" },
 		{ label: pack.labels.tg_video_cnt, value: row.tg_video_cnt ?? 0, icon: "🎬" },
 	];
 	const summaryRows: Array<{ label: string; value?: unknown; htmlValue?: string; icon: string }> = [
-		{ label: pack.labels.action, value: action, icon: "🛠�? },
+		{ label: pack.labels.action, value: action, icon: "🛠️" },
 		{ label: pack.labels.id, value: row.id ?? "", icon: "🆔" },
 		{ label: pack.labels.name, value: row.name ?? "", icon: "👤" },
 		{ label: pack.labels.operatorIp, value: operatorIp || "unknown", icon: "🌐" },
@@ -2574,7 +2699,7 @@ function formatOperationSummaryHtml(
 			<td style="padding:9px 20px;background:#FFF3F3;border-bottom:1px solid #F3B5B5;color:#7e0202;font-size:13px;line-height:1.45;">
 				<span style="font-weight:700;">${escapeHtml(ui.blogTitle)}:</span>
 				<span style="opacity:.92;"> ${escapeHtml(ui.blogDesc)}</span>
-				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(ui.blogBtn)} �?/a>
+				<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:#7e0202;font-weight:700;text-decoration:none;">${escapeHtml(ui.blogBtn)} →</a>
 			</td>
 		</tr>
 		<tr>
@@ -2587,12 +2712,12 @@ function formatOperationSummaryHtml(
 		</tr>
 		<tr>
 			<td style="padding:0 20px 14px;">
-				<div style="background:#FFFBFB;border:1px solid #FECACA;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.8;color:#3F3F46;">
-					<div>Discord: <a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://t.co/RmDE2FA61Y</a></div>
-					<div>Telegram: <a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://t.me/fistingguidebot</a></div>
-					<div>Blog: <a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">${escapeHtml(BLOG_URL)}</a></div>
-					<div>X / Twitter: <a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" style="color:#7e0202;">https://x.com/FistingGuide</a></div>
-					<div>Email: <a href="mailto:fistingguide@proton.me" style="color:#7e0202;">fistingguide@proton.me</a></div>
+				<div style="display:flex;gap:12px;align-items:center;">
+					<a href="https://t.me/fistingguidebot" target="_blank" rel="noopener noreferrer" title="Telegram Bot" aria-label="Telegram Bot" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">💬</a>
+					<a href="https://x.com/FistingGuide" target="_blank" rel="noopener noreferrer" title="X / Twitter" aria-label="X / Twitter" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">𝕏</a>
+					<a href="https://t.co/RmDE2FA61Y" target="_blank" rel="noopener noreferrer" title="Discord" aria-label="Discord" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">🧵</a>
+					<a href="${escapeHtml(BLOG_URL)}" target="_blank" rel="noopener noreferrer" title="Blog" aria-label="Blog" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">📖</a>
+					<a href="mailto:fistingguide@proton.me" title="Email" aria-label="Email" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:999px;background:#FFF3F3;border:1px solid #F3B5B5;color:#7e0202;text-decoration:none;font-size:21px;line-height:1;">✉️</a>
 				</div>
 			</td>
 		</tr>
@@ -3621,4 +3746,3 @@ export default {
 		}
 	},
 } satisfies ExportedHandler<RuntimeEnv>;
-
