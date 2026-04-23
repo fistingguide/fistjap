@@ -2055,7 +2055,7 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 		</div>
 		<div id="ageDeniedText" data-i18n="age_denied" hidden>Access denied. This website is for adults 18+ only.</div>
 		<section class="panel">
-			<h1 class="site-main-title">A List for Fister and Fistees</h1>
+			<h1 class="site-main-title">A List for Gay Fister and Fistees</h1>
 			<div class="panel-sticky-top">
 				<p class="ranking-notice top-disclaimer" data-i18n="ranking_location_notice">${escapeHtml(RANKING_NOTICE_ZH_CN)}</p>
 				<header class="header">
