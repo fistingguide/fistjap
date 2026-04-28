@@ -2139,6 +2139,8 @@ export function renderLeaderboardPage(rows: ProfileRecord[]): string {
 				<a class="mobile-inline-carousel-slide" href="https://www.ilovefist.com/" target="_self"><img src="/r2-fg/assets/mobile-carousel/5.png" alt="ILOVEFIST" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">ILOVEFIST</span></a>
 				<a class="mobile-inline-carousel-slide" href="https://agay.jp/magazine/category/fist/" target="_self"><img src="/r2-fg/assets/mobile-carousel/6.png" alt="AGAY.jp" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">AGAY.jp</span></a>
 				<a class="mobile-inline-carousel-slide" href="https://www.tarisss.com/" target="_self"><img src="/r2-fg/assets/mobile-carousel/7.png" alt="TaRiss's" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">TaRiss's</span></a>
+				<a class="mobile-inline-carousel-slide" href="https://ffister.com/" target="_self"><img src="/r2-fg/assets/mobile-carousel/8.jpg" alt="FFister.com" loading="lazy" fetchpriority="low" decoding="async" /><span class="mobile-inline-carousel-label">FFister.com's</span></a>
+
 			</div>
 			<section class="event-promo" aria-label="list star promotion">
 				<h2 class="event-promo-campaign" data-i18n="campaign_title">Campaign</h2>
